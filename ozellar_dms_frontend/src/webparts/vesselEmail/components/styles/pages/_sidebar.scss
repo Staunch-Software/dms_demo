@@ -1,0 +1,189 @@
+// sidebar — styles
+
+// ── Converted inline styles (sidebar) ─────────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.sidebar-i1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border: 1px solid rgba(255,255,255,0.18);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.sidebar-i2 {
+  font-size: 14px;
+}
+.sidebar-i3 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 38px;
+  min-height: 38px;
+  max-height: 38px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-align: left;
+}
+.sidebar-i4 {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+}
+.sidebar-i5 {
+  display: flex;
+  align-items: center;
+}
+.sidebar-i6 {
+  position: relative;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: background 150ms ease;
+}
+.sidebar-i7 {
+  font-size: 14.5px;
+}
+.sidebar-i8 {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  height: 16px;
+  padding: 0 3px;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  line-height: 1;
+  z-index: 2;
+}
+.vessel-dms-app .sidebar-i8 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.sidebar-i9 {
+  overflow: hidden;
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+}
+.sidebar-i10 {
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.vessel-dms-app .sidebar-i10 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.sidebar-i11 {
+  inset: 0;
+}
+.sidebar-i12 {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  min-height: 48px;
+  height: 48px;
+}
+.sidebar-i13 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.sidebar-i14 {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+.sidebar-i15 {
+  font-size: 16px;
+}
+.sidebar-i16 {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.015em;
+}
+.vessel-dms-app .sidebar-i16 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.sidebar-i17 {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(243,247,251,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 6px 12px 3px 12px;
+  flex-shrink: 0;
+}
+.vessel-dms-app .sidebar-i17 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.sidebar-i18 {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sidebar-i19 {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(243,247,251,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 4px 12px 2px 12px;
+  flex-shrink: 0;
+}
+.vessel-dms-app .sidebar-i19 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.sidebar-i20 {
+  position: relative;
+  z-index: 1;
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-i21 {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.sidebar-i22 {
+  position: relative;
+  z-index: 1;
+  padding: 6px 14px;
+  font-size: 10px;
+  color: rgba(243,247,251,0.45);
+  flex-shrink: 0;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-dms-app .sidebar-i22 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.sidebar-i23 {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}

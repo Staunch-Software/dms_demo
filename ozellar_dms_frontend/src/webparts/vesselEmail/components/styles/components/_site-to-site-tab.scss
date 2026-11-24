@@ -1,0 +1,448 @@
+// site-to-site-tab — styles
+
+// ── Converted inline styles (site-to-site-tab) ────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.site-to-site-tab-i1 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.site-to-site-tab-i2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+}
+.site-to-site-tab-i3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+.vessel-dms-app .site-to-site-tab-i3 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i4 {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+.site-to-site-tab-i5 {
+  padding: 8px 14px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.vessel-dms-app .site-to-site-tab-i5 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i6 {
+  flex: 1;
+  overflow-y: auto;
+}
+.site-to-site-tab-i7 {
+  max-width: 640px;
+}
+.site-to-site-tab-i8 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+.vessel-dms-app .site-to-site-tab-i8 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i9 {
+  font-size: 12px;
+  margin-top: 4px;
+}
+.vessel-dms-app .site-to-site-tab-i9 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i10 {
+  margin-top: 10px;
+  max-height: 380px;
+  overflow: auto;
+}
+.site-to-site-tab-i11 {
+  margin-top: 8px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i11 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i12 {
+  margin-top: 10px;
+}
+.site-to-site-tab-i13 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 60px;
+}
+.site-to-site-tab-i14 {
+  font-size: 22px;
+  color: var(--clay-accent);
+}
+.site-to-site-tab-i15 {
+  font-size: 13px;
+}
+.vessel-dms-app .site-to-site-tab-i15 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i16 {
+  max-width: 680px;
+}
+.site-to-site-tab-i17 {
+  font-size: 14px;
+  font-weight: 700;
+}
+.vessel-dms-app .site-to-site-tab-i17 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i18 {
+  font-size: 12px;
+  margin-top: 2px;
+}
+.vessel-dms-app .site-to-site-tab-i18 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i19 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.site-to-site-tab-i20 {
+  font-size: 12px;
+  margin-top: 10px;
+}
+.vessel-dms-app .site-to-site-tab-i20 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i21 {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.site-to-site-tab-i22 {
+  font-size: 12px;
+}
+.site-to-site-tab-i23 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+.site-to-site-tab-i24 {
+  display: block;
+  cursor: pointer;
+  padding: 8px 10px;
+}
+.site-to-site-tab-i25 {
+  margin-right: 6px;
+}
+.site-to-site-tab-i26 {
+  font-size: 12px;
+  font-weight: 600;
+}
+.vessel-dms-app .site-to-site-tab-i26 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i27 {
+  font-size: 11px;
+  margin-top: 3px;
+}
+.vessel-dms-app .site-to-site-tab-i27 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i28 {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .site-to-site-tab-i28 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i29 {
+  font-size: 11px;
+}
+.vessel-dms-app .site-to-site-tab-i29 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i30 {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .site-to-site-tab-i30 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i31 {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.site-to-site-tab-i32 {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+.site-to-site-tab-i33 {
+  max-width: 760px;
+}
+.site-to-site-tab-i34 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.site-to-site-tab-i35 {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i35 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i36 {
+  margin-top: 6px;
+}
+.site-to-site-tab-i37 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.site-to-site-tab-i38 {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  align-items: center;
+}
+.site-to-site-tab-i39 {
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i39 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i40 {
+  margin-top: 14px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i40 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i41 {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.vessel-dms-app .site-to-site-tab-i41 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i42 {
+  margin-top: 3px;
+}
+.site-to-site-tab-i43 {
+  font-size: 11px;
+  margin-right: 6px;
+}
+.site-to-site-tab-i44 {
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.vessel-dms-app .site-to-site-tab-i44 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i45 {
+  margin-top: 4px;
+  max-height: 260px;
+  overflow: auto;
+}
+.site-to-site-tab-i46 {
+  padding: 10px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i46 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i47 {
+  display: flex;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i47 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i48 {
+  flex: 1;
+  word-break: break-all;
+}
+.site-to-site-tab-i49 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.site-to-site-tab-i50 {
+  margin-top: 14px;
+  padding: 12px;
+}
+.site-to-site-tab-i51 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.site-to-site-tab-i52 {
+  font-size: 13px;
+  font-weight: 700;
+}
+.vessel-dms-app .site-to-site-tab-i52 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i53 {
+  margin-left: auto;
+  font-size: 11px;
+}
+.vessel-dms-app .site-to-site-tab-i53 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i54 {
+  font-size: 12px;
+  margin-top: 8px;
+  line-height: 1.8;
+}
+.vessel-dms-app .site-to-site-tab-i54 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i55 {
+  margin-top: 4px;
+  max-height: 220px;
+  overflow: auto;
+}
+.site-to-site-tab-i56 {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i56 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i57 {
+  word-break: break-all;
+}
+.site-to-site-tab-i58 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.site-to-site-tab-i59 {
+  max-width: 900px;
+}
+.site-to-site-tab-i60 {
+  display: flex;
+  align-items: center;
+}
+.site-to-site-tab-i61 {
+  padding: 12px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i61 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i62 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+}
+.site-to-site-tab-i63 {
+  flex: 1;
+}
+.site-to-site-tab-i64 {
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .site-to-site-tab-i64 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i65 {
+  font-size: 11px;
+  margin-top: 2px;
+}
+.vessel-dms-app .site-to-site-tab-i65 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i66 {
+  padding: 12px;
+}
+.site-to-site-tab-i67 {
+  padding: 8px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i67 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i68 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+}
+.site-to-site-tab-i69 {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.site-to-site-tab-i70 {
+  font-size: 11px;
+}
+.site-to-site-tab-i71 {
+  font-size: 13px;
+}
+.site-to-site-tab-i72 {
+  flex: 1;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i72 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i73 {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.vessel-dms-app .site-to-site-tab-i73 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i74 {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.site-to-site-tab-i75 {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i75 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i76 {
+  font-size: 12px;
+  margin-top: 6px;
+}
+.vessel-dms-app .site-to-site-tab-i76 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i77 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.site-to-site-tab-i78 {
+  font-size: 11px;
+  margin-top: 4px;
+}
+.vessel-dms-app .site-to-site-tab-i78 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i79 {
+  margin-top: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.vessel-dms-app .site-to-site-tab-i79 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i80 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.site-to-site-tab-i81 {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+}
+.site-to-site-tab-i82 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.vessel-dms-app .site-to-site-tab-i82 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i83 {
+  margin-top: 4px;
+}
+.site-to-site-tab-i84 {
+  padding: 8px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .site-to-site-tab-i84 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i85 {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .site-to-site-tab-i85 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.site-to-site-tab-i86 {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.site-to-site-tab-i87 {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.vessel-dms-app .site-to-site-tab-i87 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes

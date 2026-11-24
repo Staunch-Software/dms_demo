@@ -1,0 +1,7 @@
+// Shared design tokens. Keep in step with vdmsFont / vdmsMotion in ../futuristicTheme.ts.
+@use 'sass:string';
+
+$font-ui: string.unquote("'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif");
+$font-display: $font-ui;
+$font-mono: $font-ui;
+$ease-glide: cubic-bezier(.2, .8, .2, 1);

@@ -1,0 +1,375 @@
+// Service Agreements page (ServiceAgreementsPage.tsx). Buttons (.sa-btn) live in modals/_service-agreement.scss.
+@use '../breakpoints' as *;
+
+$sa-accent: var(--clay-accent, #0e7490);
+$sa-accent-soft: var(--clay-accent-soft, #dceef2);
+
+.sa-page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+// ── Notice ──────────────────────────────────────────────────────────────
+.sa-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+
+  &--success { background: var(--clay-pill-active-bg, #dcfce7); color: var(--clay-pill-active-text, #15803d); }
+  &--warning { background: var(--clay-pill-warn-bg, #fef3c7); color: var(--clay-pill-warn-text, #b45309); }
+}
+.sa-notice__text { flex: 1; }
+.sa-notice__close {
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+// ── Tabs + filters on one row (wraps on small screens) ─────────────────
+.sa-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sa-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  overflow-x: auto;
+}
+.sa-tab {
+  height: 30px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--vdms-text-secondary);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  &.is-on {
+    background: var(--vdms-surface);
+    color: var(--vdms-text);
+    box-shadow: 0 1px 3px rgba(16, 27, 45, 0.12);
+  }
+}
+.sa-tab__count {
+  min-width: 18px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  text-align: center;
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text-muted);
+
+  .sa-tab--active.is-on & { background: var(--clay-pill-active-bg, #dcfce7); color: var(--clay-pill-active-text, #15803d); }
+  .sa-tab--expiring.is-on & { background: var(--clay-pill-warn-bg, #fef3c7); color: var(--clay-pill-warn-text, #b45309); }
+  .sa-tab--expired.is-on & { background: var(--clay-pill-danger-bg, #fee2e2); color: var(--clay-pill-danger-text, #b91c1c); }
+  .sa-tab--all.is-on & { background: $sa-accent-soft; color: $sa-accent; }
+}
+
+.sa-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sa-control {
+  height: 34px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--vdms-line);
+  background: var(--vdms-glass, var(--vdms-surface));
+  color: var(--vdms-text);
+  font-size: 12.5px;
+  font-family: inherit;
+  outline: none;
+  min-width: 150px;
+  max-width: 220px;
+
+  &:focus { border-color: $sa-accent; }
+}
+.sa-search {
+  position: relative;
+
+  .sa-control { padding-left: 30px; width: 250px; max-width: none; }
+}
+.sa-search__icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--vdms-text-faint);
+  pointer-events: none;
+}
+
+// ── Table ───────────────────────────────────────────────────────────────
+.sa-table-card {
+  background: var(--vdms-surface);
+  border: 1px solid var(--vdms-line);
+  border-radius: 14px;
+  box-shadow: var(--clay-shadow-raised, 0 1px 2px rgba(16, 27, 45, 0.05), 0 4px 12px rgba(16, 27, 45, 0.06));
+  overflow-x: auto;
+}
+.sa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    padding: 10px 14px;
+    background: var(--vdms-surface-alt);
+    border-bottom: 1px solid var(--vdms-line);
+    color: var(--vdms-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: left;
+    white-space: nowrap;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--vdms-border-soft, var(--vdms-line));
+    color: var(--vdms-text-muted);
+    font-size: 12.5px;
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--vdms-surface-alt); }
+}
+.sa-table__no {
+  font-weight: 700;
+  color: var(--vdms-text) !important;
+  white-space: nowrap;
+}
+.sa-table__name {
+  min-width: 200px;
+
+  a, & > .sa-table__name-line {
+    font-weight: 600;
+    color: var(--vdms-text);
+  }
+  a {
+    color: $sa-accent;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+.sa-table__name-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.sa-table__sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+}
+.sa-table__date { white-space: nowrap; }
+.sa-table__ships {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sa-table__actions-h { text-align: right !important; }
+.sa-table__actions {
+  white-space: nowrap;
+  text-align: right;
+
+  & > * + * { margin-left: 6px; }
+}
+
+.sa-days--expiring { color: var(--clay-pill-warn-text, #b45309); font-weight: 600; }
+.sa-days--expired { color: var(--clay-pill-danger-text, #b91c1c); font-weight: 600; }
+
+.sa-status {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &--active { background: var(--clay-pill-active-bg, #dcfce7); color: var(--clay-pill-active-text, #15803d); }
+  &--expiring { background: var(--clay-pill-warn-bg, #fef3c7); color: var(--clay-pill-warn-text, #b45309); }
+  &--expired { background: var(--clay-pill-danger-bg, #fee2e2); color: var(--clay-pill-danger-text, #b91c1c); }
+}
+
+.sa-row-btn {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  box-sizing: border-box;
+  background: var(--vdms-surface);
+  color: var(--vdms-text);
+  border: 1px solid var(--vdms-line);
+
+  &:hover { border-color: var(--vdms-line-strong); }
+  &--accent { background: $sa-accent-soft; color: $sa-accent; border-color: transparent; }
+  &--icon { width: 28px; padding: 0; justify-content: center; }
+}
+
+// Remarks popover (hover or keyboard focus)
+.sa-remarks {
+  position: relative;
+  display: inline-flex;
+}
+.sa-remarks__btn {
+  border: none;
+  background: transparent;
+  padding: 2px;
+  cursor: help;
+  color: $sa-accent;
+  font-size: 13px;
+  display: inline-flex;
+}
+.sa-remarks__pop {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  margin-top: 4px;
+  width: 280px;
+  max-width: 70vw;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--vdms-surface);
+  border: 1px solid var(--vdms-line);
+  box-shadow: 0 8px 24px rgba(10, 22, 38, 0.16);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--vdms-text);
+  white-space: pre-wrap;
+  text-align: left;
+
+  strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--vdms-text-muted);
+  }
+}
+.sa-remarks:hover .sa-remarks__pop,
+.sa-remarks:focus-within .sa-remarks__pop { display: block; }
+
+// ── Contract list v2 ────────────────────────────────────────────────────
+.sa-table__desc {
+  min-width: 180px;
+  max-width: 260px;
+
+  span {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+.sa-table__party {
+  max-width: 170px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sa-conf {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: fit-content;
+  margin-top: 3px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+
+  &--internal { background: $sa-accent-soft; color: $sa-accent; }
+  &--confidential { background: var(--clay-pill-danger-bg, #fee2e2); color: var(--clay-pill-danger-text, #b91c1c); }
+}
+.sa-status--terminated { background: var(--vdms-surface-alt); color: var(--vdms-text-muted); border: 1px solid var(--vdms-line); }
+.sa-days--terminated { color: var(--vdms-text-muted); }
+.sa-tab__count {
+  .sa-tab--terminated.is-on & { background: var(--vdms-surface-alt); color: var(--vdms-text); }
+}
+.sa-row-btn:disabled { opacity: 0.55; cursor: wait; }
+
+// ── Responsive ──────────────────────────────────────────────────────────
+@media (max-width: $tablet) {
+  .sa-toolbar { flex-direction: column; align-items: stretch; }
+  .sa-filters { width: 100%; }
+  .sa-search { flex: 1 1 220px; .sa-control { width: 100%; } }
+  .sa-control { flex: 1 1 150px; max-width: none; }
+}
+
+// Phones: each agreement becomes a card instead of a wide table row.
+@media (max-width: $phone) {
+  .sa-table-card { background: transparent; border: none; box-shadow: none; overflow: visible; }
+  .sa-table {
+    thead { display: none; }
+    tbody, tr, td { display: block; width: 100%; box-sizing: border-box; }
+    tr {
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--vdms-surface);
+      border: 1px solid var(--vdms-line);
+    }
+    tbody tr:hover td { background: transparent; }
+    td {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 5px 0;
+      border-bottom: none;
+      text-align: right;
+
+      &::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--vdms-text-faint);
+        text-align: left;
+      }
+    }
+  }
+  .sa-table__name { min-width: 0; }
+  .sa-table__ships { max-width: none; white-space: normal; }
+  .sa-table__actions {
+    justify-content: flex-end !important;
+    padding-top: 8px !important;
+    &::before { display: none; }
+  }
+  .sa-tabs { width: 100%; box-sizing: border-box; }
+}

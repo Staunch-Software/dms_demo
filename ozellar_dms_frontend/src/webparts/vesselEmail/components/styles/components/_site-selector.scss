@@ -1,0 +1,65 @@
+// Site / status filter dropdown (SiteSelector.tsx).
+// The popover is portalled to <body>, so these classes are deliberately self-contained and carry
+// every colour they need: the app's global dark-theme / button / input rules (all scoped under
+// .vessel-dms-app) cannot reach it. Colours match the constants SiteSelector.tsx still uses inline.
+
+@use 'sass:string';
+
+$ink: #1F2937;
+$muted: #6B7280;
+$teal: #0F766E;
+$line: #D6DEE8;
+$line-strong: #94A3B8;
+$pop-max-h: 320px;
+$font: string.unquote("'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif");
+
+.vdms-site-trigger { box-sizing: border-box; display: flex; align-items: center; gap: 8px; width: 100%; height: 36px; padding: 0 12px; background: #fff; color: #{$ink}; border: 1px solid #{$line}; border-radius: 8px; font: 600 13px/20px #{$font}; cursor: pointer; text-align: left; box-shadow: none; transition: border-color .15s ease; }
+.vdms-site-trigger:hover, .vdms-site-trigger.is-open { border-color: #{$line-strong}; }
+.vdms-site-trigger:focus { outline: none; }
+.vdms-site-trigger:focus-visible { outline: 1px solid #{$line-strong}; outline-offset: 1px; border-color: #{$line-strong}; }
+.vdms-site-trigger.is-compact { height: 34px; font-weight: 500; }
+.vdms-site-trigger:disabled { opacity: .6; cursor: not-allowed; background: #F3F4F6; }
+/* Alignment: trigger content sits 13px in (1 border + 12 padding), the same as option content
+   (1 popover border + 4 padding + 1 row border + 7 padding), so text, icons, chevron and tick line up. */
+/* The app theme paints a 2-3px outline + glow on every hovered / focused button with !important
+   (all scoped under .vessel-dms-app); this keeps the trigger to a thin neutral border. */
+html .vessel-dms-app button.vdms-site-trigger:hover:not(:disabled),
+html .vessel-dms-app button.vdms-site-trigger:focus,
+html .vessel-dms-app button.vdms-site-trigger:active { outline: none !important; box-shadow: none !important; filter: none !important; transform: none !important; }
+html .vessel-dms-app button.vdms-site-trigger:focus-visible { outline: 1px solid #{$line-strong} !important; outline-offset: 1px !important; box-shadow: none !important; }
+.vdms-site-pop { position: fixed; z-index: 100050; box-sizing: border-box; background: #fff; border: 1px solid #{$line}; border-radius: 10px; box-shadow: 0 6px 18px rgba(11,42,74,.10); padding: 4px; font-family: #{$font}; opacity: 0; transform: translateY(-4px); transition: opacity .15s ease, transform .15s ease; }
+.vdms-site-pop.is-up { transform: translateY(4px); }
+.vdms-site-pop.is-shown { opacity: 1; transform: none; }
+.vdms-site-row { box-sizing: border-box; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 7px; border: 1px solid transparent; border-radius: 7px; font: 500 13px/20px #{$font}; }
+.vdms-site-search { margin-bottom: 4px; background: #fff; border-color: #{$line}; }
+.vdms-site-search:focus-within { border-color: #{$line-strong}; }
+.vdms-site-search input { flex: 1; min-width: 0; height: 30px; margin: 0; padding: 0; background: transparent !important; color: #{$ink} !important; border: 0 !important; outline: none !important; box-shadow: none !important; font: 400 13px/20px #{$font}; }
+.vdms-site-search input::placeholder { color: #{$muted}; opacity: 1; }
+.vdms-site-list { max-height: #{$pop-max-h - 56px}; overflow-y: auto; }
+.vdms-site-opt { color: #{$ink}; cursor: pointer; }
+.vdms-site-opt.is-active { background: #F3F4F6; }
+.vdms-site-opt.is-selected { background: #E6F4F2; }
+.vdms-site-opt.is-selected.is-active { background: #DCEFEC; }
+.vdms-site-opt.is-disabled { color: #9CA3AF; cursor: not-allowed; }
+.vdms-site-opt.is-disabled.is-active { background: transparent; }
+.vdms-site-group { padding: 8px 8px 4px; color: #{$muted}; font: 600 11px/16px #{$font}; text-transform: uppercase; letter-spacing: .04em; }
+.vdms-site-ico { display: inline-flex; align-items: center; justify-content: center; width: 18px; flex: 0 0 18px; font-size: 14px; color: #{$teal}; }
+.vdms-site-txt { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vdms-site-opt.is-selected .vdms-site-txt { font-weight: 600; }
+.vdms-site-end { display: inline-flex; align-items: center; justify-content: center; width: 18px; flex: 0 0 18px; font-size: 12px; color: #{$teal}; }
+.vdms-site-empty { padding: 10px 8px; color: #{$muted}; font: 400 13px/20px #{$font}; }
+.vdms-site-pop.is-uniform .vdms-site-group { font: 500 13px/20px #{$font}; text-transform: none; letter-spacing: 0; color: #{$muted}; }
+.vdms-site-pop.is-uniform .vdms-site-opt.is-selected .vdms-site-txt { font-weight: 500; }
+.vdms-site-pop.is-uniform .vdms-site-search input { font: 500 13px/20px #{$font}; }
+@media (prefers-reduced-motion: reduce) { .vdms-site-pop, .vdms-site-trigger { transition: none; } }
+
+// ── Converted inline styles (site-selector) ───────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.site-selector-i1 {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,16 @@
+// Single source of truth for CSS breakpoints. $phone and $tablet must stay in step with
+// responsive.ts (MOBILE_MAX = 767, TABLET_MAX = 1023).
+$phone: 767px;
+$tablet: 1023px;
+$short-height: 760px;
+
+// Finer steps used by page stylesheets (min-width values; max-width is "next step up" minus 1px)
+$bp-xs: 480px;    // small phone and up
+$bp-sm: 576px;    // large phone and up
+$bp-md: 768px;    // tablet and up
+$bp-wide: 576px;  // large phone and up: header buttons stay right of the title, toolbar stays on one row
+$bp-tab-sm: 661px; // below this the Cards/List toggle shows icons only (not enough room for text)
+$bp-lg: 1024px;   // small laptop and up
+$bp-xl: 1280px;   // laptop and up
+$bp-5col: 1256px; // five vessel cards per row from here up
+$bp-xxl: 1440px;  // large desktop boundary

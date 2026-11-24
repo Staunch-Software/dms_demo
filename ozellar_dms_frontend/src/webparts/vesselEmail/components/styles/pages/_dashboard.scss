@@ -1,0 +1,411 @@
+// Dashboard page (components/pages/DashboardPage.tsx).
+// Layout classes are generated (see "Converted inline styles"); the semantic hooks used by the
+// responsive rules at the bottom are `vdms-dashboard`, `vdms-dashboard__header`, `__actions`, `__banner`,
+// `__kpis`, `__kpi`, `__kpi-value`, `__kpi-label`, `__rows`, `__card` and `__compliance`.
+@use '../breakpoints' as *;
+
+// ── Converted inline styles (dashboard-page) ──────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.dashboard-page-i1 {
+  border-radius: 18px;
+  padding: 14px 16px;
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-page-i2 {
+  padding: 26px 10px;
+  text-align: center;
+  font-size: 12.5px;
+}
+.vessel-dms-app .dashboard-page-i2 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i3 {
+  flex-shrink: 0;
+}
+.dashboard-page-i4 {
+  font-weight: 800;
+}
+.dashboard-page-i5 {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.dashboard-page-i6 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+}
+.vessel-dms-app .dashboard-page-i6 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i7 {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dashboard-page-i8 {
+  flex: 1;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dashboard-page-i9 {
+  font-size: 11px;
+  width: 42px;
+  text-align: right;
+}
+.vessel-dms-app .dashboard-page-i9 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i10 {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 128px;
+  padding: 4px 2px 0;
+}
+.dashboard-page-i11 {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.dashboard-page-i12 {
+  font-size: 10.5px;
+  font-weight: 700;
+  min-height: 13px;
+}
+.dashboard-page-i13 {
+  max-width: 30px;
+  border-radius: 5px;
+}
+.dashboard-page-i14 {
+  font-size: 10.5px;
+  font-weight: 700;
+}
+.dashboard-page-i15 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.dashboard-page-i16 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.vessel-dms-app .dashboard-page-i16 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i17 {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+  cursor: pointer;
+}
+.vessel-dms-app .dashboard-page-i17 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i18 {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.dashboard-page-i19 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+.dashboard-page-i20 {
+  font-size: 11px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.vessel-dms-app .dashboard-page-i20 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i21 {
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 11px;
+}
+.vessel-dms-app .dashboard-page-i21 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i22 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.dashboard-page-i23 {
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.vessel-dms-app .dashboard-page-i23 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i24 {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dashboard-page-i25 {
+  font-size: 14px;
+}
+.dashboard-page-i26 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.dashboard-page-i27 {
+  font-size: 12.5px;
+  line-height: 16px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .dashboard-page-i27 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i28 {
+  font-size: 11px;
+  line-height: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .dashboard-page-i28 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i29 {
+  font-size: 10.5px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.dashboard-page-i30 {
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+}
+.dashboard-page-i31 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dashboard-page-i32 {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.vessel-dms-app .dashboard-page-i32 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i33 {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.dashboard-page-i34 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.vessel-dms-app .dashboard-page-i34 { font-size: 27px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i35 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.vessel-dms-app .dashboard-page-i35 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i36 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  // No bottom padding of its own: the app shell already adds the space for the assistant button
+  // (48px from 768px up, 88px below), so keeping 48px here doubled it.
+  box-sizing: border-box;
+}
+.dashboard-page-i37 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.dashboard-page-i38 {
+  margin: 0;
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 800;
+}
+.dashboard-page-i39 {
+  margin: 3px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .dashboard-page-i39 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i40 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+.dashboard-page-i41 {
+  padding: 8px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.vessel-dms-app .dashboard-page-i41 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i42 {
+  font-size: 12px;
+}
+.dashboard-page-i43 {
+  position: relative;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  padding: 16px 22px;
+  background: var(--vdms-surface, #ffffff);
+}
+.dashboard-page-i44 {
+  position: relative;
+  z-index: 1;
+}
+.dashboard-page-i45 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.vessel-dms-app .dashboard-page-i45 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i46 {
+  font-size: 14.5px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.dashboard-page-i47 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+.dashboard-page-i48 {
+  font-size: 11px;
+  font-weight: 600;
+}
+.vessel-dms-app .dashboard-page-i48 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dashboard-page-i49 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 10px;
+}
+.dashboard-page-i50 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.dashboard-page-i51 {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// ── Responsive (350px → 1480px+) ─────────────────────────────────────────────────────────────
+// Widest first, narrowest last. Selectors use two classes so they win over the generated single-class
+// rules above without !important (except where the generated rule or the shared SiteSelector already
+// uses it).
+//
+//   1200+       laptop / desktop   4 KPI cards in a row, two cards per section row, roomier gaps
+//   768–1199    tablet / small     2×2 KPI cards, section cards side by side only if they fit (auto)
+//   576–767     large phone        2×2 KPI cards, section cards stacked, header stays on one row
+//   480–575     phone              header stacks (title, then site filter + Refresh)
+//   350–479     small phone        compact cards and type
+//
+// Below 768px the shared shell already reserves 88px under every page for the floating assistant
+// button, so the page's own 48px bottom padding is dropped there.
+
+.vdms-dashboard {
+  // Grid children must be allowed to shrink or long labels push the page wider than the screen.
+  .vdms-dashboard__kpis > *, .vdms-dashboard__rows > * { min-width: 0; }
+}
+
+// Laptop and desktop
+@media (min-width: 1200px) {
+  .vdms-dashboard {
+    gap: 14px;
+    .vdms-dashboard__kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .vdms-dashboard__rows { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .vdms-dashboard__banner { padding: 18px 26px; }
+  }
+}
+
+// Tablet, small laptop and large phone: 2×2 KPI cards. Section rows use auto-fit so two cards sit
+// side by side only when each gets at least 340px; otherwise they stack.
+@media (min-width: #{$bp-wide}) and (max-width: 1199px) {
+  .vdms-dashboard {
+    .vdms-dashboard__kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .vdms-dashboard__rows { grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); }
+  }
+}
+
+// Large phone and below (<768): the shell adds 88px for the assistant button, so drop our own padding.
+@media (max-width: #{$phone}) {
+  .vdms-dashboard { padding-bottom: 0; }
+}
+
+// Phone (<576): header stacks, the site filter shares a row with Refresh.
+@media (max-width: #{$bp-wide - 1px}) {
+  .vdms-dashboard {
+    .vdms-dashboard__kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .vdms-dashboard__rows { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+
+    .vdms-dashboard__header { flex-direction: column; align-items: stretch; gap: 10px; }
+    // SiteSelector sets an inline width (230px) and min-width (190px), hence !important on the wrapper.
+    .vdms-dashboard__actions { width: 100%; }
+    .vdms-dashboard__actions > div { flex: 1 1 0; width: auto !important; min-width: 0 !important; }
+    .vdms-dashboard__actions > button { flex: 0 0 auto; }
+
+    .vdms-dashboard__banner { padding: 12px 14px; }
+    .vdms-dashboard__card { padding: 12px; }
+    // Donut + legend: centre the donut when the legend wraps beneath it.
+    .vdms-dashboard__compliance { justify-content: center; }
+  }
+}
+
+// Small phone (350–479): compact KPI cards. Two columns still fit at 350px (about 158px each).
+@media (max-width: #{$bp-xs - 1px}) {
+  .vessel-dms-app .vdms-dashboard {
+    .vdms-dashboard__kpi { padding: 10px 11px; gap: 6px; border-radius: 14px; }
+    // The label may wrap onto two lines instead of pushing the icon out of the card.
+    .vdms-dashboard__kpi-label { font-size: 11px !important; letter-spacing: 0.02em; white-space: normal; line-height: 1.2; }
+    .vdms-dashboard__kpi-value { font-size: 22px !important; }
+    .vdms-dashboard__kpis > * > div:first-child { gap: 6px; }
+  }
+}
+
+// Shorter top bar on this page (tablet and phone widths). The bar is shared by every page, so the rule is
+// scoped to the app shell that contains the Dashboard. At these widths the bar wraps an empty "folder route"
+// slot (only the Documents page fills it) onto a second row, which made the bar about 98px tall with its
+// content pinned to the top; with the slot hidden and the 76px minimum lowered it is 60px and centered.
+@media (max-width: #{$tablet}) {
+  .vessel-dms-app:has(.vdms-dashboard) .vessel-dms-topbar {
+    min-height: 60px;
+    #vdms-header-route:empty { display: none; }
+  }
+}

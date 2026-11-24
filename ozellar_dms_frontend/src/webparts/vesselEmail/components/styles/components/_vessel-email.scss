@@ -1,0 +1,840 @@
+// Toast animations used by VesselEmail.tsx
+// Moved out of the component's inline <style>; the rules are unchanged.
+
+@keyframes slideInRight { from { opacity:0; transform:translateX(40px); } to { opacity:1; transform:translateX(0); } }
+@keyframes countdownShrink { from { width:100%; } to { width:0%; } }
+
+// ── Converted inline styles (vessel-email) ────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-email-i1 {
+  margin: 24px;
+  padding: 32px;
+  border-radius: 14px;
+  border: 1px solid #fecaca;
+}
+.vessel-email-i2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+.vessel-dms-app .vessel-email-i2 { font-size: 20px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i3 {
+  font-size: 22px;
+}
+.vessel-email-i4 {
+  font-size: 13px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-email-i4 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i5 {
+  font-size: 12px;
+  color: #b91c1c;
+  margin-bottom: 20px;
+  word-break: break-all;
+}
+.vessel-dms-app .vessel-email-i5 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i6 {
+  color: #fff;
+  border: none;
+  padding: 8px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-email-i6 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i7 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-email-i8 {
+  background: var(--vdms-surface, #ffffff);
+  border-radius: 16px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+.vessel-email-i9 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.vessel-email-i10 {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.vessel-dms-app .vessel-email-i10 { font-size: 18px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i11 {
+  font-size: 20px;
+}
+.vessel-email-i12 {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--vdms-text, #0f172a);
+}
+.vessel-dms-app .vessel-email-i12 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i13 {
+  font-size: 12px;
+  color: var(--vdms-text-muted, #64748b);
+  margin-top: 2px;
+}
+.vessel-dms-app .vessel-email-i13 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i14 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.vessel-email-i15 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.vessel-email-i16 {
+  height: 16px;
+  accent-color: #ef4444;
+  cursor: pointer;
+}
+.vessel-email-i17 {
+  font-size: 16px;
+}
+.vessel-email-i18 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text, #0f172a);
+  flex: 1;
+  word-break: break-all;
+}
+.vessel-dms-app .vessel-email-i18 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i19 {
+  margin-bottom: 12px;
+}
+.vessel-email-i20 {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--vdms-text-muted, #64748b);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.vessel-dms-app .vessel-email-i20 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i21 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.vessel-email-i22 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--vdms-surface-alt, #f8fafc);
+}
+.vessel-email-i23 {
+  font-size: 14px;
+}
+.vessel-email-i24 {
+  font-size: 12px;
+  color: var(--vdms-text, #0f172a);
+  flex: 1;
+  word-break: break-all;
+}
+.vessel-dms-app .vessel-email-i24 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i25 {
+  background: var(--vdms-surface, #ffffff);
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--vdms-text, #0f172a);
+  white-space: nowrap;
+}
+.vessel-dms-app .vessel-email-i25 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i26 {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--vdms-text-muted, #64748b);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.vessel-dms-app .vessel-email-i26 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i27 {
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 13px;
+  resize: vertical;
+  margin-bottom: 12px;
+  background: var(--vdms-surface-alt, #f8fafc);
+  color: var(--vdms-text, #0f172a);
+}
+.vessel-dms-app .vessel-email-i27 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i28 {
+  border: 1px solid #fca5a5;
+  padding: 8px 12px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.vessel-dms-app .vessel-email-i28 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i29 {
+  font-size: 12px;
+}
+.vessel-email-i30 {
+  border: 1px solid #fed7aa;
+  padding: 8px 12px;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+.vessel-dms-app .vessel-email-i30 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i31 {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.vessel-email-i32 {
+  min-height: 44px;
+  padding: 8px 20px;
+  background: var(--vdms-surface, #ffffff);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--vdms-text, #0f172a);
+}
+.vessel-dms-app .vessel-email-i32 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i33 {
+  min-height: 44px;
+  padding: 8px 20px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+.vessel-dms-app .vessel-email-i33 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i34 {
+  font-size: 13px;
+}
+.vessel-email-i35 {
+  inset: 0;
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-email-i36 {
+  max-width: 95vw;
+  overflow: hidden;
+  border: none;
+}
+.vessel-email-i37 {
+  padding: 20px 24px 16px;
+}
+.vessel-email-i38 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.vessel-email-i39 {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.vessel-dms-app .vessel-email-i39 { font-size: 20px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i40 {
+  font-size: 17px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessel-email-i40 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i41 {
+  font-size: 12px;
+  margin-top: 2px;
+  word-break: break-word;
+}
+.vessel-dms-app .vessel-email-i41 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i42 {
+  padding: 20px 24px;
+}
+.vessel-email-i43 {
+  padding: 10px 14px;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+.vessel-dms-app .vessel-email-i43 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i44 {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.vessel-dms-app .vessel-email-i44 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i45 {
+  padding: 10px 14px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  box-shadow: inset 3px 3px 8px rgba(120,190,185,0.35), inset -3px -3px 6px rgba(255,255,255,0.7);
+}
+.vessel-dms-app .vessel-email-i45 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i46 {
+  font-size: 11px;
+  margin-top: 8px;
+}
+.vessel-dms-app .vessel-email-i46 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i47 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-top: 14px;
+}
+.vessel-email-i48 {
+  height: 15px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+.vessel-email-i49 {
+  font-size: 12.5px;
+}
+.vessel-dms-app .vessel-email-i49 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i50 {
+  padding: 14px 24px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.vessel-email-i51 {
+  border: none;
+  min-height: 44px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-email-i51 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i52 {
+  border: none;
+  color: #fff;
+  min-height: 44px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessel-email-i52 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i53 {
+  border-radius: 16px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.3);
+  border: 1px solid #fee2e2;
+}
+.vessel-email-i54 {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #fecdd3;
+}
+.vessel-email-i55 {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.vessel-dms-app .vessel-email-i55 { font-size: 20px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i56 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #9f1239;
+}
+.vessel-dms-app .vessel-email-i56 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i57 {
+  font-size: 12px;
+  color: #be123c;
+  margin-top: 2px;
+}
+.vessel-dms-app .vessel-email-i57 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i58 {
+  font-size: 13px;
+  color: var(--vdms-text);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.vessel-dms-app .vessel-email-i58 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i59 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+.vessel-email-i60 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.vessel-email-i61 {
+  height: 18px;
+  accent-color: #e11d48;
+  cursor: pointer;
+}
+.vessel-email-i62 {
+  flex: 1;
+}
+.vessel-email-i63 {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-email-i63 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i64 {
+  font-size: 11px;
+  color: #e11d48;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-email-i64 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i65 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .vessel-email-i65 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i66 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-border);
+  padding: 12px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.vessel-dms-app .vessel-email-i66 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i67 {
+  color: var(--vdms-text);
+}
+.vessel-email-i68 {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--vdms-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.vessel-dms-app .vessel-email-i68 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i69 {
+  box-sizing: border-box;
+  border: 1px solid var(--vdms-border);
+  padding: 8px 10px;
+  font-size: 13px;
+  resize: vertical;
+}
+.vessel-dms-app .vessel-email-i69 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i70 {
+  padding: 14px 24px 20px;
+  background: var(--vdms-surface-alt);
+  border-top: 1px solid var(--vdms-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.vessel-email-i71 {
+  border: 1px solid var(--vdms-border);
+  min-height: 44px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-email-i71 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i72 {
+  border: none;
+  min-height: 44px;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(225,29,72,0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-dms-app .vessel-email-i72 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i73 {
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  border: 1.5px solid #86efac;
+  animation: slideInRight 0.3s ease;
+}
+.vessel-email-i74 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.vessel-email-i75 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vessel-email-i76 {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.vessel-dms-app .vessel-email-i76 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i77 {
+  font-size: 18px;
+}
+.vessel-email-i78 {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-email-i78 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i79 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+}
+.vessel-dms-app .vessel-email-i79 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i80 {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--vdms-text-faint);
+  min-height: 44px;
+  font-size: 18px;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.vessel-dms-app .vessel-email-i80 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i81 {
+  background: var(--vdms-surface-alt);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+.vessel-email-i82 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  margin-bottom: 3px;
+}
+.vessel-dms-app .vessel-email-i82 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i83 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+  word-break: break-all;
+}
+.vessel-dms-app .vessel-email-i83 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i84 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  margin-top: 6px;
+}
+.vessel-dms-app .vessel-email-i84 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i85 {
+  font-size: 11px;
+}
+.vessel-email-i86 {
+  font-size: 12px;
+  color: var(--vdms-text);
+  margin-top: 2px;
+  word-break: break-all;
+}
+.vessel-dms-app .vessel-email-i86 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i87 {
+  margin-top: 10px;
+  border: 1px solid #fed7aa;
+  padding: 8px 10px;
+}
+.vessel-email-i88 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9a3412;
+}
+.vessel-dms-app .vessel-email-i88 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i89 {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #9a3412;
+}
+.vessel-dms-app .vessel-email-i89 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i90 {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.vessel-email-i91 {
+  font-size: 11px;
+  color: #7c2d12;
+  word-break: break-all;
+}
+.vessel-dms-app .vessel-email-i91 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i92 {
+  font-size: 11px;
+  color: #9a3412;
+}
+.vessel-dms-app .vessel-email-i92 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i93 {
+  display: flex;
+  gap: 8px;
+}
+.vessel-email-i94 {
+  flex: 1;
+  color: #fff;
+  border: none;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-email-i94 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i95 {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #fff;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-email-i95 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i96 {
+  flex: 1;
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text);
+  border: none;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-email-i96 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i97 {
+  margin-top: 12px;
+  height: 3px;
+  background: var(--vdms-surface-alt);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.vessel-email-i98 {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+.vessel-email-i99 {
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px solid #ef4444;
+}
+.vessel-email-i100 {
+  font-weight: 700;
+  font-size: 14px;
+  color: #fca5a5;
+}
+.vessel-dms-app .vessel-email-i100 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i101 {
+  font-size: 12px;
+  color: var(--vdms-text-faint);
+  margin-top: 3px;
+}
+.vessel-dms-app .vessel-email-i101 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i102 {
+  color: #fff;
+}
+.vessel-email-i103 {
+  margin-top: 8px;
+  display: grid;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--vdms-text-faint);
+}
+.vessel-dms-app .vessel-email-i103 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i104 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-email-i105 {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.vessel-email-i106 {
+  border: none;
+  border-radius: 7px;
+  min-height: 44px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.vessel-dms-app .vessel-email-i106 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i107 {
+  background: transparent;
+  color: var(--vdms-text-faint);
+  border: 1px solid var(--vdms-text-secondary);
+  min-height: 44px;
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-email-i107 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i108 {
+  pointer-events: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1.5px solid #ef4444;
+}
+.vessel-email-i109 {
+  margin-top: 8px;
+  max-height: 140px;
+  overflow-y: auto;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.vessel-email-i110 {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-size: 11px;
+  color: var(--vdms-text-faint);
+}
+.vessel-dms-app .vessel-email-i110 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i111 {
+  color: #fff;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-email-i112 {
+  background: transparent;
+  color: var(--vdms-text-faint);
+  border: 1px solid var(--vdms-text-secondary);
+  border-radius: 7px;
+  min-height: 44px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-email-i112 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i113 {
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.vessel-email-i114 {
+  background: var(--vdms-surface, #fff);
+  border-radius: 28px;
+  padding: 44px 48px;
+  max-width: 520px;
+  text-align: center;
+  box-shadow: var(--vdms-shadow);
+  border: 1px solid var(--vdms-line);
+}
+.vessel-email-i115 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-email-i115 { font-size: 21.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i116 {
+  margin: 0 0 26px;
+  font-size: 15px;
+  color: var(--vdms-text-secondary);
+  line-height: 1.6;
+}
+.vessel-dms-app .vessel-email-i116 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i117 {
+  color: #fff;
+  border: none;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-email-i117 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i118 {
+  backdrop-filter: blur(26px) saturate(1.5);
+  -webkit-backdrop-filter: blur(26px) saturate(1.5);
+  border-radius: 28px;
+  padding: 44px 48px;
+  max-width: 460px;
+  text-align: center;
+  box-shadow: var(--vdms-shadow);
+  border: 1px solid var(--vdms-line);
+}
+.vessel-email-i119 {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  border-radius: 20px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+.vessel-dms-app .vessel-email-i119 { font-size: 27px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-email-i120 {
+  font-size: 30px;
+}
+
+// ── Converted inline styles (vessel-email) ────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-email-j1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 65vh;
+  padding: 60px 20px;
+  box-sizing: border-box;
+}

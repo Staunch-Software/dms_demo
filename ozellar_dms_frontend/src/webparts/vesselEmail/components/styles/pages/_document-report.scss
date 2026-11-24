@@ -1,0 +1,216 @@
+// document-report-page — styles
+@use '../breakpoints' as *;
+
+// ── Converted inline styles (document-report-page) ────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.document-report-page-i1 {
+  margin: 6px 0;
+}
+.document-report-page-i2 {
+  box-sizing: border-box;
+  padding: 6px 8px;
+  font-size: 12.5px;
+}
+.vessel-dms-app .document-report-page-i2 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.document-report-page-i3 {
+  flex: 1 1 auto;
+  min-height: 80px;
+  overflow-y: auto;
+  margin-top: 6px;
+}
+.document-report-page-i4 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.document-report-page-i5 {
+  padding: 8px;
+  font-size: 12px;
+}
+.vessel-dms-app .document-report-page-i5 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.document-report-page-i6 {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+.document-report-page-i7 {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.document-report-page-i8 {
+  font-size: 13px;
+}
+.document-report-page-i9 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.document-report-page-i10 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.vessel-dms-app .document-report-page-i10 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.document-report-page-i11 {
+  position: relative;
+  flex: 1 1 260px;
+  max-width: 380px;
+}
+.document-report-page-i12 {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+}
+.document-report-page-i13 {
+  box-sizing: border-box;
+  padding: 8px 10px 8px 30px;
+  font-size: 13px;
+}
+.vessel-dms-app .document-report-page-i13 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.document-report-page-i14 {
+  font-size: 12px;
+}
+.document-report-page-i15 {
+  margin-left: auto;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.vessel-dms-app .document-report-page-i15 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.document-report-page-i16 {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .document-report-page-i16 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.document-report-page-i17 {
+  overflow: hidden;
+}
+.document-report-page-i18 {
+  overflow: auto;
+  max-height: calc(100vh - 292px);
+  min-height: 240px;
+  border-radius: 11px;
+}
+.document-report-page-i19 {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+.document-report-page-i20 {
+  width: 52px;
+}
+.document-report-page-i21 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.document-report-page-i22 {
+  font-size: 11px;
+}
+.document-report-page-i23 {
+  margin-left: auto;
+  height: 22px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.document-report-page-i24 {
+  font-size: 10px;
+}
+.document-report-page-i25 {
+  text-decoration: none;
+  font-weight: 600;
+}
+.document-report-page-i26 {
+  padding: 12px;
+  text-align: center;
+}
+
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+// Reports page (pages/DocumentReportPage.tsx). Columns: 1 #, 2 Document Name, 3 Vessel Name,
+// 4 Main Folder, 5 Group, 6 Category. The header and body cells write their padding and font size
+// inline, hence !important.
+
+// Laptop and desktop (1024+): the table fills the rest of the screen height instead of a fixed
+// calc(100vh - 292px), which left an empty strip under it. The page and its wrapper stretch to the
+// scroll area's height; the table box takes what the header and toolbar leave.
+@media (min-width: #{$bp-lg}) {
+  // The scroll area is a row flex container; as a column, its child can take exactly its height
+  .vessel-dms-app .vdms-main-scroll:has(.document-report-page-i7) { flex-direction: column !important; }
+  .vessel-dms-app .vdms-main-scroll:has(.document-report-page-i7) > div:has(> .document-report-page-i7) {
+    flex: 1 1 0;
+    display: flex !important; // the wrapper is display: block from an existing rule
+    flex-direction: column;
+    min-height: 0;
+  }
+  .document-report-page-i7 { flex: 1 1 0; min-height: 0; }
+  .document-report-page-i17 { flex: 1 1 0; min-height: 260px; display: flex; flex-direction: column; }
+  .document-report-page-i18 { flex: 1 1 0; max-height: none; min-height: 0; }
+}
+
+// Embedded inside the Vessel DMS page: that page doesn't give this one a fixed height to fill (the
+// standalone page does), so the flex-fill rules above collapsed the table to its 260px minimum. Size
+// the table to the viewport instead so it uses the full height under the page header.
+.document-report-page-i7.document-report-page-embedded {
+  flex: none;
+  min-height: 0;
+  .document-report-page-i17 { flex: none; min-height: 0; display: block; }
+  .document-report-page-i18 { flex: none; max-height: calc(100vh - 240px); min-height: 420px; }
+}
+
+// Below 1440 (laptops with the sidebar open, e.g. 1920×1200 at 150% scaling = 1280px; at 1024 the
+// content is only ~700px): smaller text, and the table fits the width instead of keeping a 900px
+// minimum (inline). Header labels may wrap, so a long label ("Vessel Name") never pushes its filter
+// button out of view.
+@media (max-width: #{$bp-xxl - 1px}) {
+  .document-report-page-i7 { gap: 10px; }
+  .document-report-page-i19 { min-width: 0 !important; }
+  .document-report-page-i19 th { font-size: 11px !important; padding: 8px 6px !important; white-space: normal !important; letter-spacing: 0.02em !important; }
+  .document-report-page-i19 td { font-size: 12px !important; padding: 6px 8px !important; overflow-wrap: anywhere; }
+  .document-report-page-i21 { gap: 4px; }
+  .document-report-page-i23 { width: 20px !important; height: 20px; flex-shrink: 0; } // column filter button (inline width)
+}
+
+// Tablet and below (<1024): the page title and subtitle are hidden (the top bar shows the title; the
+// Refresh / Download buttons in the same header stay), and the table's scroll box gets most of the
+// screen height.
+@media (max-width: #{$tablet}) {
+  .document-report-page-i7 > .dms-design-system-i1 > div:first-child { display: none; }
+  .document-report-page-i9 { gap: 8px; }
+  .document-report-page-i10 { flex: 1 1 100%; }
+  .document-report-page-i10 > :last-child { flex: 1 1 0; min-width: 0 !important; width: auto !important; }
+  .document-report-page-i11 { flex: 1 1 200px; max-width: none; }
+  .document-report-page-i18 { max-height: 72vh; }
+}
+
+// Large phone and below (<768): the #, Main Folder and Group columns are collapsed (their filters
+// stay available from 768px up); Refresh / Download share a row.
+@media (max-width: #{$phone}) {
+  .document-report-page-i7 > .dms-design-system-i1 > div:last-child { width: 100%; }
+  .document-report-page-i7 > .dms-design-system-i1 > div:last-child > button { flex: 1 1 0; justify-content: center; font-size: 12px !important; }
+  // The table sizes its columns from the visible cells (the colgroup's percentages would keep room for
+  // the hidden ones). The empty-state row spans all columns and is left alone.
+  .document-report-page-i19 { table-layout: auto; }
+  .document-report-page-i19 col { width: auto !important; }
+  .document-report-page-i19 th:nth-child(1), .document-report-page-i19 th:nth-child(4), .document-report-page-i19 th:nth-child(5),
+  .document-report-page-i19 tr:not(:has(td[colspan])) > td:nth-child(1),
+  .document-report-page-i19 tr:not(:has(td[colspan])) > td:nth-child(4),
+  .document-report-page-i19 tr:not(:has(td[colspan])) > td:nth-child(5) { display: none; }
+  .document-report-page-i19 td:nth-child(2) { width: 55%; }
+  .document-report-page-i19 th { letter-spacing: 0 !important; }
+  .document-report-page-i19 th, .document-report-page-i19 td { font-size: 11.5px !important; padding: 6px 6px !important; }
+  .document-report-page-i15 { flex: 1 1 100%; margin-left: 0; text-align: right; }
+}

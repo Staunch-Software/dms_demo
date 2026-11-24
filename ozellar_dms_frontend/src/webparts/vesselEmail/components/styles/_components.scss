@@ -1,0 +1,114 @@
+// Shared component skin: type scale, inputs, buttons, popups, motion
+@use 'tokens' as *;
+
+/* ── Dashboard hero + glass cards ─────────────────────────────────── */
+html [data-vessel-theme="light"] .vdms-hero-ovl { background: linear-gradient(90deg, rgba(236,247,255,0.95) 0%, rgba(236,247,255,0.7) 55%, rgba(236,247,255,0.05) 100%); }
+html [data-vessel-theme="night"] .vdms-hero-ovl { background: linear-gradient(90deg, rgba(3,20,35,0.92) 0%, rgba(3,20,35,0.6) 55%, rgba(3,20,35,0.15) 100%); }
+html [data-vessel-theme="night"] .vdms-hero { background-color: #0a1626; filter: none; }
+.vessel-dms-app table th { font-family: $font-mono; letter-spacing: 0.08em; }
+/* ── Typography scale (~10% smaller: body 14.5–15.5, table cells 13.5, labels 12.5–13.5, meta 11) ──
+   Pages set inline px sizes; these remap them without touching any JSX. */
+.vessel-dms-app [style*="font-size: 9px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 10px !important; }
+.vessel-dms-app [style*="font-size: 10px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 10px !important; }
+.vessel-dms-app [style*="font-size: 11px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 11px !important; }
+.vessel-dms-app [style*="font-size: 11.5px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 11.5px !important; }
+.vessel-dms-app [style*="font-size: 12px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 12.5px !important; }
+.vessel-dms-app [style*="font-size: 12.5px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 12.5px !important; }
+.vessel-dms-app [style*="font-size: 13px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 13.5px !important; }
+.vessel-dms-app [style*="font-size: 14px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 14.5px !important; }
+.vessel-dms-app [style*="font-size: 15px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 14.5px !important; }
+.vessel-dms-app [style*="font-size: 16px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 15.5px !important; }
+.vessel-dms-app [style*="font-size: 17px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 15.5px !important; }
+.vessel-dms-app [style*="font-size: 18px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 16px !important; }
+.vessel-dms-app [style*="font-size: 20px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 18px !important; }
+.vessel-dms-app [style*="font-size: 22px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 20px !important; }
+.vessel-dms-app [style*="font-size: 24px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 21.5px !important; }
+.vessel-dms-app [style*="font-size: 26px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 23.5px !important; }
+.vessel-dms-app [style*="font-size: 28px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 25px !important; }
+.vessel-dms-app [style*="font-size: 30px"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-size: 27px !important; }
+.vessel-dms-app h1 { font-size: 25px !important; }
+.vessel-dms-app h2 { font-size: 20px !important; }
+.vessel-dms-app h3 { font-size: 17px !important; }
+.vessel-dms-app [style*="font-family"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-family: $font-ui !important; }
+/* Dialogs (Add / Edit / Renew certificate, Archive, Create folder, Compose mail ...) are portalled straight onto <body>, outside
+   .vessel-dms-app, so the rules above never reach them. Same font, same treatment: root, form controls, and any inline font-family. */
+body > div[style*="position: fixed"][style*="inset: 0px"][style*="z-index: 1000"] { font-family: $font-ui; -webkit-font-smoothing: antialiased; }
+body > div[style*="position: fixed"][style*="inset: 0px"][style*="z-index: 1000"] button, body > div[style*="position: fixed"][style*="inset: 0px"][style*="z-index: 1000"] input, body > div[style*="position: fixed"][style*="inset: 0px"][style*="z-index: 1000"] select, body > div[style*="position: fixed"][style*="inset: 0px"][style*="z-index: 1000"] textarea { font-family: inherit; }
+body > div[style*="position: fixed"][style*="inset: 0px"][style*="z-index: 1000"] [style*="font-family"]:not(i):not([data-icon-name]):not([data-no-scale]) { font-family: $font-ui !important; }
+.vessel-dms-app table td { font-size: 13.5px; }
+.vessel-dms-app table th { font-size: 11px !important; }
+
+/* ── Text colours: hard-coded slate greys → design ink (light mode only;
+   night keeps the var(--vdms-*) values, which already flip) ───────── */
+html [data-vessel-theme="light"] [style*="color: rgb(15, 23, 42)"]:not([style*="background: rgb"]) { color: #08243a !important; }
+html [data-vessel-theme="light"] [style*="color: rgb(30, 41, 59)"]:not([style*="background: rgb"]) { color: #08243a !important; }
+html [data-vessel-theme="light"] [style*="color: rgb(51, 65, 85)"]:not([style*="background: rgb"]) { color: #34536a !important; }
+html [data-vessel-theme="light"] [style*="color: rgb(71, 85, 105)"]:not([style*="background: rgb"]) { color: #34536a !important; }
+html [data-vessel-theme="light"] [style*="color: rgb(100, 116, 139)"]:not([style*="background: rgb"]) { color: #4a6a82 !important; }
+html [data-vessel-theme="light"] [style*="color: rgb(148, 163, 184)"]:not([style*="background: rgb"]) { color: #6b879c !important; }
+html [data-vessel-theme="light"] [style*="color: rgb(2, 132, 199)"]:not([style*="background: rgb"]) { color: #0a7ea8 !important; }
+html [data-vessel-theme="light"] [style*="color: rgb(3, 105, 161)"]:not([style*="background: rgb"]) { color: #0b5f8a !important; }
+html [data-vessel-theme="light"] [style*="color: rgb(7, 89, 133)"]:not([style*="background: rgb"]) { color: #0a4a73 !important; }
+
+
+/* ── Inputs ───────────────────────────────────────────────────────── */
+.vessel-dms-app input, .vessel-dms-app select, .vessel-dms-app textarea { border-radius: 12px; font-family: $font-ui; }
+html [data-vessel-theme="night"] input, html [data-vessel-theme="night"] select, html [data-vessel-theme="night"] textarea {
+  background: rgba(3,20,35,0.6) !important; color: #eaf6fd !important; border-color: rgba(140,210,240,0.28) !important;
+}
+html [data-vessel-theme="night"] input::placeholder, html [data-vessel-theme="night"] textarea::placeholder { color: #7f9bb0 !important; }
+.vessel-dms-app input:focus, .vessel-dms-app select:focus, .vessel-dms-app textarea:focus {
+  outline: none; border-color: var(--clay-accent) !important; box-shadow: 0 0 0 4px var(--vdms-focus-soft) !important;
+}
+
+/* ── Interaction feedback (replaces the orange outline) ───────────── */
+html .vessel-dms-app button, html .vessel-dms-app a, html .vessel-dms-app [role="button"] {
+  transition: filter .2s ease, transform .22s $ease-glide, box-shadow .22s ease, background .25s ease;
+}
+html .vessel-dms-app button:hover:not(:disabled), html .vessel-dms-app a:hover, html .vessel-dms-app [role="button"]:hover {
+  filter: brightness(1.04) saturate(1.06) !important;
+  outline: 2px solid var(--vdms-focus) !important; outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--vdms-focus-soft) !important;
+}
+html .vessel-dms-app button:focus-visible, html .vessel-dms-app a:focus-visible, html .vessel-dms-app [role="button"]:focus-visible {
+  outline: 3px solid var(--vdms-focus) !important; outline-offset: 2px;
+}
+/* Dashboard list rows: subtle tint on hover/focus, no outline box, no layout shift. */
+html .vessel-dms-app .vdms-list-row:hover,
+html .vessel-dms-app .vdms-list-row[role="button"]:focus,
+html .vessel-dms-app .vdms-list-row[role="button"]:focus-visible {
+  outline: none !important; box-shadow: none !important; filter: none !important; transform: none !important;
+  background: var(--vdms-focus-soft);
+}
+html .vessel-dms-app .vdms-list-row[role="button"]:focus-visible {
+  box-shadow: inset 3px 0 0 var(--vdms-focus) !important;
+}
+/* Plain text-link buttons (e.g. dashboard "View all →"): no hover/focus box. */
+html .vessel-dms-app button.vdms-link-btn:hover:not(:disabled),
+html .vessel-dms-app button.vdms-link-btn:focus,
+html .vessel-dms-app button.vdms-link-btn:focus-visible {
+  outline: none !important; box-shadow: none !important; filter: none !important;
+}
+
+/* ── Popups: subtle blurred overlay + soft entrance ───────────────── */
+.vessel-dms-app div[style*="position: fixed"][style*="inset: 0px"] {
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+  animation: vdms-fade .2s ease both;
+}
+.vessel-dms-app div[style*="position: fixed"][style*="inset: 0px"] > div:only-child {
+  border-radius: 14px; animation: vdms-pop .25s $ease-glide both;
+}
+
+/* ── Motion primitives: restrained, functional transitions only ───── */
+@keyframes vdms-fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes vdms-pop { from { opacity: 0; transform: translateY(8px) scale(.98) } to { opacity: 1; transform: none } }
+@keyframes vdms-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.45) } 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0) } }
+.vdms-pop { animation: vdms-pop .3s $ease-glide both; }
+.vdms-pulse { animation: vdms-pulse 2.4s ease-in-out infinite; }
+
+// Spinner keyframes used by inline `animation: spin ...` styles across pages
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .vdms-pulse, .vdms-pop { animation: none !important; }
+}

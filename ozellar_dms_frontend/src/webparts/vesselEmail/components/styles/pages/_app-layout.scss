@@ -1,0 +1,295 @@
+// app-layout — styles
+
+// ── Converted inline styles (app-layout) ──────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.app-layout-i1 {
+  top: 90px;
+  right: 20px;
+  z-index: 200000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 340px;
+}
+.app-layout-i2 {
+  border: 1px solid #fecdd3;
+  box-shadow: 0 12px 32px rgba(15,23,42,0.25);
+  padding: 14px 16px;
+  display: flex;
+  gap: 10px;
+}
+.app-layout-i3 {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+.vessel-dms-app .app-layout-i3 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i4 {
+  flex: 1;
+}
+.app-layout-i5 {
+  font-size: 13px;
+  font-weight: 700;
+}
+.vessel-dms-app .app-layout-i5 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i6 {
+  font-size: 12px;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .app-layout-i6 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i7 {
+  font-size: 11px;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .app-layout-i7 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i8 {
+  margin-top: 8px;
+  padding: 4px 10px;
+  border: 1px solid #fca5a5;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .app-layout-i8 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i9 {
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  align-self: flex-start;
+}
+.vessel-dms-app .app-layout-i9 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i10 {
+  font-size: 14px;
+}
+.app-layout-i11 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.app-layout-i12 {
+  font-size: 18px;
+}
+.app-layout-i13 {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  max-height: 64px;
+  overflow: hidden;
+  padding: 4px;
+  margin-left: 4px;
+}
+.app-layout-i14 {
+  font-size: 16px;
+}
+.app-layout-i15 {
+  font-size: 17px;
+}
+.app-layout-i16 {
+  position: relative;
+}
+.app-layout-i17 {
+  font-size: 20px;
+}
+.app-layout-i18 {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  height: 18px;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--vdms-surface, #ffffff);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+.vessel-dms-app .app-layout-i18 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i19 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-layout-i20 {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--vdms-line-strong);
+  background: var(--vdms-field);
+  color: var(--vdms-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.app-layout-i21 {
+  flex-shrink: 0;
+  padding: 7px 18px;
+  border-bottom: 1px solid #bfdbfe;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.vessel-dms-app .app-layout-i21 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i22 {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.app-layout-i23 {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.app-layout-i24 {
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+}
+.app-layout-i25 {
+  flex-direction: column;
+  min-height: 0;
+}
+.app-layout-i26 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 480px;
+  border: 1px solid var(--vdms-border);
+  overflow: hidden;
+}
+.app-layout-i27 {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--vdms-border);
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .app-layout-i27 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-i28 {
+  color: var(--clay-accent, #0e7490);
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.app-layout-i29 {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+.app-layout-i30 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border: 0;
+}
+
+// ── Converted inline styles (app-layout) ──────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.app-layout-j1 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 480px;
+  border: 1px solid var(--vdms-border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+.app-layout-j2 {
+  border-radius: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--vdms-border);
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  background: var(--vdms-surface-alt);
+}
+.vessel-dms-app .app-layout-j2 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-j3 {
+  font-size: 14px;
+}
+.app-layout-j4 {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.app-layout-j5 {
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+.vessel-dms-app .app-layout-j5 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.app-layout-j6 {
+  font-size: 11px;
+}
+.app-layout-j7 {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+.app-layout-j8 {
+  position: absolute;
+  inset: 0;
+  background: var(--vdms-surface, #ffffff);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 24px;
+  text-align: center;
+}
+.app-layout-j9 {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+.app-layout-j10 {
+  font-size: 12px;
+}
+.app-layout-j11 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: block;
+  background: #ffffff;
+  height: 100%;
+  border: 0;
+}

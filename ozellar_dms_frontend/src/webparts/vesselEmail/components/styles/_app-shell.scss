@@ -1,0 +1,225 @@
+// App shell: workbench break-out, dark-mode tokens and shell layout.
+// Moved out of AppLayout.tsx (injectFullScreenStyles); the rules are unchanged.
+
+/* ── Whole-app dark mode tokens ──────────────────────────────────────
+   Every page still sets its own inline colors (no shared component
+   library to retheme centrally — see clayTheme.ts header comment), so
+   the bulk of those inline hex literals were swapped for var(--vdms-*)
+   references instead of being duplicated with isNight ternaries. These
+   custom properties are the single place that actually flips between
+   light and night, scoped to the [data-vessel-theme] attribute set on
+   the app root below. Night values use the Maritime deep-sea palette (see deepHarborNightTheme / the night
+   input styles further down) so nothing clashes. */
+[data-vessel-theme="light"] {
+  --vdms-surface: #ffffff;
+  --vdms-surface-alt: #f6f8fb;
+  --vdms-border: #e2e8f0;
+  --vdms-border-soft: #eef1f5;
+  --vdms-line: #cbd5e1;
+  --vdms-line-strong: #94a3b8;
+  --vdms-line-soft: #e2e8f0;
+  --vdms-text: #101b2d;
+  --vdms-text-secondary: #475569;
+  --vdms-text-muted: #64748b;
+  --vdms-text-faint: #94a3b8;
+  --vdms-toggle-active-bg: #0b2a4a;
+  --vdms-toggle-active-text: #ffffff;
+  /* clay.* tokens (clayTheme.ts) */
+  --clay-bg: #eef2f7;
+  --clay-surface: #ffffff;
+  --clay-surface-raised: #f6f8fb;
+  --clay-surface-hover: #eaf0f6;
+  --clay-text: #101b2d;
+  --clay-text-muted: #5b6b7f;
+  --clay-accent-soft: #dceef2;
+  --clay-accent-soft-hover: #c7e4ea;
+  --clay-icon-bg: linear-gradient(150deg, #e3f2f4, #cfe8ec);
+  --clay-shadow-raised: 0 1px 2px rgba(16,27,45,0.05), 0 4px 12px rgba(16,27,45,0.06);
+  --clay-shadow-raised-hover: 0 2px 4px rgba(16,27,45,0.06), 0 8px 20px rgba(16,27,45,0.10);
+  --clay-shadow-button: 0 1px 2px rgba(16,27,45,0.08), 0 4px 10px rgba(14,116,144,0.25);
+  --clay-shadow-icon: inset 0 0 0 1px rgba(14,116,144,0.14);
+  --clay-pill-active-bg: #dcfce7;
+  --clay-pill-active-text: #15803d;
+  --clay-pill-active-shadow: none;
+  --clay-pill-warn-bg: #fef3c7;
+  --clay-pill-warn-text: #b45309;
+  --clay-pill-warn-shadow: none;
+  --clay-pill-danger-bg: #fee2e2;
+  --clay-pill-danger-text: #b91c1c;
+  --clay-pill-danger-shadow: none;
+}
+[data-vessel-theme="night"] {
+  --vdms-surface: #101d2e;
+  --vdms-surface-alt: #152536;
+  --vdms-border: rgba(148,178,204,0.18);
+  --vdms-border-soft: rgba(148,178,204,0.1);
+  --vdms-line: rgba(148,178,204,0.22);
+  --vdms-line-strong: rgba(148,178,204,0.45);
+  --vdms-line-soft: rgba(148,178,204,0.14);
+  --vdms-text: #e7eef5;
+  --vdms-text-secondary: #aebfd1;
+  --vdms-text-muted: #8ca0b5;
+  --vdms-text-faint: #71869b;
+  --vdms-toggle-active-bg: #2dd4bf;
+  --vdms-toggle-active-text: #04211d;
+  /* clay.* tokens (clayTheme.ts) — night values */
+  --clay-bg: #0a1626;
+  --clay-surface: #101d2e;
+  --clay-surface-raised: #182536;
+  --clay-surface-hover: #202f42;
+  --clay-text: #e7eef5;
+  --clay-text-muted: #8ca0b5;
+  --clay-accent-soft: #113b38;
+  --clay-accent-soft-hover: #15473f;
+  --clay-icon-bg: linear-gradient(150deg, #113b38, #15473f);
+  --clay-shadow-raised: 0 1px 2px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
+  --clay-shadow-raised-hover: 0 2px 4px rgba(0,0,0,0.35), 0 8px 22px rgba(0,0,0,0.4);
+  --clay-shadow-button: 0 1px 2px rgba(0,0,0,0.35), 0 4px 12px rgba(45,212,191,0.2);
+  --clay-shadow-icon: inset 0 0 0 1px rgba(45,212,191,0.18);
+  --clay-pill-active-bg: rgba(34,197,94,0.16);
+  --clay-pill-active-text: #86efac;
+  --clay-pill-active-shadow: none;
+  --clay-pill-warn-bg: rgba(245,158,11,0.16);
+  --clay-pill-warn-text: #fcd34d;
+  --clay-pill-warn-shadow: none;
+  --clay-pill-danger-bg: rgba(239,68,68,0.16);
+  --clay-pill-danger-text: #fca5a5;
+  --clay-pill-danger-shadow: none;
+}
+
+/* Force web part zone to not clip our fixed overlay */
+.CanvasZone, .CanvasSection, .CanvasComponent,
+[data-automation-id="CanvasControl"],
+.ms-SPCanvas, .SPCanvas, .workbenchPageContent,
+.sp-Canvas, .sp-CanvasSection {
+  overflow: visible !important;
+}
+/* Ensure html/body don't clip */
+html, body {
+  overflow: hidden !important;
+}
+/* Sidebar nav sleek modern scrollbar */
+.vessel-dms-sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+.vessel-dms-sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.vessel-dms-sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+.vessel-dms-sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+.vessel-dms-sidebar-nav {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Night mode keeps the warm clay accent while lowering the surrounding surfaces. */
+[data-vessel-theme="night"] input,
+[data-vessel-theme="night"] select,
+[data-vessel-theme="night"] textarea {
+  background: rgba(3,20,35,0.6) !important;
+  color: #eaf6fd !important;
+  border-color: rgba(140,210,240,0.28) !important;
+  color-scheme: dark;
+}
+[data-vessel-theme="night"] input::placeholder,
+[data-vessel-theme="night"] textarea::placeholder {
+  color: #7f9bb0 !important;
+}
+
+/* Shared interaction feedback for buttons and custom clickable surfaces. */
+.vessel-dms-app button,
+.vessel-dms-app a,
+.vessel-dms-app [role="button"] {
+  transition: filter 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+}
+.vessel-dms-app button:hover:not(:disabled),
+.vessel-dms-app a:hover,
+.vessel-dms-app [role="button"]:hover {
+  filter: brightness(0.94) saturate(1.08) !important;
+  transform: translateY(-1px) !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+.vessel-dms-app button:active:not(:disabled),
+.vessel-dms-app a:active,
+.vessel-dms-app [role="button"]:active {
+  filter: brightness(0.88) saturate(1.12);
+  transform: translateY(0);
+  outline: none !important;
+}
+.vessel-dms-app button:focus-visible,
+.vessel-dms-app a:focus-visible,
+.vessel-dms-app [role="button"]:focus-visible {
+  outline: 2px solid rgba(10,126,168,0.75) !important;
+  outline-offset: 2px !important;
+}
+.vessel-dms-app .vdms-select-trigger,
+.vessel-dms-app button.vdms-select-trigger,
+.vessel-dms-app button.vdms-select-trigger:hover,
+.vessel-dms-app button.vdms-select-trigger:focus,
+.vessel-dms-app button.vdms-select-trigger:focus-visible,
+.vessel-dms-app button.vdms-select-trigger:active {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+/* Single-border search fields with clean focus states - strictly NO double borders & ample icon clearance */
+.vdms-settings-body input.vdms-single-border-search,
+.vessel-dms-app input.vdms-single-border-search,
+.vessel-dms-app .vdms-single-border-search,
+input.vdms-single-border-search {
+  border: 1px solid var(--vdms-line, #cbd5e1) !important;
+  background: var(--vdms-surface, #ffffff) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease !important;
+  padding-left: 40px !important;
+  padding-right: 32px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  box-sizing: border-box !important;
+  font-size: 13px !important;
+}
+.vdms-settings-body input.vdms-single-border-search:hover,
+.vdms-settings-body input.vdms-single-border-search:focus,
+.vdms-settings-body input.vdms-single-border-search:focus-visible,
+.vessel-dms-app .vdms-single-border-search:hover,
+.vessel-dms-app .vdms-single-border-search:focus,
+.vessel-dms-app .vdms-single-border-search:focus-visible {
+  border-color: var(--vdms-line-strong, #94a3b8) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Clean modern scrollbars for Settings & Certificate Mapping */
+.vdms-settings-body::-webkit-scrollbar,
+.vdms-settings-nav::-webkit-scrollbar,
+.vdms-scroll-clean::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+.vdms-settings-body::-webkit-scrollbar-track,
+.vdms-settings-nav::-webkit-scrollbar-track,
+.vdms-scroll-clean::-webkit-scrollbar-track {
+  background: transparent;
+}
+.vdms-settings-body::-webkit-scrollbar-thumb,
+.vdms-settings-nav::-webkit-scrollbar-thumb,
+.vdms-scroll-clean::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 6px;
+}
+.vdms-settings-body::-webkit-scrollbar-thumb:hover,
+.vdms-settings-nav::-webkit-scrollbar-thumb:hover,
+.vdms-scroll-clean::-webkit-scrollbar-thumb:hover {
+  background: var(--clay-accent, #0e7490);
+}

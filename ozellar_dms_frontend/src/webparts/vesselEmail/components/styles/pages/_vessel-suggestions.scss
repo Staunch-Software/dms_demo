@@ -1,0 +1,478 @@
+// Vessel suggestions dialog (pages/VesselSuggestionsModal.tsx)
+// Moved out of the component's inline <style> element; the rules are unchanged.
+
+@keyframes vsm-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+@keyframes vsm-spin { to{transform:rotate(360deg)} }
+@keyframes vsm-fade-in { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes vsm-scale-in { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+.vsm-card { animation: vsm-scale-in 0.3s cubic-bezier(.34,1.56,.64,1) both; }
+.vsm-spinner { animation: vsm-spin 0.9s linear infinite; }
+.vsm-fade { animation: vsm-fade-in 0.4s ease both; }
+.vsm-btn:hover { opacity:0.88; transform:translateY(-1px); }
+.vsm-btn { transition: all 0.2s ease; cursor:pointer; }
+
+// ── Converted inline styles (vessel-suggestions-modal) ────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-suggestions-modal-i1 {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 28px;
+}
+.vessel-suggestions-modal-i2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-suggestions-modal-i3 {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+.vessel-dms-app .vessel-suggestions-modal-i3 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i4 {
+  font-size: 13px;
+}
+.vessel-suggestions-modal-i5 {
+  font-size: 10px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i5 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i6 {
+  flex: 1;
+  height: 2px;
+  margin: 0 4px;
+  margin-bottom: 20px;
+  transition: background 0.4s ease;
+}
+.vessel-suggestions-modal-i7 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  transition: all 0.35s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.vessel-suggestions-modal-i8 {
+  font-size: 11px;
+  color: rgba(148,163,184,1);
+  flex-shrink: 0;
+}
+.vessel-dms-app .vessel-suggestions-modal-i8 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i9 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-suggestions-modal-i9 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i10 {
+  margin-left: auto;
+  font-size: 11px;
+  color: #4ade80;
+}
+.vessel-dms-app .vessel-suggestions-modal-i10 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i11 {
+  font-size: 11px;
+}
+.vessel-suggestions-modal-i12 {
+  margin-bottom: 14px;
+}
+.vessel-suggestions-modal-i13 {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.vessel-dms-app .vessel-suggestions-modal-i13 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i14 {
+  color: #f87171;
+  margin-left: 3px;
+}
+.vessel-suggestions-modal-i15 {
+  font-size: 10px;
+  margin-top: 4px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i15 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i16 {
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+}
+.vessel-suggestions-modal-i17 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.vessel-suggestions-modal-i18 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.vessel-suggestions-modal-i19 {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.vessel-dms-app .vessel-suggestions-modal-i19 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i20 {
+  font-size: 18px;
+}
+.vessel-suggestions-modal-i21 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessel-suggestions-modal-i21 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i22 {
+  margin: 0;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i22 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i23 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.vessel-suggestions-modal-i24 {
+  font-size: 18px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i24 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i25 {
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-suggestions-modal-i25 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i26 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.vessel-suggestions-modal-i27 {
+  border: 1px solid rgba(59,130,246,0.25);
+  padding: 3px 10px;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .vessel-suggestions-modal-i27 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i28 {
+  font-size: 11px;
+  padding: 3px 4px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i28 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i29 {
+  font-size: 11px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.vessel-dms-app .vessel-suggestions-modal-i29 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i30 {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  border: 1px solid rgba(74,222,128,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i30 { font-size: 27px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i31 {
+  font-size: 30px;
+}
+.vessel-suggestions-modal-i32 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i32 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i33 {
+  font-size: 12px;
+  max-width: 440px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+.vessel-dms-app .vessel-suggestions-modal-i33 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i34 {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+.vessel-suggestions-modal-i35 {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  padding: 10px 18px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i35 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i36 {
+  display: none;
+}
+.vessel-suggestions-modal-i37 {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-suggestions-modal-i37 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i38 {
+  margin-bottom: 16px;
+}
+.vessel-suggestions-modal-i39 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i39 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i40 {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vessel-suggestions-modal-i41 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-suggestions-modal-i41 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i42 {
+  font-size: 12px;
+}
+.vessel-suggestions-modal-i43 {
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessel-suggestions-modal-i43 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i44 {
+  font-size: 26px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i44 { font-size: 23.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i45 {
+  font-size: 26px;
+}
+.vessel-suggestions-modal-i46 {
+  flex: 1;
+}
+.vessel-suggestions-modal-i47 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4ade80;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i47 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i48 {
+  border: 1px solid rgba(74,222,128,0.4);
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessel-suggestions-modal-i48 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i49 {
+  font-size: 10px;
+}
+.vessel-suggestions-modal-i50 {
+  font-size: 11px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i50 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i51 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #93c5fd;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i51 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i52 {
+  border: 1px solid rgba(59,130,246,0.4);
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessel-suggestions-modal-i52 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i53 {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.vessel-suggestions-modal-i54 {
+  font-size: 10px;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i54 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i55 {
+  padding: 4px 10px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.vessel-suggestions-modal-i56 {
+  font-size: 16px;
+  font-weight: 800;
+}
+.vessel-dms-app .vessel-suggestions-modal-i56 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i57 {
+  font-size: 9px;
+  margin-top: 1px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i57 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i58 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.vessel-suggestions-modal-i59 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.vessel-dms-app .vessel-suggestions-modal-i59 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i60 {
+  border: 1px solid rgba(99,179,237,0.3);
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-suggestions-modal-i60 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i61 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+.vessel-suggestions-modal-i62 {
+  grid-column: 1 / -1;
+}
+.vessel-suggestions-modal-i63 {
+  margin-top: 4px;
+}
+.vessel-suggestions-modal-i64 {
+  font-size: 10px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.vessel-dms-app .vessel-suggestions-modal-i64 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i65 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.vessel-suggestions-modal-i66 {
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .vessel-suggestions-modal-i66 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i67 {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px solid rgba(239,68,68,0.3);
+  font-size: 13px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i67 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i68 {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+.vessel-suggestions-modal-i69 {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  box-shadow: 0 0 32px rgba(16,185,129,0.4);
+}
+.vessel-suggestions-modal-i70 {
+  font-size: 34px;
+}
+.vessel-suggestions-modal-i71 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i71 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i72 {
+  font-size: 13px;
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+.vessel-dms-app .vessel-suggestions-modal-i72 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i73 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.vessel-suggestions-modal-i74 {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 6px 12px;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-suggestions-modal-i74 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-suggestions-modal-i75 {
+  margin-right: 6px;
+}
+.vessel-suggestions-modal-i76 {
+  margin-right: 4px;
+}
+.vessel-suggestions-modal-i77 {
+  font-weight: 600;
+}

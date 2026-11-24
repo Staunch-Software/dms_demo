@@ -1,0 +1,188 @@
+// vessel-roots-control — styles
+
+// ── Converted inline styles (vessel-roots-control) ────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-roots-control-i1 {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.vessel-roots-control-i2 {
+  margin-top: 3px;
+}
+.vessel-roots-control-i3 {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-roots-control-i3 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i4 {
+  display: block;
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-roots-control-i4 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i5 {
+  margin: -2px 0 4px 12px;
+  padding: 6px 10px;
+}
+.vessel-roots-control-i6 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vessel-roots-control-i7 {
+  font-size: 12px;
+}
+.vessel-roots-control-i8 {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-roots-control-i8 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i9 {
+  font-size: 12px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-roots-control-i9 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i10 {
+  font-size: 11px;
+}
+.vessel-roots-control-i11 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.vessel-roots-control-i12 {
+  width: min(680px, 100%);
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid var(--vdms-line);
+  box-shadow: 0 20px 50px rgba(8,18,32,0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.vessel-roots-control-i13 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-roots-control-i14 {
+  font-size: 16px;
+}
+.vessel-roots-control-i15 {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-roots-control-i15 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i16 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-roots-control-i16 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i17 {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--vdms-text-muted);
+}
+.vessel-roots-control-i18 {
+  font-size: 13px;
+}
+.vessel-roots-control-i19 {
+  margin-left: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.vessel-roots-control-i20 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.vessel-dms-app .vessel-roots-control-i20 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i21 {
+  cursor: pointer;
+}
+.vessel-roots-control-i22 {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.vessel-roots-control-i23 {
+  font-size: 9px;
+}
+.vessel-roots-control-i24 {
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--vdms-border-soft);
+}
+.vessel-roots-control-i25 {
+  padding: 10px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-roots-control-i25 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i26 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--vdms-border-soft);
+}
+.vessel-roots-control-i27 {
+  font-size: 12.5px;
+  color: var(--vdms-text);
+  flex: 1;
+}
+.vessel-dms-app .vessel-roots-control-i27 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i28 {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--vdms-text-muted);
+}
+.vessel-roots-control-i29 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.vessel-roots-control-i30 {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 14px;
+  padding: 3px 9px;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-roots-control-i30 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i31 {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.vessel-roots-control-i32 {
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-roots-control-i32 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-roots-control-i33 {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

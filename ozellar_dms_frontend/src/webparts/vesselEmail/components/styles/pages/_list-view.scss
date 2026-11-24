@@ -1,0 +1,344 @@
+// list-view — styles
+
+// ── Converted inline styles (list-view) ───────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.list-view-i1 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.list-view-i2 {
+  border: none;
+  overflow-x: auto;
+}
+.list-view-i3 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+.list-view-i4 {
+  border: none;
+  padding: 12px;
+}
+.list-view-i5 {
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+.vessel-dms-app .list-view-i5 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i6 {
+  margin-top: 4px;
+  font-size: 12px;
+}
+.vessel-dms-app .list-view-i6 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i7 {
+  margin-top: 8px;
+  font-size: 11px;
+  word-break: break-word;
+}
+.vessel-dms-app .list-view-i7 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i8 {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.list-view-i9 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.list-view-i10 {
+  height: 16px;
+  accent-color: #ef4444;
+}
+.list-view-i11 {
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.vessel-dms-app .list-view-i11 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i12 {
+  font-size: 12px;
+}
+.list-view-i13 {
+  font-style: italic;
+  font-size: 11px;
+}
+.vessel-dms-app .list-view-i13 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i14 {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.list-view-i15 {
+  min-height: 44px;
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+.vessel-dms-app .list-view-i15 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i16 {
+  display: none;
+}
+.list-view-i17 {
+  min-height: 44px;
+  border: 1px solid #d8b4fe;
+  font-size: 12px;
+  font-weight: 700;
+}
+.vessel-dms-app .list-view-i17 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i18 {
+  min-height: 44px;
+  border: 1px solid #fca5a5;
+  font-size: 12px;
+  font-weight: 700;
+}
+.vessel-dms-app .list-view-i18 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i19 {
+  margin-top: 8px;
+  min-height: 44px;
+  border: 1px solid #bfdbfe;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .list-view-i19 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i20 {
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 13px;
+}
+.vessel-dms-app .list-view-i20 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i21 {
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.vessel-dms-app .list-view-i21 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i22 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: left;
+}
+.vessel-dms-app .list-view-i22 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i23 {
+  padding: 10px 10px;
+  width: 44px;
+  text-align: center;
+}
+.list-view-i24 {
+  padding: 10px 12px;
+}
+.list-view-i25 {
+  padding: 10px 12px;
+  text-align: right;
+}
+.list-view-i26 {
+  padding: 48px 16px;
+  text-align: center;
+}
+.list-view-i27 {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.list-view-i28 {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e0f2fe;
+  border-top: 3px solid #0284c7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.list-view-i29 {
+  font-weight: 700;
+  font-size: 13px;
+}
+.vessel-dms-app .list-view-i29 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i30 {
+  font-size: 11px;
+  max-width: 360px;
+}
+.vessel-dms-app .list-view-i30 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i31 {
+  font-size: 13px;
+}
+.vessel-dms-app .list-view-i31 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i32 {
+  transition: background 0.1s;
+}
+.list-view-i33 {
+  padding: 10px 10px;
+  text-align: center;
+}
+.list-view-i34 {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.vessel-dms-app .list-view-i34 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i35 {
+  padding: 10px 12px;
+  font-weight: 600;
+}
+.list-view-i36 {
+  padding: 10px 12px;
+  font-weight: 700;
+}
+.list-view-i37 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.list-view-i38 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.list-view-i39 {
+  height: 14px;
+  accent-color: #ef4444;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.list-view-i40 {
+  font-size: 14px;
+}
+.vessel-dms-app .list-view-i40 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i41 {
+  font-size: 14px;
+}
+.list-view-i42 {
+  text-decoration: underline;
+  font-weight: 600;
+  cursor: pointer;
+  flex-grow: 1;
+}
+.list-view-i43 {
+  border: 1px solid rgba(59,130,246,0.3);
+  padding: 1px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.vessel-dms-app .list-view-i43 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i44 {
+  font-size: 10px;
+}
+.list-view-i45 {
+  border: 1px solid #fed7aa;
+  padding: 1px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.vessel-dms-app .list-view-i45 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i46 {
+  border: 1px solid #86efac;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.vessel-dms-app .list-view-i46 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i47 {
+  border: 1px solid #c4b5fd;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.vessel-dms-app .list-view-i47 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i48 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.list-view-i49 {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.list-view-i50 {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.vessel-dms-app .list-view-i50 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i51 {
+  font-size: 11px;
+}
+.list-view-i52 {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.vessel-dms-app .list-view-i52 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i53 {
+  height: 27px;
+  padding: 0;
+  border: 1px solid #bfdbfe;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-dms-app .list-view-i53 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i54 {
+  padding: 10px 14px;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.vessel-dms-app .list-view-i54 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i55 {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.list-view-i56 {
+  border: none;
+  padding: 3px 8px;
+  font-size: 11px;
+}
+.vessel-dms-app .list-view-i56 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.list-view-i57 {
+  border: none;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.vessel-dms-app .list-view-i57 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes

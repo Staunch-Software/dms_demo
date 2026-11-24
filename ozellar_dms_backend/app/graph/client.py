@@ -1,0 +1,443 @@
+"""Microsoft Graph client — app-only (client-credentials) auth.
+
+Acquires a token for the backend Entra app via MSAL and exposes thin async
+request helpers. Tokens are cached by MSAL and refreshed automatically.
+"""
+import asyncio
+import random
+import time
+
+import httpx
+import msal
+
+from ..config import settings
+import os
+import re
+
+
+# ── Throttling: keep bulk READS off the signed-in user's SharePoint quota ──
+# The SPFx web part forwards the user's delegated Graph token
+# (X-Graph-Access-Token). Every Graph call made with it is charged to that
+# USER's SharePoint throttling budget, so the backend's drive-wide delta
+# index, folder walks and per-file tag look-ups exhausted it and SharePoint
+# started redirecting the user's own pages to _layouts/15/Throttle.htm.
+# Read-only calls now use the app-only (client-credentials) token, which has
+# its own, separate per-app quota; writes keep the user's token so
+# "Modified By" stays the real user. If the app is not allowed to read a
+# site/drive (401/403) that call falls back to the user's token.
+# Set GRAPH_READS_AS_APP=false in backend/.env to restore the old behaviour.
+_READS_AS_APP = os.getenv("GRAPH_READS_AS_APP", "true").strip().lower() not in ("0", "false", "no", "off")
+# Microsoft's recommended traffic decoration (helps SharePoint prioritise
+# well-behaved app traffic when a tenant is under load).
+_USER_AGENT = os.getenv("GRAPH_USER_AGENT", "NONISV|OzellarMarine|StaunchDMS/1.0")
+_APP_DENIED_TTL = 600.0
+_app_denied: dict[str, float] = {}  # "/drives/<id>" or "/sites/<id>" -> denied until (monotonic)
+_SCOPE_RE = re.compile(r"/(drives|sites)/([^/?:]+)", re.IGNORECASE)
+
+
+def _graph_path(url: str) -> str:
+    u = url.split("?", 1)[0]
+    i = u.find("graph.microsoft.com/")
+    if i >= 0:
+        u = u[i + len("graph.microsoft.com/"):]
+        u = u.split("/", 1)[1] if "/" in u else ""  # drop "v1.0" / "beta"
+    return "/" + u.lstrip("/")
+
+
+def _is_user_scoped(path: str) -> bool:
+    p = path.lower()
+    return p == "/me" or p.startswith("/me/") or p.startswith("/me?")
+
+
+def _is_read_only(method: str, url: str, body: dict | None) -> bool:
+    path = _graph_path(url)
+    if _is_user_scoped(path):
+        return False
+    m = (method or "").upper()
+    if m == "GET":
+        return True
+    if m == "POST" and path.lower().endswith("/$batch") and isinstance(body, dict):
+        reqs = body.get("requests") or []
+        return bool(reqs) and all(
+            str(r.get("method", "GET")).upper() == "GET"
+            and not _is_user_scoped("/" + str(r.get("url", "")).lstrip("/"))
+            for r in reqs
+        )
+    return False
+
+
+def _scope_key(url: str) -> str | None:
+    m = _SCOPE_RE.search(_graph_path(url))
+    return f"/{m.group(1).lower()}/{m.group(2)}" if m else None
+
+
+class GraphError(RuntimeError):
+    def __init__(self, status: int, message: str, retry_after: float | None = None):
+        self.status = status
+        self.retry_after = retry_after
+        super().__init__(f"Graph {status}: {message}")
+
+
+class GraphClient:
+    def __init__(self, site_config=None):
+        self._cfg = site_config or settings
+        self._app = msal.ConfidentialClientApplication(
+            client_id=self._cfg.graph_client_id,
+            authority=self._cfg.authority_url,
+            client_credential=self._cfg.graph_client_secret,
+        )
+        self._http: httpx.AsyncClient | None = None
+        # Set whenever Graph reports its per-app request quota is fully
+        # spent (SharePoint Embedded's `activityLimitReached`/`quota`
+        # throttle, with a retryAfterSeconds in the hundreds — distinct
+        # from the ordinary few-second burst 429 the retry loop below
+        # already handles). While now < this timestamp, every request
+        # fails immediately without touching the network, instead of
+        # adding more load to an app that is already fully throttled.
+        self._throttled_until: float = 0.0
+
+    def _client(self) -> httpx.AsyncClient:
+        # One pooled, keep-alive client reused across calls (avoids a new TLS
+        # handshake per folder creation — the main provisioning bottleneck).
+        if self._http is None or self._http.is_closed:
+            from .http import verify
+
+            self._http = httpx.AsyncClient(
+                timeout=120,
+                verify=verify(),
+                limits=httpx.Limits(max_connections=30, max_keepalive_connections=30),
+            )
+        return self._http
+
+    async def aclose(self):
+        if self._http is not None and not self._http.is_closed:
+            await self._http.aclose()
+
+    def _token(self) -> str:
+        scope = getattr(self._cfg, "graph_scope", "https://graph.microsoft.com/.default")
+        result = self._app.acquire_token_silent([scope], account=None)
+        if not result:
+            result = self._app.acquire_token_for_client(scopes=[scope])
+        if "access_token" not in result:
+            raise GraphError(
+                401,
+                result.get("error_description", result.get("error", "token failure")),
+            )
+        return result["access_token"]
+
+    def _sp_token(self) -> str:
+        """Acquire a SharePoint-scoped token (aud = tenant SharePoint root).
+
+        SharePoint REST API endpoints reject the Graph-audience token with 401
+        even when all permissions are granted and consented.  A separate token
+        with scope ``https://<tenant>.sharepoint.com/.default`` is required.
+        """
+        sp_scope = getattr(self._cfg, "sharepoint_scope", None)
+        if not sp_scope:
+            raise GraphError(400, "sharepoint_scope not configured — add {ENV}_SHAREPOINT_SITE_URL to .env")
+        result = self._app.acquire_token_silent([sp_scope], account=None)
+        if not result:
+            result = self._app.acquire_token_for_client(scopes=[sp_scope])
+        if "access_token" not in result:
+            raise GraphError(
+                401,
+                result.get("error_description", result.get("error", "SP token failure")),
+            )
+        return result["access_token"]
+
+    def _headers(self, extra: dict | None = None, access_token: str | None = None) -> dict:
+        token = access_token if (isinstance(access_token, str) and "." in access_token) else self._token()
+        h = {"Authorization": f"Bearer {token}", "User-Agent": _USER_AGENT}
+        if extra:
+            h.update(extra)
+        return h
+
+    async def request(
+        self,
+        method: str,
+        path: str,
+        *,
+        json: dict | None = None,
+        content: bytes | None = None,
+        headers: dict | None = None,
+        params: dict | None = None,
+        access_token: str | None = None,
+    ) -> httpx.Response:
+        delegated = isinstance(access_token, str) and "." in access_token
+        if delegated and _READS_AS_APP and _is_read_only(method, path, json):
+            key = _scope_key(path)
+            denied_until = _app_denied.get(key or "", 0.0)
+            if time.monotonic() >= denied_until:
+                try:
+                    return await self._request(
+                        method, path, json=json, content=content,
+                        headers=headers, params=params, access_token=None,
+                    )
+                except GraphError as exc:
+                    if exc.status not in (401, 403):
+                        raise  # incl. 429: never spill app throttling onto the user
+                    if key:
+                        _app_denied[key] = time.monotonic() + _APP_DENIED_TTL
+        return await self._request(
+            method, path, json=json, content=content,
+            headers=headers, params=params, access_token=access_token,
+        )
+
+    async def _request(
+        self,
+        method: str,
+        path: str,
+        *,
+        json: dict | None = None,
+        content: bytes | None = None,
+        headers: dict | None = None,
+        params: dict | None = None,
+        access_token: str | None = None,
+    ) -> httpx.Response:
+        url = path if path.startswith("http") else f"{settings.graph_base_url}{path}"
+        # Hard guard: never touch the production OzellarDMS site outside prod.
+        from .guard import assert_allowed
+        assert_allowed(url, operation=f"graph {method}")
+
+        # The app's whole request quota may already be spent from a previous
+        # call (see _throttled_until below) — fail fast without hitting the
+        # network rather than adding another doomed request on top of an
+        # already-throttled app. This is what actually lets the throttle
+        # clear: without it, every folder click / vessel-filter change during
+        # the cooldown fired a fresh request (each itself retrying up to 6
+        # times), which is what kept re-triggering `activityLimitReached`.
+        now = time.monotonic()
+        if now < self._throttled_until:
+            remaining = self._throttled_until - now
+            raise GraphError(
+                429,
+                f"Microsoft Graph request quota exhausted for this app — retry in {remaining:.0f}s",
+                retry_after=remaining,
+            )
+
+        # Graph can throttle a burst for longer than the usual short retry
+        # window. Keep retries bounded, but give 429 responses enough time to
+        # recover before surfacing the error to the API caller.
+        # Network-level errors (wsarecv / connection forcibly closed) are also
+        # retried — the stale keep-alive connection is discarded and a fresh
+        # client is created for the next attempt.
+        _NETWORK_ERRORS = (
+            httpx.ReadError,
+            httpx.ConnectError,
+            httpx.RemoteProtocolError,
+            httpx.WriteError,
+            httpx.PoolTimeout,
+            httpx.ConnectTimeout,
+            httpx.ReadTimeout,
+        )
+        for attempt in range(6):
+            client = self._client()
+            try:
+                resp = await client.request(
+                    method,
+                    url,
+                    json=json,
+                    content=content,
+                    headers=self._headers(headers, access_token),
+                    params=params,
+                )
+            except _NETWORK_ERRORS as exc:
+                if attempt >= 5:
+                    raise
+                # Discard the broken client so the next attempt gets a fresh connection
+                try:
+                    await self._http.aclose()
+                except Exception:
+                    pass
+                self._http = None
+                delay = min(2 ** attempt, 16) + random.random()
+                await asyncio.sleep(delay)
+                continue
+            # SharePoint Embedded throttles bursts (429) / transient 503.
+            if resp.status_code in (429, 503):
+                retry_after_hdr = resp.headers.get("Retry-After")
+                try:
+                    retry_after: float | None = float(retry_after_hdr) if retry_after_hdr else None
+                except (TypeError, ValueError):
+                    retry_after = None
+
+                # Distinguish a short burst throttle (fine to retry inline,
+                # capped at 30s) from the app's whole request quota being
+                # exhausted — Graph's `activityLimitReached`/`quota` error,
+                # whose retryAfterSeconds runs into the hundreds. Retrying
+                # that inline (even capped at 30s) just spends more quota on
+                # a doomed attempt; the body also carries retryAfterSeconds
+                # even when no Retry-After header is present, so fall back to
+                # reading it from there.
+                is_quota_exhausted = bool(retry_after and retry_after > 30)
+                body_retry_after: float | None = None
+                if resp.status_code == 429:
+                    try:
+                        err = resp.json().get("error") or {}
+                        code = str(err.get("code", "")).lower()
+                        inner_code = str((err.get("innerError") or {}).get("code", "")).lower()
+                        if code == "activitylimitreached" or inner_code in ("quota", "throttledrequest"):
+                            is_quota_exhausted = True
+                        body_retry_raw = err.get("retryAfterSeconds")
+                        if body_retry_raw is not None:
+                            body_retry_after = float(body_retry_raw)
+                    except Exception:
+                        pass
+                if retry_after is None:
+                    retry_after = body_retry_after
+                if body_retry_after and body_retry_after > 30:
+                    is_quota_exhausted = True
+
+                if is_quota_exhausted:
+                    wait = min(retry_after, 300) if retry_after else 60.0
+                    self._throttled_until = time.monotonic() + wait
+                    raise GraphError(
+                        429,
+                        f"Microsoft Graph request quota exhausted for this app — "
+                        f"retry in {wait:.0f}s ({resp.text[:200]})",
+                        retry_after=wait,
+                    )
+
+                if attempt < 5:
+                    delay = min(retry_after, 30) if retry_after else min(2 ** attempt, 16)
+                    await asyncio.sleep(delay + random.random())
+                    continue
+            break
+        if resp.status_code >= 400:
+            raise GraphError(resp.status_code, resp.text)
+        return resp
+
+    async def get(self, path: str, **kw) -> dict:
+        return (await self.request("GET", path, **kw)).json()
+
+    async def post(self, path: str, **kw) -> dict:
+        r = await self.request("POST", path, **kw)
+        return r.json() if r.content else {}
+
+    async def patch(self, path: str, **kw) -> dict:
+        r = await self.request("PATCH", path, **kw)
+        return r.json() if r.content else {}
+
+    async def delete(self, path: str, **kw) -> None:
+        await self.request("DELETE", path, **kw)
+
+    async def sp_request(
+        self,
+        method: str,
+        url: str,
+        *,
+        json: dict | None = None,
+        access_token: str | None = None,
+    ) -> httpx.Response:
+        """Call a SharePoint REST API endpoint using a SP-scoped token.
+
+        The ``url`` must be the full URL (e.g.
+        ``https://tenant.sharepoint.com/sites/OzellarDMS/_api/...``).
+        If ``access_token`` is a delegated user token it is used as-is;
+        otherwise the app acquires its own SP-scoped client-credentials token.
+        """
+        from .guard import assert_allowed
+        assert_allowed(url, operation=f"sharepoint-rest {method}")
+        token = access_token or self._sp_token()
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/json;odata=nometadata",
+            "Content-Type": "application/json;odata=nometadata",
+            "User-Agent": _USER_AGENT,
+        }
+        _NETWORK_ERRORS = (
+            httpx.ReadError, httpx.ConnectError, httpx.RemoteProtocolError,
+            httpx.WriteError, httpx.PoolTimeout, httpx.ConnectTimeout, httpx.ReadTimeout,
+        )
+        for attempt in range(4):
+            client = self._client()
+            try:
+                resp = await client.request(method, url, json=json, headers=headers)
+            except _NETWORK_ERRORS as exc:
+                if attempt >= 3:
+                    raise
+                try:
+                    await self._http.aclose()
+                except Exception:
+                    pass
+                self._http = None
+                import asyncio as _asyncio, random as _random
+                await _asyncio.sleep(min(2 ** attempt, 8) + _random.random())
+                continue
+            if resp.status_code in (429, 503) and attempt < 3:
+                import asyncio as _asyncio, random as _random
+                retry_after = resp.headers.get("Retry-After")
+                try:
+                    delay = min(float(retry_after), 30) if retry_after else min(2 ** attempt, 16)
+                except (TypeError, ValueError):
+                    delay = min(2 ** attempt, 16)
+                await _asyncio.sleep(delay + _random.random())
+                continue
+            break
+        if resp.status_code >= 400:
+            raise GraphError(resp.status_code, resp.text)
+        return resp
+
+    async def sp_post(self, url: str, *, json: dict | None = None, access_token: str | None = None) -> dict:
+        """POST to a SharePoint REST API endpoint; returns parsed JSON."""
+        r = await self.sp_request("POST", url, json=json, access_token=access_token)
+        return r.json() if r.content else {}
+
+
+_client: GraphClient | None = None
+_site_clients: dict[str, GraphClient] = {}  # Cache clients per site
+
+
+def graph(site_name: str | None = None, site_config: object | None = None) -> GraphClient:
+    """Lazily-constructed singleton (only valid when Graph is configured).
+    
+    Args:
+        site_name: If provided, return a client for that site. Otherwise use default.
+        site_config: If provided, return a client configured with this settings object.
+    """
+    global _client, _site_clients
+    if site_config is not None:
+        return GraphClient(site_config=site_config)
+    
+    # Resolve the current request's configured site, so a session switch does
+    # not reuse the process-wide client created for the startup site.
+    if not site_name:
+        from ..config import settings as current_settings
+        site_name = str(current_settings.active_site or "").lower() or None
+
+    # If site_name is specified, use per-site caching
+    if site_name:
+        if site_name not in _site_clients:
+            from ..config import Settings
+            cfg = None
+            try:
+                cfg = Settings.load_site_config(site_name)
+            except Exception:
+                pass
+            _site_clients[site_name] = GraphClient(site_config=cfg)
+        return _site_clients[site_name]
+    
+    # Default: use global client
+    if _client is None:
+        _client = GraphClient()
+    return _client
+
+
+async def reset_graph_client(site_name: str | None = None):
+    """Reset the cached graph client. Call this when switching sites.
+    
+    Args:
+        site_name: If provided, reset only that site's client. Otherwise reset all.
+    """
+    global _client, _site_clients
+    if site_name:
+        if site_name in _site_clients:
+            await _site_clients[site_name].aclose()
+            del _site_clients[site_name]
+    else:
+        if _client is not None:
+            await _client.aclose()
+        _client = None
+        for client in _site_clients.values():
+            await client.aclose()
+        _site_clients.clear()

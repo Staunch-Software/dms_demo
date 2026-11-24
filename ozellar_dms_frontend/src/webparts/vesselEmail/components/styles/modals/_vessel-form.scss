@@ -1,0 +1,505 @@
+// vessel-form-modal — styles
+
+// ── Converted inline styles (vessel-form-modal) ───────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-form-modal-i1 {
+  inset: 0;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.vessel-form-modal-i2 {
+  border-radius: 24px;
+  max-width: 94vw;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px -12px rgba(15,23,42,0.35), 0 8px 20px -8px rgba(15,23,42,0.18);
+  position: relative;
+  overflow: hidden;
+}
+.vessel-form-modal-i3 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  z-index: 1;
+}
+.vessel-form-modal-i4 {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 2;
+}
+.vessel-dms-app .vessel-form-modal-i4 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i5 {
+  font-size: 14px;
+}
+.vessel-form-modal-i6 {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+.vessel-form-modal-i7 {
+  text-align: center;
+  padding: 28px 0;
+}
+.vessel-form-modal-i8 {
+  font-size: 44px;
+  margin-bottom: 12px;
+}
+.vessel-form-modal-i9 {
+  font-size: 44px;
+}
+.vessel-form-modal-i10 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessel-form-modal-i10 { font-size: 18px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i11 {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.vessel-dms-app .vessel-form-modal-i11 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i12 {
+  text-align: center;
+  padding: 12px 0;
+}
+.vessel-form-modal-i13 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessel-form-modal-i13 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i14 {
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.vessel-dms-app .vessel-form-modal-i14 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i15 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #bae6fd;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.vessel-dms-app .vessel-form-modal-i15 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i16 {
+  font-size: 16px;
+}
+.vessel-dms-app .vessel-form-modal-i16 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i17 {
+  font-size: 16px;
+}
+.vessel-form-modal-i18 {
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.vessel-form-modal-i19 {
+  background: linear-gradient(90deg, #0ea5e9, #0284c7, #38bdf8);
+  height: 100%;
+  transition: width 0.8s ease-out;
+}
+.vessel-form-modal-i20 {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-form-modal-i20 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i21 {
+  color: #16a34a;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-form-modal-i22 {
+  font-size: 14px;
+}
+.vessel-dms-app .vessel-form-modal-i22 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i23 {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-form-modal-i24 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-form-modal-i25 {
+  font-size: 52px;
+  margin-bottom: 12px;
+}
+.vessel-form-modal-i26 {
+  font-size: 52px;
+}
+.vessel-form-modal-i27 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #059669;
+}
+.vessel-dms-app .vessel-form-modal-i27 { font-size: 18px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i28 {
+  margin: 0 0 20px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.vessel-dms-app .vessel-form-modal-i28 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i29 {
+  border: 1px solid #a7f3d0;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  font-size: 12px;
+  text-align: left;
+}
+.vessel-dms-app .vessel-form-modal-i29 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i30 {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.vessel-form-modal-i31 {
+  font-size: 12px;
+}
+.vessel-form-modal-i32 {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+}
+.vessel-dms-app .vessel-form-modal-i32 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i33 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.vessel-form-modal-i34 {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+}
+.vessel-form-modal-i35 {
+  font-size: 19px;
+}
+.vessel-form-modal-i36 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+}
+.vessel-dms-app .vessel-form-modal-i36 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i37 {
+  font-size: 12px;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.vessel-dms-app .vessel-form-modal-i37 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i38 {
+  padding: 8px 12px;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+.vessel-dms-app .vessel-form-modal-i38 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i39 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.vessel-dms-app .vessel-form-modal-i39 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i40 {
+  height: 17px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.vessel-dms-app .vessel-form-modal-i40 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i41 {
+  position: relative;
+}
+.vessel-form-modal-i42 {
+  min-height: 42px;
+  padding: 10px 38px 10px 12px;
+  box-sizing: border-box;
+  text-align: left;
+  position: relative;
+  font-size: 13px;
+}
+.vessel-dms-app .vessel-form-modal-i42 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i43 {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transition: transform 0.15s ease;
+}
+.vessel-form-modal-i44 {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 190px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.vessel-form-modal-i45 {
+  min-height: 36px;
+  border: 0;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+}
+.vessel-dms-app .vessel-form-modal-i45 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i46 {
+  margin-right: 6px;
+}
+.vessel-form-modal-i47 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.vessel-form-modal-i48 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.vessel-dms-app .vessel-form-modal-i48 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i49 {
+  border: 0;
+  cursor: pointer;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-form-modal-i49 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i50 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.vessel-dms-app .vessel-form-modal-i50 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i51 {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-form-modal-i51 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i52 {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-form-modal-i52 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i53 {
+  color: #b91c1c;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.vessel-dms-app .vessel-form-modal-i53 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i54 {
+  padding: 12px;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-form-modal-i54 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i55 {
+  overflow-y: auto;
+}
+.vessel-form-modal-i56 {
+  text-align: left;
+  padding: 9px 12px;
+  box-sizing: border-box;
+  border: 0;
+  cursor: pointer;
+}
+.vessel-form-modal-i57 {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-form-modal-i57 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i58 {
+  margin-bottom: 10px;
+}
+.vessel-form-modal-i59 {
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+.vessel-dms-app .vessel-form-modal-i59 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i60 {
+  display: flex;
+  gap: 8px;
+}
+.vessel-form-modal-i61 {
+  flex: 1;
+  padding: 9px 10px;
+  box-sizing: border-box;
+}
+.vessel-form-modal-i62 {
+  padding: 8px 12px;
+  border: 1px solid #0284c7;
+  border-radius: 7px;
+  font-weight: 600;
+}
+.vessel-form-modal-i63 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+.vessel-form-modal-i64 {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 14px;
+  padding: 4px 9px;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-form-modal-i64 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i65 {
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+.vessel-form-modal-i66 {
+  display: grid;
+  gap: 12px;
+}
+.vessel-form-modal-i67 {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.vessel-dms-app .vessel-form-modal-i67 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i68 {
+  color: #ef4444;
+}
+.vessel-form-modal-i69 {
+  padding: 9px 12px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+.vessel-dms-app .vessel-form-modal-i69 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i70 {
+  margin-top: 5px;
+  font-size: 11px;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.vessel-dms-app .vessel-form-modal-i70 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i71 {
+  font-size: 11px;
+}
+.vessel-form-modal-i72 {
+  padding: 9px 12px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  appearance: auto;
+}
+.vessel-dms-app .vessel-form-modal-i72 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i73 {
+  margin-top: auto;
+  padding: 8px 10px;
+  font-size: 12px;
+  word-break: break-word;
+}
+.vessel-dms-app .vessel-form-modal-i73 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i74 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.vessel-dms-app .vessel-form-modal-i74 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i75 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.vessel-form-modal-i76 {
+  background: transparent;
+  min-height: 40px;
+  box-sizing: border-box;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-form-modal-i76 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i77 {
+  color: #fff;
+  border: none;
+  min-height: 40px;
+  box-sizing: border-box;
+  padding: 9px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-form-modal-i77 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes

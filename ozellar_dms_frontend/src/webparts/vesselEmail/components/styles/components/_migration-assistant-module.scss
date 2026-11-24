@@ -1,0 +1,81 @@
+// migration-assistant-module — styles
+@use '../breakpoints' as *;
+
+// ── Converted inline styles (migration-assistant-module) ──────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.migration-assistant-module-i1 {
+  padding: 40px;
+  text-align: center;
+  font-size: 13px;
+}
+.vessel-dms-app .migration-assistant-module-i1 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-assistant-module-i2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  margin: 0 auto 10px;
+}
+.migration-assistant-module-i3 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 20px 20px;
+}
+.migration-assistant-module-i4 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 8px;
+}
+.migration-assistant-module-i5 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .migration-assistant-module-i5 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-assistant-module-i6 {
+  font-size: 13px;
+}
+.migration-assistant-module-i7 {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding-right: 4px;
+}
+.vessel-dms-app .migration-assistant-module-i7 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-assistant-module-i8 {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+}
+.migration-assistant-module-i9 {
+  flex: 1;
+  overflow: hidden;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+
+// Large phone and below (<768): the page scrolls as a whole instead of filling the screen height
+// (the folder list was squeezed to about 140px). The four tabs stay on one row that scrolls
+// sideways, and the connection status keeps only its coloured dot (its text pushed the page 77px
+// wider than the screen).
+@media (max-width: #{$phone}) {
+  .migration-assistant-module-i3 { height: auto; padding: 0 6px 12px; }
+  .migration-assistant-module-i4 { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 2px; }
+  .migration-assistant-module-i4::-webkit-scrollbar { display: none; }
+  .migration-assistant-module-i5 { flex: 0 0 auto; white-space: nowrap; padding: 8px 8px; font-size: 12px; }
+  .migration-assistant-module-i7 { flex: 0 0 auto; font-size: 0; padding-left: 6px; }
+  .migration-assistant-module-i9 { overflow: visible; padding-top: 10px; }
+}

@@ -1,0 +1,87 @@
+// Vessel multi-select dropdown (VesselMultiSelect.tsx)
+// Moved out of the component's inline <style>; the rules are unchanged.
+
+html .vessel-dms-app button.vdms-vms-trigger, html .vessel-dms-app button.vdms-vms-trigger:hover, html .vessel-dms-app button.vdms-vms-trigger:focus, html .vessel-dms-app button.vdms-vms-trigger:active { outline: none !important; box-shadow: none !important; transform: none !important; filter: none !important; border: 1px solid var(--vdms-line, #cbd5e1) !important; }
+html .vessel-dms-app button.vdms-vms-trigger:hover, html .vessel-dms-app button.vdms-vms-trigger.vdms-vms-open { border: 1px solid var(--vdms-line-strong, #94a3b8) !important; }
+html .vessel-dms-app .vdms-vms-row, html .vessel-dms-app .vdms-vms-row:hover, html .vessel-dms-app .vdms-vms-row:focus { outline: none !important; box-shadow: none !important; transform: none !important; border: none !important; }
+html .vessel-dms-app .vdms-vms-row:hover { background: var(--vdms-surface-alt) !important; }
+
+// ── Converted inline styles (vessel-multi-select) ─────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-multi-select-i1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.vessel-multi-select-i2 {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.vessel-multi-select-i3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-multi-select-i4 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.vessel-multi-select-i5 {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  box-shadow: 0 6px 18px rgba(11, 42, 74, 0.10);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.vessel-multi-select-i6 {
+  padding: 8px;
+  background: var(--vdms-surface-alt);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.vessel-multi-select-i7 {
+  display: flex;
+  justify-content: space-between;
+}
+.vessel-multi-select-i8 {
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  font-size: 12.5px;
+  outline: none;
+}
+.vessel-dms-app .vessel-multi-select-i8 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-multi-select-i9 {
+  overflow-y: auto;
+  padding: 4px;
+}
+.vessel-multi-select-i10 {
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-multi-select-i10 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-multi-select-i11 {
+  flex-shrink: 0;
+  height: 16px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #fff;
+}
+.vessel-dms-app .vessel-multi-select-i11 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-multi-select-i12 {
+  font-size: 10px;
+}

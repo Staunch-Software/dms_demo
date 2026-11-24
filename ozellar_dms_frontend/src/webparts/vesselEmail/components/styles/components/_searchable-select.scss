@@ -1,0 +1,135 @@
+// Searchable select (SearchableSelect.tsx)
+// Moved out of the component's inline <style>; the rules are unchanged.
+
+.vdms-select-trigger {
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  border: 1px solid var(--vdms-line, #cbd5e1) !important;
+}
+.vdms-select-trigger:hover,
+.vdms-select-trigger:focus,
+.vdms-select-trigger:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  border: 1px solid var(--vdms-line-strong, #94a3b8) !important;
+}
+/* The app theme's hover/focus glow (outline + shadow, !important, higher specificity) otherwise wins. */
+html .vessel-dms-app button.vdms-select-trigger.vdms-select-flat:hover:not(:disabled),
+html .vessel-dms-app button.vdms-select-trigger.vdms-select-flat:focus,
+html .vessel-dms-app button.vdms-select-trigger.vdms-select-flat:active { outline: none !important; box-shadow: none !important; filter: none !important; transform: none !important; }
+html .vessel-dms-app button.vdms-select-trigger.vdms-select-flat:focus-visible { outline: 1px solid var(--vdms-line-strong, #94a3b8) !important; outline-offset: 1px !important; box-shadow: none !important; }
+.vdms-select-trigger.vdms-select-open {
+  border: 1px solid var(--vdms-line-strong, #94a3b8) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+// ── Converted inline styles (searchable-select) ───────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.searchable-select-i1 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vdms-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.vessel-dms-app .searchable-select-i1 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.searchable-select-i2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.searchable-select-i3 {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.searchable-select-i4 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.searchable-select-i5 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.searchable-select-i6 {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.searchable-select-i7 {
+  background: var(--vdms-surface-alt);
+}
+.searchable-select-i8 {
+  position: relative;
+}
+.searchable-select-i9 {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  pointer-events: none;
+  z-index: 2;
+}
+.searchable-select-i10 {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  cursor: pointer;
+  z-index: 2;
+}
+.searchable-select-i11 {
+  padding: 14px 12px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  text-align: center;
+}
+.vessel-dms-app .searchable-select-i11 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.searchable-select-i12 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.searchable-select-i13 {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.searchable-select-i14 {
+  display: flex;
+  flex-direction: column;
+}
+.searchable-select-i15 {
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .searchable-select-i15 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.searchable-select-i16 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .searchable-select-i16 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.searchable-select-i17 {
+  font-size: 12px;
+  margin-left: 8px;
+}

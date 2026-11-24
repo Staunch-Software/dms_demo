@@ -1,0 +1,362 @@
+// recycle-bin-page — styles
+@use '../breakpoints' as *;
+
+// ── Converted inline styles (recycle-bin-page) ────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.recycle-bin-page-i1 {
+  inset: 0;
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.recycle-bin-page-i2 {
+  width: 520px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--vdms-line);
+  max-height: 90vh;
+}
+.recycle-bin-page-i3 {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--vdms-line);
+}
+.recycle-bin-page-i4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.recycle-bin-page-i5 {
+  font-size: 24px;
+}
+.vessel-dms-app .recycle-bin-page-i5 { font-size: 21.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i6 {
+  font-size: 18px;
+  font-weight: 700;
+}
+.vessel-dms-app .recycle-bin-page-i6 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i7 {
+  margin: 4px 0 0;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.vessel-dms-app .recycle-bin-page-i7 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i8 {
+  margin: 16px 24px;
+  max-height: 210px;
+  overflow-y: auto;
+  border: 1px solid var(--vdms-line);
+}
+.recycle-bin-page-i9 {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--vdms-border-soft);
+  font-size: 13px;
+}
+.vessel-dms-app .recycle-bin-page-i9 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i10 {
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+}
+.vessel-dms-app .recycle-bin-page-i10 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i11 {
+  flex: 1;
+}
+.recycle-bin-page-i12 {
+  color: var(--vdms-text);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recycle-bin-page-i13 {
+  font-size: 11px;
+}
+.vessel-dms-app .recycle-bin-page-i13 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i14 {
+  font-size: 12px;
+  font-weight: 600;
+}
+.vessel-dms-app .recycle-bin-page-i14 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i15 {
+  margin: 16px 24px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.recycle-bin-page-i16 {
+  padding: 10px 14px;
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.vessel-dms-app .recycle-bin-page-i16 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i17 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.recycle-bin-page-i18 {
+  font-size: 13px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .recycle-bin-page-i18 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i19 {
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.vessel-dms-app .recycle-bin-page-i19 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i20 {
+  color: var(--vdms-text-muted);
+}
+.recycle-bin-page-i21 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 24px 20px;
+}
+.recycle-bin-page-i22 {
+  font-size: 13px;
+}
+.recycle-bin-page-i23 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.recycle-bin-page-i24 {
+  width: 500px;
+  max-height: 90vh;
+  overflow: hidden;
+  border: 1px solid var(--vdms-line);
+}
+.recycle-bin-page-i25 {
+  padding: 20px 22px 14px;
+}
+.recycle-bin-page-i26 {
+  font-size: 17px;
+  font-weight: 700;
+}
+.vessel-dms-app .recycle-bin-page-i26 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i27 {
+  margin: 10px 0 0;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.vessel-dms-app .recycle-bin-page-i27 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i28 {
+  margin: 14px 22px;
+  max-height: 190px;
+  overflow-y: auto;
+  border: 1px solid var(--vdms-line);
+  border-radius: 7px;
+}
+.recycle-bin-page-i29 {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--vdms-border-soft);
+  font-size: 12px;
+}
+.vessel-dms-app .recycle-bin-page-i29 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i30 {
+  text-align: center;
+}
+.recycle-bin-page-i31 {
+  flex: 1;
+  color: var(--vdms-text);
+}
+.recycle-bin-page-i32 {
+  margin: 14px 22px;
+  padding: 10px 12px;
+  background: var(--vdms-surface-alt);
+  border-radius: 7px;
+  color: var(--vdms-text-muted);
+  font-size: 12px;
+}
+.vessel-dms-app .recycle-bin-page-i32 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i33 {
+  color: var(--vdms-text);
+}
+.recycle-bin-page-i34 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 22px 20px;
+}
+.recycle-bin-page-i35 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.recycle-bin-page-i36 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.recycle-bin-page-i37 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.recycle-bin-page-i38 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .recycle-bin-page-i38 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i39 {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.recycle-bin-page-i40 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+.recycle-bin-page-i41 {
+  padding: 24px;
+  color: var(--vdms-text-faint);
+  text-align: center;
+  font-size: 13px;
+}
+.vessel-dms-app .recycle-bin-page-i41 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i42 {
+  border: 1px solid var(--vdms-line);
+  padding: 12px;
+}
+.recycle-bin-page-i43 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.recycle-bin-page-i44 {
+  font-weight: 700;
+  color: var(--vdms-text);
+  font-size: 13px;
+}
+.vessel-dms-app .recycle-bin-page-i44 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i45 {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  line-height: 1.5;
+}
+.vessel-dms-app .recycle-bin-page-i45 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i46 {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.recycle-bin-page-i47 {
+  padding: 36px;
+  color: var(--vdms-text-faint);
+  text-align: center;
+}
+.recycle-bin-page-i48 {
+  padding: 10px 14px;
+}
+.recycle-bin-page-i49 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.recycle-bin-page-i50 {
+  font-size: 12px;
+}
+.recycle-bin-page-i51 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 1px solid var(--vdms-line);
+  padding: 8px;
+}
+.recycle-bin-page-i52 {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.recycle-bin-page-i53 {
+  font-weight: 600;
+}
+.recycle-bin-page-i54 {
+  display: flex;
+  gap: 8px;
+}
+.recycle-bin-page-i55 {
+  padding: 48px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 14px;
+}
+.vessel-dms-app .recycle-bin-page-i55 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.recycle-bin-page-i56 {
+  font-size: 14px;
+}
+
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+// The table is used from 768px up; phones get the card list the component renders instead.
+
+// Below 1440 (laptops with the sidebar open, e.g. 1920×1200 at 150% scaling = 1280px; tablet): the
+// tables fit the width instead of keeping a 760px minimum and scrolling sideways (the Delete
+// permanently button was cut off). Smaller text, labels and long paths may wrap, the reason is
+// truncated shorter, and the two row buttons stack when there is no room. The cells write their
+// padding, font size and widths inline, hence !important.
+@media (max-width: #{$bp-xxl - 1px}) {
+  .recycle-bin-page-i49 { gap: 14px; }
+  .vdms-recycle__table { min-width: 0 !important; }
+  .vdms-recycle__table th { padding: 8px 8px !important; font-size: 10px !important; white-space: normal !important; letter-spacing: 0.03em !important; }
+  .vdms-recycle__table td { padding: 8px 8px !important; font-size: 12px !important; }
+  // Vessels tab: 1 checkbox, 2 Vessel, 3 Site, 4 Original path, 5 Deleted, 6 Deleted By, 7 Reason,
+  // 8 Actions. Folders and Files tabs (10 columns): 1 checkbox, 2 Folder/File, 3 Site, 4 Path,
+  // 5 Vessel, 6 Category, 7 Sub-category, 8 Deleted By, 9 Reason, 10 Actions.
+  // Only the path may break anywhere (it has no spaces); names wrap between words only.
+  .vdms-recycle__table td.recycle-bin-page-i48 { overflow-wrap: break-word; }
+  .vdms-recycle__table td.recycle-bin-page-i48:nth-child(4) { overflow-wrap: anywhere; min-width: 130px !important; }
+  .vdms-recycle__table td:nth-last-child(2) { max-width: 140px !important; } // reason for deletion
+  // Restore above Delete permanently, so the actions column stays narrow
+  .vdms-recycle__table .recycle-bin-page-i35 { flex-direction: column; align-items: stretch; gap: 4px; }
+  .vdms-recycle__table .recycle-bin-page-i35 > button { padding: 4px 8px !important; font-size: 11.5px !important; white-space: nowrap; justify-content: center; }
+  // Folders and Files tabs: Site and Category are hidden (Site is the same for most rows; the full
+  // details stay in the row's restore dialog). The empty-state row spans all columns and is left alone.
+  .vdms-recycle__table:has(thead th:nth-child(10)) th:nth-child(3),
+  .vdms-recycle__table:has(thead th:nth-child(10)) th:nth-child(6),
+  .vdms-recycle__table:has(thead th:nth-child(10)) tr:not(:has(td[colspan])) > td:nth-child(3),
+  .vdms-recycle__table:has(thead th:nth-child(10)) tr:not(:has(td[colspan])) > td:nth-child(6) { display: none; }
+}
+
+// Tablet and below (<1024): the page title is hidden (the top bar shows it; the Refresh button stays),
+// and the search / "deleted by" filters take the free width.
+@media (max-width: #{$tablet}) {
+  .recycle-bin-page-i49 > .dms-design-system-i1 > div:first-child { display: none; }
+  .recycle-bin-page-i39 { flex: 1 1 100%; }
+  .recycle-bin-page-i39 > input { flex: 1 1 160px; width: auto !important; min-width: 0; }
+}

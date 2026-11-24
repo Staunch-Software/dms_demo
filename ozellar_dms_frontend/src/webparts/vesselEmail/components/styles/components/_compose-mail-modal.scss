@@ -1,0 +1,318 @@
+// compose-mail-modal — styles
+
+// ── Converted inline styles (compose-mail-modal) ──────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.compose-mail-modal-i1 {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 16px;
+  position: relative;
+}
+.compose-mail-modal-i2 {
+  width: 34px;
+  padding-top: 7px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .compose-mail-modal-i2 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i3 {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  min-height: 32px;
+}
+.compose-mail-modal-i4 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px 3px 3px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.vessel-dms-app .compose-mail-modal-i4 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i5 {
+  height: 20px;
+  border-radius: 50%;
+  font-size: 9.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+.compose-mail-modal-i6 {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  display: inline-flex;
+}
+.compose-mail-modal-i7 {
+  font-size: 9px;
+}
+.compose-mail-modal-i8 {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 13.5px;
+  padding: 6px 2px;
+  background: transparent;
+}
+.compose-mail-modal-i9 {
+  position: absolute;
+  left: 60px;
+  top: 100%;
+  z-index: 3;
+  width: 360px;
+  max-width: calc(100% - 76px);
+  box-shadow: 0 10px 28px rgba(11,42,74,0.2);
+  overflow: hidden;
+}
+.compose-mail-modal-i10 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.compose-mail-modal-i11 {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.vessel-dms-app .compose-mail-modal-i11 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i12 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .compose-mail-modal-i12 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i13 {
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .compose-mail-modal-i13 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i14 {
+  width: 30px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.compose-mail-modal-i15 {
+  font-size: 13px;
+}
+.compose-mail-modal-i16 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.compose-mail-modal-i17 {
+  position: relative;
+  width: 860px;
+  height: 90vh;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(11,42,74,0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.compose-mail-modal-i18 {
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.compose-mail-modal-i19 {
+  font-size: 18px;
+}
+.compose-mail-modal-i20 {
+  flex: 1;
+  font-weight: 800;
+  font-size: 15px;
+}
+.vessel-dms-app .compose-mail-modal-i20 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i21 {
+  border: none;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.compose-mail-modal-i22 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  flex-wrap: wrap;
+}
+.compose-mail-modal-i23 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 13.5px;
+}
+.compose-mail-modal-i24 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+.vessel-dms-app .compose-mail-modal-i24 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i25 {
+  color: #0e7490;
+}
+.compose-mail-modal-i26 {
+  display: none;
+}
+.compose-mail-modal-i27 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+  margin-left: auto;
+  font-weight: 600;
+}
+.vessel-dms-app .compose-mail-modal-i27 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i28 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+.vessel-dms-app .compose-mail-modal-i28 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i29 {
+  width: 34px;
+  font-weight: 600;
+}
+.compose-mail-modal-i30 {
+  flex: 1;
+  max-width: 460px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+.vessel-dms-app .compose-mail-modal-i30 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i31 {
+  border: none;
+  background: none;
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+  padding-top: 7px;
+}
+.vessel-dms-app .compose-mail-modal-i31 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i32 {
+  padding: 4px 16px;
+}
+.compose-mail-modal-i33 {
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 8px 0;
+  background: transparent;
+  box-sizing: border-box;
+}
+.vessel-dms-app .compose-mail-modal-i33 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i34 {
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.compose-mail-modal-i35 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  max-width: 330px;
+}
+.compose-mail-modal-i36 {
+  font-size: 12.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .compose-mail-modal-i36 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i37 {
+  font-size: 11px;
+}
+.vessel-dms-app .compose-mail-modal-i37 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i38 {
+  font-size: 11.5px;
+  padding: 2px 4px;
+}
+.vessel-dms-app .compose-mail-modal-i38 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i39 {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.compose-mail-modal-i40 {
+  font-size: 10px;
+}
+.compose-mail-modal-i41 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  max-width: 300px;
+}
+.compose-mail-modal-i42 {
+  font-size: 11.5px;
+}
+.vessel-dms-app .compose-mail-modal-i42 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i43 {
+  display: flex;
+  gap: 2px;
+  padding: 6px 12px;
+}
+.compose-mail-modal-i44 {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  outline: none;
+}
+.vessel-dms-app .compose-mail-modal-i44 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.compose-mail-modal-i45 {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-dms-app .compose-mail-modal-i45 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes

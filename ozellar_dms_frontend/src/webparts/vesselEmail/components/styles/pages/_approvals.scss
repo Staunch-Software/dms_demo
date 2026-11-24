@@ -1,0 +1,216 @@
+// approvals-page — styles
+
+// ── Converted inline styles (approvals-page) ──────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.approvals-page-i1 {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  margin-left: 6px;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.vessel-dms-app .approvals-page-i1 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i2 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.approvals-page-i3 {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--vdms-line);
+  padding-bottom: 0;
+}
+.approvals-page-i4 {
+  display: flex;
+  gap: 8px;
+}
+.approvals-page-i5 {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: -2px;
+}
+.vessel-dms-app .approvals-page-i5 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i6 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.vessel-dms-app .approvals-page-i6 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i7 {
+  font-size: 12px;
+}
+.approvals-page-i8 {
+  padding: 48px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .approvals-page-i8 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i9 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.vessel-dms-app .approvals-page-i9 { font-size: 25px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i10 {
+  font-size: 28px;
+}
+.approvals-page-i11 {
+  padding: 48px;
+  text-align: center;
+  color: var(--vdms-text-faint);
+  font-size: 14px;
+  background: var(--vdms-surface-alt);
+  border: 1px dashed var(--vdms-line);
+}
+.vessel-dms-app .approvals-page-i11 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i12 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.approvals-page-i13 {
+  font-size: 32px;
+}
+.approvals-page-i14 {
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+}
+.approvals-page-i15 {
+  font-size: 12px;
+  margin-top: 4px;
+  color: var(--vdms-text-faint);
+}
+.vessel-dms-app .approvals-page-i15 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i16 {
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.vessel-dms-app .approvals-page-i16 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i17 {
+  background: var(--vdms-surface-alt);
+  border-bottom: 2px solid var(--vdms-line);
+  color: var(--vdms-text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  text-align: left;
+  letter-spacing: 0.04em;
+}
+.vessel-dms-app .approvals-page-i17 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i18 {
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+.approvals-page-i19 {
+  padding: 10px 16px;
+  text-align: right;
+  white-space: nowrap;
+}
+.approvals-page-i20 {
+  border-bottom: 1px solid var(--vdms-border-soft);
+  transition: background 0.12s;
+}
+.approvals-page-i21 {
+  padding: 12px 16px;
+  font-weight: 600;
+  color: var(--vdms-text);
+}
+.approvals-page-i22 {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+.approvals-page-i23 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.approvals-page-i24 {
+  padding: 12px 16px;
+  color: var(--vdms-text-muted);
+  white-space: nowrap;
+}
+.approvals-page-i25 {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.vessel-dms-app .approvals-page-i25 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i26 {
+  color: var(--vdms-text-faint);
+}
+.approvals-page-i27 {
+  padding: 12px 16px;
+  color: var(--vdms-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.approvals-page-i28 {
+  padding: 12px 16px;
+  text-align: right;
+}
+.approvals-page-i29 {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.approvals-page-i30 {
+  border: none;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-dms-app .approvals-page-i30 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i31 {
+  font-size: 15px;
+}
+.approvals-page-i32 {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.approvals-page-i33 {
+  border: 1px solid var(--vdms-line);
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text-faint);
+  height: 28px;
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-dms-app .approvals-page-i33 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.approvals-page-i34 {
+  font-size: 14px;
+}

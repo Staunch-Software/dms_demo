@@ -1,0 +1,314 @@
+// vessel-folder-template-section — styles
+
+// ── Converted inline styles (vessel-folder-template-section) ──────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-folder-template-section-i1 {
+  border: none;
+  background: transparent;
+  padding: 4px 6px;
+}
+.vessel-folder-template-section-i2 {
+  font-size: 13px;
+}
+.vessel-folder-template-section-i3 {
+  padding: 8px 10px;
+  background: var(--vdms-surface-alt);
+  border-bottom: 1px solid var(--vdms-border-soft);
+}
+.vessel-folder-template-section-i4 {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.vessel-folder-template-section-i5 {
+  font-size: 12px;
+  margin-top: 6px;
+}
+.vessel-dms-app .vessel-folder-template-section-i5 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i6 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  margin-top: 6px;
+}
+.vessel-dms-app .vessel-folder-template-section-i6 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i7 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--vdms-border-soft);
+}
+.vessel-folder-template-section-i8 {
+  border: none;
+  background: transparent;
+  color: var(--vdms-text-muted);
+  padding: 0;
+}
+.vessel-folder-template-section-i9 {
+  font-size: 10px;
+}
+.vessel-folder-template-section-i10 {
+  font-size: 15px;
+}
+.vessel-folder-template-section-i11 {
+  font-size: 13px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-folder-template-section-i11 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i12 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-folder-template-section-i12 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i13 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  font-style: italic;
+}
+.vessel-dms-app .vessel-folder-template-section-i13 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i14 {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+.vessel-folder-template-section-i15 {
+  font-size: 12px;
+  margin-right: 6px;
+}
+.vessel-dms-app .vessel-folder-template-section-i15 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i16 {
+  margin-top: 28px;
+}
+.vessel-folder-template-section-i17 {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.vessel-folder-template-section-i18 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-folder-template-section-i18 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i19 {
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  margin-top: 3px;
+  max-width: 720px;
+}
+.vessel-dms-app .vessel-folder-template-section-i19 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i20 {
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.vessel-dms-app .vessel-folder-template-section-i20 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i21 {
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-folder-template-section-i21 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i22 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.vessel-folder-template-section-i23 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--vdms-line);
+  flex-wrap: wrap;
+}
+.vessel-folder-template-section-i24 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-folder-template-section-i24 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i25 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-folder-template-section-i25 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i26 {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+.vessel-folder-template-section-i27 {
+  max-height: 520px;
+  overflow-y: auto;
+}
+.vessel-folder-template-section-i28 {
+  padding: 16px;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-folder-template-section-i28 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i29 {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--vdms-line);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.vessel-folder-template-section-i30 {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.vessel-folder-template-section-i31 {
+  padding: 8px 14px;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-folder-template-section-i31 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i32 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.vessel-folder-template-section-i33 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+}
+.vessel-dms-app .vessel-folder-template-section-i33 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i34 {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--vdms-text);
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre;
+}
+.vessel-dms-app .vessel-folder-template-section-i34 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i35 {
+  font-weight: 700;
+}
+.vessel-folder-template-section-i36 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.vessel-dms-app .vessel-folder-template-section-i36 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i37 {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.vessel-folder-template-section-i38 {
+  margin-top: 12px;
+}
+.vessel-folder-template-section-i39 {
+  font-size: 12.5px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-folder-template-section-i39 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i40 {
+  margin-top: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--vdms-border-soft);
+}
+.vessel-folder-template-section-i41 {
+  border-bottom: 1px solid var(--vdms-border-soft);
+  padding: 6px 10px;
+}
+.vessel-folder-template-section-i42 {
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-folder-template-section-i42 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i43 {
+  color: var(--vdms-text-muted);
+}
+.vessel-folder-template-section-i44 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  margin: 4px 0 2px 14px;
+  line-height: 1.6;
+}
+.vessel-dms-app .vessel-folder-template-section-i44 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i45 {
+  padding: 10px;
+  font-size: 12.5px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-folder-template-section-i45 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i46 {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.vessel-folder-template-section-i47 {
+  font-size: 12px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-folder-template-section-i47 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i48 {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-folder-template-section-i48 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i49 {
+  font-weight: 600;
+}
+.vessel-folder-template-section-i50 {
+  margin-top: 4px;
+}
+.vessel-folder-template-section-i51 {
+  border: 1px solid var(--vdms-line);
+  background: var(--vdms-surface-alt);
+  padding: 10px 12px;
+}
+.vessel-folder-template-section-i52 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-folder-template-section-i53 {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-folder-template-section-i53 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i54 {
+  margin-top: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-folder-template-section-i54 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-folder-template-section-i55 {
+  font-size: 11px;
+  margin-top: 6px;
+}
+.vessel-dms-app .vessel-folder-template-section-i55 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes

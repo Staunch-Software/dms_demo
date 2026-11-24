@@ -1,0 +1,27 @@
+// Layout: sidebar and topbar shell
+@use 'tokens' as *;
+
+/* ── Sidebar shell ─────────────────────────────────────────────────── */
+/* Background colour itself comes from the inline clay.accentDeep style
+   in Sidebar.tsx (so it stays admin-preset aware). Full-bleed enterprise
+   nav rail — flush to the viewport edges, no floating-card margin/radius
+   (previously margin: 14px 0 14px 14px + border-radius: 16px, which left
+   a visible gap of page background above/left of the rail). */
+.vessel-dms-sidebar {
+  margin: 0; height: 100vh !important;
+  transition: width .25s $ease-glide, min-width .25s $ease-glide, max-width .25s $ease-glide, transform .25s $ease-glide, opacity .2s ease !important;
+}
+.vessel-dms-sidebar-nav button { transition: background .2s ease, color .2s ease !important; }
+.vessel-dms-sidebar button { border-radius: 8px; font-size: 15px; }
+@media (max-width: 1023px) { .vessel-dms-sidebar { top: 0 !important; left: 0 !important; margin: 0; } }
+
+/* ── Top bar ──────────────────────────────────────────────────────── */
+/* Flush against the sidebar and the viewport top — no floating-card
+   margin/radius (previously margin: 14px 14px 0 + border-radius: 12px,
+   which left a visible gap between the sidebar and the header). */
+.vessel-dms-topbar {
+  margin: 0; height: 60px !important; border-radius: 0;
+  position: relative; z-index: 5;
+}
+.vdms-main-scroll { min-width: 0; }
+.vessel-dms-topbar, .vessel-dms-topbar button { font-family: $font-ui; }

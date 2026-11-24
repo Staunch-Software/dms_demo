@@ -1,0 +1,73 @@
+// Module management panel (pages/ModuleManagementSection.tsx)
+// Moved out of the component's inline <style> element; the rules are unchanged.
+
+html .vessel-dms-app .vdms-mod-toggle { width: 34px !important; height: 20px !important; min-width: 34px !important; min-height: 20px !important; max-width: 34px !important; max-height: 20px !important; padding: 0 !important; border-radius: 10px !important; box-sizing: border-box !important; line-height: 0 !important; box-shadow: none !important; } html .vessel-dms-app .vdms-mod-toggle > span { width: 14px !important; height: 14px !important; } .vdms-mod-scroll { scrollbar-width: auto; scrollbar-color: #8c8c8c #f1f1f1; } .vdms-mod-scroll::-webkit-scrollbar { width: 14px; height: 14px; } .vdms-mod-scroll::-webkit-scrollbar-track { background: #f1f1f1; } .vdms-mod-scroll::-webkit-scrollbar-thumb { background: #8c8c8c; border-radius: 8px; border: 3px solid #f1f1f1; } .vdms-mod-scroll::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+
+// ── Converted inline styles (module-management-section) ───────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.module-management-section-i1 {
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  transition: left 0.2s ease;
+}
+.module-management-section-i2 {
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .module-management-section-i2 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.module-management-section-i3 {
+  padding: 12px;
+  font-size: 13px;
+}
+.vessel-dms-app .module-management-section-i3 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.module-management-section-i4 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 0;
+  min-height: 0;
+}
+.module-management-section-i5 {
+  flex-shrink: 0;
+}
+.module-management-section-i6 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .module-management-section-i6 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.module-management-section-i7 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 16px;
+}
+.module-management-section-i8 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .module-management-section-i8 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.module-management-section-i9 {
+  font-size: 11px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+.vessel-dms-app .module-management-section-i9 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.module-management-section-i10 {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.module-management-section-i11 {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+.vessel-dms-app .module-management-section-i11 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes

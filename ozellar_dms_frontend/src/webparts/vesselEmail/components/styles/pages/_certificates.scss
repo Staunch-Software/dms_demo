@@ -1,0 +1,685 @@
+// Certificates page (pages/CertificatesPage.tsx)
+// Moved out of the component's inline <style> elements; the rules are unchanged.
+@use '../breakpoints' as *;
+
+.vdms-cert-no-link,
+.vdms-cert-no-link:hover,
+.vdms-cert-no-link:focus,
+.vdms-cert-no-link:focus-visible,
+.vdms-cert-no-link:active,
+.vdms-cert-no-link::before,
+.vdms-cert-no-link::after {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  content: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+.vdms-cert-no-link:hover {
+  color: #0284c7 !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.vdms-cert-table th { font-size: 11px !important; font-weight: 700 !important; padding: 12px 12px !important; letter-spacing: 0.04em !important; text-transform: uppercase !important; }
+.vdms-cert-table td { padding: 14px 12px !important; overflow-wrap: anywhere; vertical-align: middle !important; }
+.vdms-vessel-link-cell:hover .vdms-vessel-name-span { color: var(--vdms-accent, #0284c7) !important; text-decoration: underline !important; }
+.vdms-cert-table a, .vdms-cert-table a:hover, .vdms-cert-table a:visited {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+}
+.vdms-cert-table th:first-child, .vdms-cert-table td:first-child { padding-left: 20px !important; }
+.vdms-cert-table th:last-child, .vdms-cert-table td:last-child { padding-right: 16px !important; }
+.vdms-action-dropdown-item {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vdms-text, #1e293b);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.12s ease;
+}
+.vdms-action-dropdown-item:hover {
+  background: var(--vdms-surface-alt, #f1f5f9);
+}
+// The touch-screen rule (".vessel-dms-app button { min-height: 40px }" in _responsive.scss) made every
+// menu item 40px tall, leaving big empty gaps between Renew / Edit / Version History. The prefix
+// outranks it, so the items keep their compact height.
+.vessel-dms-app .vdms-action-dropdown-item { min-height: 0; line-height: 1.3; }
+
+.vdms-matrix-table th { font-size: 11px !important; font-weight: 700 !important; letter-spacing: 0.04em !important; text-transform: uppercase !important; }
+.vdms-matrix-table td { padding: 13px 12px !important; vertical-align: middle !important; height: 48px !important; box-sizing: border-box !important; }
+.vdms-matrix-row { cursor: pointer; transition: background-color 0.12s ease; }
+.vdms-matrix-row:hover { background-color: var(--vdms-surface-alt, #f8fafc) !important; }
+.vdms-matrix-row:hover .vdms-matrix-vessel-link span { color: var(--vdms-accent, #0284c7) !important; text-decoration: underline !important; }
+
+// ── Converted inline styles (certificates-page) ───────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.certificates-page-i1 {
+  width: 9.5%;
+}
+.certificates-page-i2 {
+  width: 6%;
+}
+.certificates-page-i3 {
+  width: 7.6%;
+}
+.certificates-page-i4 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fca5a5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.certificates-page-i5 {
+  font-size: 13px;
+}
+.certificates-page-i6 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fdba74;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.certificates-page-i7 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fde68a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.certificates-page-i8 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #bae6fd;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.certificates-page-i9 {
+  height: 26px;
+  border-radius: 50%;
+  background: var(--vdms-surface-alt);
+  color: #7c3aed;
+  border: 1px solid var(--vdms-line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.certificates-page-i10 {
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.certificates-page-i11 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+  padding: 2px 4px 0 4px;
+  overflow: hidden;
+}
+.certificates-page-i12 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 2px 4px;
+}
+.certificates-page-i13 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.certificates-page-i14 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--vdms-text);
+  white-space: nowrap;
+}
+.vessel-dms-app .certificates-page-i14 { font-size: 20px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i15 {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .certificates-page-i15 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i16 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.certificates-page-i17 {
+  font-size: 12px;
+}
+.certificates-page-i18 {
+  display: grid;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.certificates-page-i19 {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+.certificates-page-i20 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.certificates-page-i21 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.vessel-dms-app .certificates-page-i21 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i22 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fca5a5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.certificates-page-i23 {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--vdms-text);
+  margin: 2px 0 0;
+}
+.certificates-page-i24 {
+  font-size: 10px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .certificates-page-i24 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i25 {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.certificates-page-i26 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ea580c;
+  text-transform: uppercase;
+}
+.vessel-dms-app .certificates-page-i26 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i27 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fdba74;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.certificates-page-i28 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #d97706;
+  text-transform: uppercase;
+}
+.vessel-dms-app .certificates-page-i28 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i29 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fde68a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.certificates-page-i30 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #bae6fd;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.certificates-page-i31 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7c3aed;
+  text-transform: uppercase;
+}
+.vessel-dms-app .certificates-page-i31 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i32 {
+  height: 26px;
+  border-radius: 50%;
+  background: var(--vdms-surface-alt);
+  color: #7c3aed;
+  border: 1px solid var(--vdms-line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.certificates-page-i33 {
+  padding: 6px 12px;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.vessel-dms-app .certificates-page-i33 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i34 {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.vessel-dms-app .certificates-page-i34 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i35 {
+  font-size: 10px;
+}
+.certificates-page-i36 {
+  cursor: pointer;
+  font-size: 9px;
+  margin-left: 2px;
+  padding: 2px;
+}
+.certificates-page-i37 {
+  position: relative;
+  flex: 0 1 260px;
+}
+.certificates-page-i38 {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.certificates-page-i39 {
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.vessel-dms-app .certificates-page-i39 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i40 {
+  font-size: 11px;
+}
+.certificates-page-i41 {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.certificates-page-i42 {
+  overflow-wrap: anywhere;
+}
+.certificates-page-i43 {
+  font-size: 10.5px;
+  color: var(--vdms-text-muted);
+  font-weight: 500;
+}
+.certificates-page-i44 {
+  color: var(--vdms-text-muted);
+}
+.certificates-page-i45 {
+  font-weight: 600;
+}
+.certificates-page-i46 {
+  font-size: 10.5px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.certificates-page-i47 {
+  font-size: 16px;
+  text-decoration: none;
+  border-bottom: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-dms-app .certificates-page-i47 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i48 {
+  text-decoration: none;
+}
+.certificates-page-i49 {
+  color: var(--vdms-text-faint);
+  font-size: 12px;
+}
+.vessel-dms-app .certificates-page-i49 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i50 {
+  position: relative;
+  display: inline-block;
+}
+.certificates-page-i51 {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 100;
+  padding: 5px;
+  background: var(--vdms-surface, #ffffff);
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.14), 0 2px 6px -1px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+.certificates-page-i52 {
+  font-size: 13px;
+  text-align: center;
+}
+.certificates-page-i53 {
+  font-size: 13px;
+  color: var(--vdms-text-secondary);
+  text-align: center;
+}
+.certificates-page-i54 {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--vdms-line);
+  background: var(--vdms-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.certificates-page-i55 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.certificates-page-i56 {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--vdms-text);
+  letter-spacing: -0.01em;
+}
+.vessel-dms-app .certificates-page-i56 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i57 {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+}
+.certificates-page-i58 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+}
+.vessel-dms-app .certificates-page-i58 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i59 {
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.vessel-dms-app .certificates-page-i59 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificates-page-i60 {
+  flex-shrink: 0;
+  border-top: 2px solid var(--vdms-line);
+  background: var(--vdms-surface-alt);
+  overflow-x: hidden;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.04);
+}
+.certificates-page-i61 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.certificates-page-i62 {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+// ── Converted inline styles (certificates-page) ───────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.certificates-page-j1 {
+  font-size: 12px;
+}
+.certificates-page-j2 {
+  height: 1px;
+  background-color: var(--vdms-border, #e5e7eb);
+  margin: 4px 0;
+}
+.certificates-page-j3 {
+  font-size: 13px;
+  color: #dc2626;
+  text-align: center;
+}
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+
+// Every width: the filters and the search box shrink with the card instead of overflowing its right edge.
+// (At 1440-1500px with the sidebar open there is only about 1090px of room: the tabs take about 340px and the
+// filters and search, fixed at 240 + 240 + 260px, needed about 780px, so the search box stuck out of the card.)
+// The filter components write a fixed 240px width on themselves and on their trigger, hence !important.
+.vdms-certificates-page {
+  .vdms-cert-toolbar { box-sizing: border-box; max-width: 100%; }
+  .vdms-cert-toolbar-right { flex: 0 1 auto !important; flex-shrink: 1 !important; min-width: 0 !important; }
+  .vdms-cert-toolbar-right > * { flex: 1 1 0 !important; width: auto !important; min-width: 150px !important; max-width: 260px !important; box-sizing: border-box; }
+  .vdms-cert-toolbar-right > * > :first-child { width: 100% !important; min-width: 0 !important; box-sizing: border-box; }
+  .vdms-cert-toolbar-right > .vdms-certificates__search { min-width: 170px !important; }
+  .vdms-certificates__search input { width: 100% !important; box-sizing: border-box; }
+}
+
+// Below 1440 (laptops with the sidebar open, e.g. 1920×1200 at 150% scaling = 1280px; tablet; phone):
+// the content area is too narrow for the tabs and three filters on one row (the filters covered the
+// tabs and the table scrolled sideways), so the filters take their own row, sharing it equally.
+// The filter components write a fixed 240px width on themselves and on their trigger.
+@media (max-width: #{$bp-xxl - 1px}) {
+  .vdms-certificates-page {
+    .vdms-cert-toolbar { flex-wrap: wrap !important; row-gap: 6px !important; }
+    .vdms-cert-toolbar-right { flex: 1 1 100% !important; flex-shrink: 1 !important; justify-content: flex-start !important; }
+    .vdms-cert-toolbar-right > * { flex: 1 1 0 !important; width: auto !important; min-width: 0 !important; max-width: none !important; }
+    .vdms-cert-toolbar-right > * > :first-child { width: 100% !important; min-width: 0 !important; }
+
+    // KPI labels stay on one line
+    .vdms-certificates__kpis > div > div:nth-child(1) > span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .vdms-certificates__kpis > div > div:nth-child(1) { gap: 6px; }
+
+    // Records table fits the width (the cells write their widths inline)
+    .vdms-certificates__pane--list .vdms-cert-table { min-width: 0 !important; }
+    .vdms-certificates__pane--list .vdms-cert-table th,
+    .vdms-certificates__pane--list .vdms-cert-table td { min-width: 0 !important; width: auto !important; }
+    .vdms-certificates__pane--list .vdms-cert-table th { font-size: 10px !important; padding: 9px 8px !important; }
+    .vdms-certificates__pane--list .vdms-cert-table td { font-size: 12px !important; padding: 9px 8px !important; }
+  }
+}
+
+// Tablet and below (<1024): the page is a fixed-height panel on desktop, so at these widths the
+// header, KPI cards and toolbar used all of the height and left the table 0px tall. Here the page
+// scrolls as a whole and the table/matrix pane gets its own height.
+@media (max-width: #{$tablet}) {
+  .vessel-dms-app .vdms-main-scroll:has(.vdms-certificates-page) { overflow-y: auto !important; }
+  // The page wrapper between the scroll area and the page clips to the scroll area's height
+  .vessel-dms-app .vdms-main-scroll:has(.vdms-certificates-page) > div:has(> .vdms-certificates-page) {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  // Same as the Vessels page: hide the empty folder-route slot so the top bar stays one row.
+  .vessel-dms-app:has(.vdms-certificates-page) .vessel-dms-topbar {
+    min-height: 60px;
+    #vdms-header-route:empty { display: none; }
+  }
+
+  .vdms-certificates-page {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+
+    .vdms-certificates__header { flex-wrap: wrap; row-gap: 6px; }
+    .vdms-certificates__actions { flex-wrap: wrap; }
+    // Only the page scrolls here. The Records table and the Cert Checklist (.vdms-chk-scroll,
+    // VesselChecklistView.tsx) grow to their content instead of scrolling inside a box; the Matrix,
+    // which is wider than any phone by design (one column per certificate type), keeps its own box.
+    // The panes write flex: 1 1 0, minHeight: 0 and overflow inline, hence !important.
+    .vdms-certificates__pane--matrix { flex: 0 0 auto !important; height: 70vh; min-height: 360px !important; }
+    .vdms-certificates__pane--list,
+    > .vdms-chk-scroll { flex: 0 0 auto !important; height: auto; min-height: 0 !important; overflow: visible !important; }
+    .vdms-certificates__pane--list > .vdms-scroll-clean { flex: 0 0 auto !important; height: auto !important; overflow: visible !important; }
+    // The pane no longer clips here, so round the header strip's outer corners to match the card (14px)
+    .vdms-certificates__pane--list .vdms-cert-table th:first-child { border-top-left-radius: 14px; }
+    .vdms-certificates__pane--list .vdms-cert-table th:last-child { border-top-right-radius: 14px; }
+    // (The records table's fit-to-width rules are in the <1280 block above; the global tablet rule in
+    // _responsive.scss also sets a 1100px minimum, which that block overrides.)
+
+    // Smaller text and tighter spacing, so less of the page has to be scrolled past to reach the table.
+    // Buttons and cards write their sizes inline, hence !important.
+    // The top bar already shows "Certificates & Compliance"
+    .vdms-certificates__title { display: none; }
+    .vdms-certificates__actions > button { height: 30px !important; font-size: 11.5px !important; padding: 0 10px !important; }
+
+    .vdms-certificates__kpis > div { padding: 6px 10px; }
+    .vdms-certificates__kpis > div > div:nth-child(1) > span:first-child { font-size: 10px; } // label
+    .vdms-certificates__kpis > div > div:nth-child(1) > span:last-child { width: 22px !important; height: 22px; } // icon
+    .vdms-certificates__kpis > div > div:nth-child(2) { font-size: 18px; margin: 0; } // count
+    .vdms-certificates__kpis > div > div:nth-child(3) { display: none; } // caption ("Require Immediate Action"…)
+
+    .vdms-cert-toolbar { padding: 6px 10px !important; }
+    .vdms-cert-toolbar-left > button { font-size: 12px; padding-top: 5px; padding-bottom: 5px; }
+    // Vessel / category filters and search: the components write their font size and height inline
+    .vdms-cert-toolbar-right > *:not(.vdms-certificates__search) > :first-child { height: 32px !important; padding-left: 8px !important; padding-right: 6px !important; gap: 5px !important; }
+    .vdms-cert-toolbar-right > *:not(.vdms-certificates__search) > :first-child * { font-size: 12px !important; }
+    .vdms-certificates__search input { height: 32px !important; font-size: 12px !important; }
+  }
+}
+
+// Tablet (768–1023): the five KPI cards fit on one row (the component's tablet layout of three
+// columns left an empty slot on the second row).
+@media (min-width: #{$bp-md}) and (max-width: #{$tablet}) {
+  .vessel-dms-app .vdms-certificates-page .vdms-certificates__kpis[style] { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+}
+
+// Large phone and below (<768)
+@media (max-width: #{$phone}) {
+  // KPI cards: three on the first row, two on the second (6-column grid, cards span 2 or 3).
+  // The selector matches the global rule's specificity (.vessel-dms-app + [style] + two :not()s);
+  // this file loads after it, so it wins.
+  .vessel-dms-app .vdms-certificates-page .vdms-certificates__kpis[style] { grid-template-columns: repeat(6, minmax(0, 1fr)) !important; gap: 6px; }
+
+  .vdms-certificates-page {
+    gap: 6px;
+
+    // The three action buttons share one row
+    .vdms-certificates__actions { width: 100%; gap: 6px; flex-wrap: nowrap; }
+    .vdms-certificates__actions > button { flex: 1 1 auto; justify-content: center; white-space: nowrap; height: 28px !important; font-size: 11px !important; padding: 0 6px !important; gap: 4px !important; }
+
+    .vdms-certificates__kpis > div { grid-column: span 2; padding: 5px 8px; border-radius: 8px !important; }
+    .vdms-certificates__kpis > div:nth-child(n+4) { grid-column: span 3; }
+    .vdms-certificates__kpis > div > div:nth-child(1) { gap: 4px; }
+    .vdms-certificates__kpis > div > div:nth-child(1) > span:first-child { font-size: 9px; letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    // The status icon would leave too little room for "DUE ≤ 30 DAYS"; the coloured label says the same
+    .vdms-certificates__kpis > div > div:nth-child(1) > span:last-child { display: none; }
+    .vdms-certificates__kpis > div > div:nth-child(2) { font-size: 16px; line-height: 1.2; }
+    .vdms-certificates__kpis > div > div:nth-child(3) { display: none; } // caption
+
+    .vdms-cert-toolbar { padding: 6px 8px !important; gap: 6px !important; }
+    // Records / Matrix / Checklist tabs share one row
+    .vdms-cert-toolbar-left { width: 100%; flex-wrap: wrap; }
+    .vdms-cert-toolbar-left > button { flex: 1 1 0; min-width: 0; justify-content: center; padding: 5px 4px; gap: 4px; font-size: 11.5px; }
+    .vdms-cert-toolbar-left > div { flex: 1 1 100%; justify-content: center; } // active KPI filter pill
+    // Vessel and category filters side by side, search on its own row
+    .vdms-cert-toolbar-right { gap: 6px !important; }
+    .vdms-cert-toolbar-right > *:not(.vdms-certificates__search) { flex: 1 1 0 !important; min-width: 0 !important; }
+    .vdms-cert-toolbar-right > *:not(.vdms-certificates__search) > :first-child * { font-size: 11.5px !important; }
+    .vdms-certificates__search { flex: 1 1 100% !important; width: 100% !important; }
+
+    // Records table: Cert Number (3), Issue Date (4) and Doc (7) are hidden; they stay available from
+    // the row's View/Edit action. The empty-state row spans all columns and is left alone.
+    .vdms-certificates__pane--list .vdms-cert-table th:nth-child(3),
+    .vdms-certificates__pane--list .vdms-cert-table th:nth-child(4),
+    .vdms-certificates__pane--list .vdms-cert-table th:nth-child(7),
+    .vdms-certificates__pane--list .vdms-cert-table tr:not(:has(td[colspan])) > td:nth-child(3),
+    .vdms-certificates__pane--list .vdms-cert-table tr:not(:has(td[colspan])) > td:nth-child(4),
+    .vdms-certificates__pane--list .vdms-cert-table tr:not(:has(td[colspan])) > td:nth-child(7) { display: none; }
+    .vdms-certificates__pane--list .vdms-cert-table th:first-child,
+    .vdms-certificates__pane--list .vdms-cert-table td:first-child { padding-left: 10px !important; }
+    .vdms-certificates__pane--list .vdms-cert-table th:last-child,
+    .vdms-certificates__pane--list .vdms-cert-table td:last-child { padding-right: 8px !important; }
+    .vdms-certificates__pane--list .vdms-cert-table td { font-size: 11.5px !important; padding: 8px 6px !important; }
+    // Header labels may wrap ("Certificate Name"), so the table never pushes the page sideways. (No
+    // overflow-x on the card: it would clip the row's actions menu.)
+    .vdms-certificates__pane--list .vdms-cert-table th { white-space: normal !important; letter-spacing: 0 !important; padding: 8px 6px !important; }
+    // The cell contents (vessel name, certificate name, dates, sub-lines) write their font sizes inline
+    .vdms-certificates__pane--list .vdms-cert-table td * { font-size: 11.5px !important; line-height: 1.3; }
+    .vdms-certificates__pane--list .vdms-cert-table td div + div,
+    .vdms-certificates__pane--list .vdms-cert-table td span + div { font-size: 10px !important; }
+    .vdms-certificates__pane--list .vdms-cert-table td i { font-size: 10px !important; }
+  }
+  // The table cells get a scaled font size from a global rule; the .vessel-dms-app prefix outranks it
+  .vessel-dms-app .vdms-certificates-page .vdms-certificates__pane--list .vdms-cert-table td { font-size: 11px !important; }
+  .vdms-certificates-page {
+    // Actions: just the menu button, no header label
+    .vdms-certificates__pane--list .vdms-cert-table th:last-child,
+    .vdms-certificates__pane--list .vdms-cert-table td:last-child { width: 34px !important; padding-left: 2px !important; padding-right: 6px !important; }
+    .vdms-certificates__pane--list .vdms-cert-table td:last-child button { width: 26px !important; height: 26px !important; min-height: 26px !important; padding: 0 !important; }
+    .vdms-certificates__pane--list .vdms-cert-table th:last-child { font-size: 0 !important; } // "Actions"
+  }
+}
+
+// Small phone (<480): smaller tab labels so the three tabs keep one row
+@media (max-width: #{$bp-xs - 1px}) {
+  .vdms-certificates-page {
+    .vdms-cert-toolbar-left > button { font-size: 11px; gap: 3px; }
+  }
+}
+
+// Narrowest phones (<400, e.g. 320–375): the three action buttons no longer fit on one row, so
+// Add Certificate takes its own row; tab icons are dropped so the tab labels keep one row.
+@media (max-width: 399px) {
+  .vdms-certificates-page {
+    .vdms-certificates__actions { flex-wrap: wrap; }
+    .vdms-certificates__actions > button { flex: 1 1 0; min-width: 0; }
+    .vdms-certificates__actions > button:last-child { flex-basis: 100%; }
+    .vdms-cert-toolbar-left > button { font-size: 10.5px; padding-left: 2px; padding-right: 2px; }
+    .vdms-cert-toolbar-left > button > i { display: none; }
+  }
+}

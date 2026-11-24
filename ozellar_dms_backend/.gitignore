@@ -1,0 +1,20 @@
+venv/
+__pycache__/
+*.pyc
+.dashboard_scan_cache.json
+.dashboard_scan_cache.tmp
+.venv/
+__pycache__/
+*.pyc
+
+# Migration Assistant (merged module): secrets + local job database
+.env.migration
+migration_assistant.db
+
+# Local environment secrets
+.env
+.env.*
+!.env.example
+
+# Local AI model weights (Florence-2, ~890 MB): too big for GitHub, download separately
+models/

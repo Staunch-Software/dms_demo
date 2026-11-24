@@ -1,0 +1,83 @@
+// bento-compose-modal — styles
+
+// ── Converted inline styles (bento-compose-modal) ─────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.bento-compose-modal-i1 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.bento-compose-modal-i2 {
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.bento-compose-modal-i3 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--vdms-text);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-dms-app .bento-compose-modal-i3 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.bento-compose-modal-i4 {
+  font-size: 17px;
+}
+.bento-compose-modal-i5 {
+  padding: 8px 12px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.vessel-dms-app .bento-compose-modal-i5 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.bento-compose-modal-i6 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bento-compose-modal-i7 {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+  margin-bottom: 4px;
+}
+.vessel-dms-app .bento-compose-modal-i7 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.bento-compose-modal-i8 {
+  font-weight: 400;
+  color: var(--vdms-text-faint);
+  font-size: 11px;
+}
+.vessel-dms-app .bento-compose-modal-i8 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.bento-compose-modal-i9 {
+  font-weight: 400;
+  color: var(--vdms-text-faint);
+  font-size: 11px;
+  margin-left: 6px;
+}
+.vessel-dms-app .bento-compose-modal-i9 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.bento-compose-modal-i10 {
+  background: var(--vdms-surface-alt);
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  border: 1px solid var(--vdms-line);
+}
+.vessel-dms-app .bento-compose-modal-i10 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.bento-compose-modal-i11 {
+  font-size: 11px;
+}
+.bento-compose-modal-i12 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+.bento-compose-modal-i13 {
+  font-size: 13px;
+}

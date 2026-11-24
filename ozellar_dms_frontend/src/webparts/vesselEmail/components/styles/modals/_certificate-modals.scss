@@ -1,0 +1,35 @@
+// Certificate dialogs (modals/AddCertificateModal, EditCertificateModal, CreateCertificateTypeModal,
+// EditCertificateTypeModal). Each file used to carry its own copy of these rules in an inline <style>;
+// they are identical, so they now live here once.
+
+.vdms-cert-modal button, .vdms-cert-modal input, .vdms-cert-modal textarea, .vdms-cert-modal select {
+  font-family: inherit;
+}
+
+// Renew, Version History and "approval sent" dialogs are rendered in a portal outside the app root,
+// so they did not get the app font (the body text fell back to the browser's serif default).
+.renew-certificate-modal-i1,
+.certificate-history-modal-i1,
+.certificate-approval-sent-modal-j1 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+.renew-certificate-modal-i1 :is(button, input, textarea, select),
+.certificate-history-modal-i1 :is(button, input, textarea, select) {
+  font-family: inherit;
+}
+
+.vdms-cert-scroll {
+  scrollbar-width: auto; scrollbar-color: #8c8c8c #f1f1f1;
+}
+.vdms-cert-scroll::-webkit-scrollbar {
+  width: 14px;
+}
+.vdms-cert-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.vdms-cert-scroll::-webkit-scrollbar-thumb {
+  background: #8c8c8c; border-radius: 8px; border: 3px solid #f1f1f1;
+}
+.vdms-cert-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6e6e6e;
+}

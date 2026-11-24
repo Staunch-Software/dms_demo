@@ -1,0 +1,161 @@
+// Custom dropdown (CustomDropdown.tsx)
+// Moved out of the component's inline <style>; the rules are unchanged.
+
+.vdms-custom-dropdown-list::-webkit-scrollbar {
+  width: 6px;
+}
+.vdms-custom-dropdown-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.vdms-custom-dropdown-list::-webkit-scrollbar-thumb {
+  background: var(--vdms-line-strong, #cbd5e1);
+  border-radius: 4px;
+}
+.vdms-custom-dropdown-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+// ── Converted inline styles (custom-dropdown) ─────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.custom-dropdown-i1 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vdms-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.vessel-dms-app .custom-dropdown-i1 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.custom-dropdown-i2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 35px;
+  padding: 0 12px;
+  background: var(--vdms-surface, #ffffff);
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  box-shadow: none;
+}
+.vessel-dms-app .custom-dropdown-i2 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.custom-dropdown-i3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.custom-dropdown-i4 {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.custom-dropdown-i5 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.custom-dropdown-i6 {
+  font-size: 11px;
+  color: var(--vdms-text-muted, #64748b);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.custom-dropdown-i7 {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--vdms-surface, #ffffff);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+.custom-dropdown-i8 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  height: 38px;
+  box-sizing: border-box;
+  user-select: none;
+  flex-shrink: 0;
+  transition: background-color 0.1s ease;
+}
+.vessel-dms-app .custom-dropdown-i8 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.custom-dropdown-i9 {
+  padding: 6px 8px;
+  background: var(--vdms-surface-alt, #f8fafc);
+  flex-shrink: 0;
+}
+.custom-dropdown-i10 {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.custom-dropdown-i11 {
+  position: absolute;
+  left: 8px;
+  font-size: 11px;
+  color: var(--vdms-text-muted, #64748b);
+  pointer-events: none;
+}
+.custom-dropdown-i12 {
+  height: 28px;
+  padding-left: 26px;
+  background: var(--vdms-surface, #ffffff);
+  color: var(--vdms-text, #1e293b);
+  font-size: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+.vessel-dms-app .custom-dropdown-i12 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.custom-dropdown-i13 {
+  position: absolute;
+  right: 6px;
+  font-size: 10px;
+  color: var(--vdms-text-muted, #64748b);
+  cursor: pointer;
+}
+.custom-dropdown-i14 {
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--vdms-text-muted, #64748b);
+}
+.vessel-dms-app .custom-dropdown-i14 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.custom-dropdown-i15 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+  box-sizing: border-box;
+  user-select: none;
+  transition: background-color 0.1s ease;
+}
+.vessel-dms-app .custom-dropdown-i15 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.custom-dropdown-i16 {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.custom-dropdown-i17 {
+  font-size: 10.5px;
+  color: var(--vdms-text-muted, #64748b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+.custom-dropdown-i18 {
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}

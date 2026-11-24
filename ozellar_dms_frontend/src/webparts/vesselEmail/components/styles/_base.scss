@@ -1,0 +1,73 @@
+// Base: theme tokens, type, app backdrop
+@use 'tokens' as *;
+
+/* ── Neutral + surface tokens (not admin-controlled) ───────────────── */
+html [data-vessel-theme="light"] {
+  --vdms-surface: #ffffff;
+  --vdms-surface-alt: #f6f8fb;
+  --vdms-border: #e2e8f0;
+  --vdms-border-soft: #eef1f5;
+  --vdms-text: #101b2d;
+  --vdms-text-secondary: #475569;
+  --vdms-text-muted: #64748b;
+  --vdms-text-faint: #94a3b8;
+  --vdms-toggle-active-bg: #0b2a4a;
+  --vdms-toggle-active-text: #ffffff;
+  --vdms-glass: #ffffff;
+  --vdms-glass-strong: #ffffff;
+  --vdms-line: #e2e8f0;
+  --vdms-line-strong: #cbd5e1;
+  --vdms-field: #ffffff;
+  --vdms-shadow: 0 1px 2px rgba(16,27,45,0.04);
+  --vdms-focus: rgba(14,116,144,0.6);
+  --vdms-focus-soft: rgba(14,116,144,0.14);
+  --clay-shadow-raised: 0 1px 2px rgba(16,27,45,0.05), 0 4px 12px rgba(16,27,45,0.06);
+  --clay-shadow-raised-hover: 0 2px 4px rgba(16,27,45,0.06), 0 8px 20px rgba(16,27,45,0.10);
+  --clay-shadow-icon: inset 0 0 0 1px rgba(14,116,144,0.14);
+  --clay-pill-active-bg: #dcfce7; --clay-pill-active-text: #15803d; --clay-pill-active-shadow: none;
+  --clay-pill-warn-bg: #fef3c7;   --clay-pill-warn-text: #b45309;   --clay-pill-warn-shadow: none;
+  --clay-pill-danger-bg: #fee2e2; --clay-pill-danger-text: #b91c1c; --clay-pill-danger-shadow: none;
+}
+html [data-vessel-theme="night"] {
+  --vdms-surface: #101d2e;
+  --vdms-surface-alt: #152536;
+  --vdms-border: rgba(148,178,204,0.18);
+  --vdms-border-soft: rgba(148,178,204,0.1);
+  --vdms-text: #e7eef5;
+  --vdms-text-secondary: #aebfd1;
+  --vdms-text-muted: #8ca0b5;
+  --vdms-text-faint: #71869b;
+  --vdms-toggle-active-bg: #2dd4bf;
+  --vdms-toggle-active-text: #04211d;
+  --vdms-glass: #101d2e;
+  --vdms-glass-strong: #0a1626;
+  --vdms-line: rgba(148,178,204,0.18);
+  --vdms-line-strong: rgba(148,178,204,0.3);
+  --vdms-field: #101d2e;
+  --vdms-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  --vdms-focus: rgba(45,212,191,0.65);
+  --vdms-focus-soft: rgba(45,212,191,0.16);
+  --clay-shadow-raised: 0 1px 2px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.35);
+  --clay-shadow-raised-hover: 0 2px 4px rgba(0,0,0,0.35), 0 8px 22px rgba(0,0,0,0.4);
+  --clay-shadow-icon: inset 0 0 0 1px rgba(45,212,191,0.18);
+  --clay-pill-active-bg: rgba(34,197,94,0.16); --clay-pill-active-text: #86efac; --clay-pill-active-shadow: none;
+  --clay-pill-warn-bg: rgba(245,158,11,0.16);  --clay-pill-warn-text: #fcd34d;  --clay-pill-warn-shadow: none;
+  --clay-pill-danger-bg: rgba(239,68,68,0.16); --clay-pill-danger-text: #fca5a5; --clay-pill-danger-shadow: none;
+}
+
+/* ── Type ─────────────────────────────────────────────────────────── */
+.vessel-dms-app, .vessel-dms-auth { font-family: $font-ui !important; -webkit-font-smoothing: antialiased; }
+.vessel-dms-app button, .vessel-dms-auth button, .vessel-dms-auth input { font-family: inherit; }
+.vessel-dms-app h1, .vessel-dms-app h2, .vessel-dms-app h3, .vessel-dms-auth h1 { font-family: $font-display; letter-spacing: -0.02em; }
+
+/* ── App backdrop ─────────────────────────────────────────────────── */
+/* Flat, solid enterprise background — no photographic backdrop. */
+.vessel-dms-app[data-vessel-theme="light"] { background: var(--clay-bg, #eef2f7) !important; }
+.vessel-dms-app[data-vessel-theme="night"] { background: var(--clay-bg, #0a1626) !important; }
+.vessel-dms-auth[data-vessel-theme="light"] {
+  background: linear-gradient(160deg, #0b2a4a 0%, #0e3a63 55%, #0a4a5c 100%) !important;
+}
+.vessel-dms-auth[data-vessel-theme="night"] {
+  background: linear-gradient(160deg, #061021 0%, #0a1626 55%, #0a2320 100%) !important;
+}
+.vessel-dms-app { isolation: isolate; }

@@ -1,0 +1,484 @@
+// certificate-master-page — styles
+@use '../breakpoints' as *;
+
+// ── Converted inline styles (certificate-master-page) ─────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.certificate-master-page-i1 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  min-height: 0;
+  flex: 1 1 0;
+  position: relative;
+}
+.certificate-master-page-i2 {
+  border: 1px solid var(--vdms-line);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-height: 48px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 90;
+}
+.certificate-master-page-i3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 auto;
+}
+.certificate-master-page-i4 {
+  position: relative;
+  flex-shrink: 0;
+}
+.certificate-master-page-i5 {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.certificate-master-page-i6 {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 95;
+}
+.certificate-master-page-i7 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.certificate-master-page-i8 {
+  font-size: 12px;
+}
+.certificate-master-page-i9 {
+  padding: 10px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.vessel-dms-app .certificate-master-page-i9 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i10 {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+.certificate-master-page-i11 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 16px;
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line-soft);
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  flex-wrap: wrap;
+  gap: 12px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.vessel-dms-app .certificate-master-page-i11 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i12 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.certificate-master-page-i13 {
+  font-weight: 600;
+  color: var(--vdms-text);
+}
+.certificate-master-page-i14 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.certificate-master-page-i15 {
+  height: 18px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-dms-app .certificate-master-page-i15 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i16 {
+  height: 18px;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid var(--vdms-line);
+  color: var(--vdms-text-muted);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-dms-app .certificate-master-page-i16 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i17 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.certificate-master-page-i18 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+}
+.vessel-dms-app .certificate-master-page-i18 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i19 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.certificate-master-page-i20 {
+  height: 24px;
+  border: 1px solid var(--vdms-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+}
+.vessel-dms-app .certificate-master-page-i20 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i21 {
+  font-size: 10px;
+}
+.certificate-master-page-i22 {
+  padding: 40px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .certificate-master-page-i22 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i23 {
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+}
+.vessel-dms-app .certificate-master-page-i23 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i24 {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 48px;
+}
+.certificate-master-page-i25 {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 35;
+  padding: 8px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--vdms-line);
+  border-right: 1px solid var(--vdms-line);
+  font-weight: 700;
+  box-sizing: border-box;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.04);
+}
+.certificate-master-page-i26 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.certificate-master-page-i27 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  font-weight: 500;
+}
+.vessel-dms-app .certificate-master-page-i27 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i28 {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 8px 4px;
+  text-align: center;
+  border-bottom: 2px solid var(--vdms-line);
+  border-right: 1px solid var(--vdms-line-soft);
+  box-sizing: border-box;
+}
+.certificate-master-page-i29 {
+  font-weight: 600;
+  color: var(--vdms-text);
+  white-space: normal;
+  line-height: 1.2;
+  font-size: 11px;
+  word-break: break-word;
+  text-align: center;
+}
+.vessel-dms-app .certificate-master-page-i29 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i30 {
+  font-size: 10px;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+  font-weight: 500;
+}
+.vessel-dms-app .certificate-master-page-i30 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i31 {
+  background: var(--vdms-surface-alt);
+}
+.certificate-master-page-i32 {
+  padding: 8px 16px;
+  background: var(--vdms-surface-alt);
+  border-top: 1px solid var(--vdms-line);
+  border-bottom: 1px solid var(--vdms-line-soft);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.certificate-master-page-i33 {
+  position: sticky;
+  left: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.certificate-master-page-i34 {
+  font-size: 13px;
+}
+.certificate-master-page-i35 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  border: 1px solid var(--vdms-line);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.certificate-master-page-i36 {
+  border-bottom: 1px solid var(--vdms-line-soft);
+}
+.certificate-master-page-i37 {
+  position: sticky;
+  left: 0;
+  z-index: 20;
+  padding: 8px 12px;
+  border-right: 1px solid var(--vdms-line);
+  border-bottom: 1px solid var(--vdms-line-soft);
+  box-sizing: border-box;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.04);
+}
+.certificate-master-page-i38 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+.certificate-master-page-i39 {
+  flex: 1;
+}
+.certificate-master-page-i40 {
+  font-weight: 600;
+  color: var(--vdms-text);
+  font-size: 12px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .certificate-master-page-i40 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i41 {
+  font-size: 10.5px;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.certificate-master-page-i42 {
+  padding: 0 4px;
+  border-radius: 4px;
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line-soft);
+  font-size: 10px;
+}
+.vessel-dms-app .certificate-master-page-i42 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i43 {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.certificate-master-page-i44 {
+  padding: 6px 4px;
+  text-align: center;
+  border-right: 1px solid var(--vdms-line-soft);
+  border-bottom: 1px solid var(--vdms-line-soft);
+  box-sizing: border-box;
+}
+.certificate-master-page-i45 {
+  padding: 40px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+}
+.certificate-master-page-i46 {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 18px;
+  border: 1.5px solid var(--vdms-line-strong);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.28), 0 4px 12px rgba(0,0,0,0.15);
+  max-width: 92%;
+}
+.certificate-master-page-i47 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.certificate-master-page-i48 {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.certificate-master-page-i49 {
+  font-size: 15px;
+}
+.certificate-master-page-i50 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .certificate-master-page-i50 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i51 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  margin-top: 1px;
+}
+.vessel-dms-app .certificate-master-page-i51 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-master-page-i52 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+// The matrix keeps its own scroll box at every width: it is one column per vessel type, so it is
+// wider than a phone by design, and its header row and certificate column stay pinned inside it.
+
+// 768–1439 (laptops with the sidebar open, e.g. 1920×1200 at 150% scaling = 1280px; tablet): the
+// vessel-type columns share the width instead of keeping an 85px minimum each, which made the table
+// wider than the screen (inline min-width, hence !important). Phones keep the sideways scroll: ten
+// columns cannot fit there.
+@media (min-width: #{$bp-md}) and (max-width: #{$bp-xxl - 1px}) {
+  .vdms-certificate-master-page .certificate-master-page-i23 { min-width: 0 !important; }
+  .vdms-certificate-master-page .certificate-master-page-i23 col:not(:first-child),
+  .vdms-certificate-master-page .certificate-master-page-i28,
+  .vdms-certificate-master-page .certificate-master-page-i44 { min-width: 0 !important; }
+}
+
+// Below 1440 (laptops with the sidebar open, tablet, phone): narrower certificate column and
+// smaller text. The column, header cell and body cells write their width inline, hence !important.
+@media (max-width: #{$bp-xxl - 1px}) {
+  .vdms-certificate-master-page {
+    .vdms-cert-master__toolbar { padding: 6px 10px; gap: 8px; min-height: 0; }
+    .vdms-cert-master__filters { gap: 8px; min-width: 0 !important; }
+    .vdms-cert-master__search { flex: 1 1 180px; width: auto !important; min-width: 0; }
+    .vdms-cert-master__search input { height: 32px !important; font-size: 12px !important; }
+    .vdms-cert-master__category { flex: 1 1 200px; min-width: 0; }
+    .vdms-cert-master__category > *, .vdms-cert-master__category > * > :first-child { width: 100% !important; min-width: 0 !important; }
+    .vdms-cert-master__category > * > :first-child { height: 32px !important; }
+    .vdms-cert-master__category > * > :first-child * { font-size: 12px !important; }
+    .vdms-cert-master__actions > button { height: 32px !important; font-size: 12px !important; padding: 0 12px !important; }
+
+    .vdms-cert-master__legend { padding: 5px 10px; font-size: 11px; gap: 6px; }
+    .vdms-cert-master__legend > div:first-child { gap: 10px; }
+
+    .certificate-master-page-i23 col:first-child,
+    .certificate-master-page-i25,
+    .certificate-master-page-i37 { width: 190px !important; min-width: 190px !important; max-width: 190px !important; }
+    .certificate-master-page-i25 { padding: 7px 10px; font-size: 11px; }
+    .certificate-master-page-i37 { padding: 6px 10px; }
+    .certificate-master-page-i24 { height: 42px; }
+    .certificate-master-page-i28 { padding: 6px 3px; }
+    .certificate-master-page-i29 { font-size: 10.5px; }
+    .certificate-master-page-i32 { padding: 6px 10px; }
+  }
+}
+
+// Tablet and below (<1024): like the Certificates page, the whole page scrolls instead of being a
+// fixed-height panel (which left the matrix too short), the matrix box gets its own height, and the
+// page title is hidden because the top bar already shows it.
+@media (max-width: #{$tablet}) {
+  .vessel-dms-app .vdms-main-scroll:has(.vdms-certificate-master-page) { overflow-y: auto !important; }
+  .vessel-dms-app .vdms-main-scroll:has(.vdms-certificate-master-page) > div:has(> .vdms-certificate-master-page) {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .vessel-dms-app:has(.vdms-certificate-master-page) .vessel-dms-topbar {
+    min-height: 60px;
+    #vdms-header-route:empty { display: none; }
+  }
+
+  .vdms-certificate-master-page {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    flex: 0 0 auto;
+    gap: 6px;
+
+    > .dms-design-system-i1 { display: none; } // page title + subtitle
+    // The pane writes flex: 1 1 0 and minHeight: 0 inline
+    .vdms-cert-master__pane { flex: 0 0 auto !important; height: 72vh; min-height: 360px !important; }
+  }
+}
+
+// Large phone and below (<768)
+@media (max-width: #{$phone}) {
+  .vdms-certificate-master-page {
+    .vdms-cert-master__toolbar { padding: 6px 8px; gap: 6px; }
+    .vdms-cert-master__filters { flex: 1 1 100%; gap: 6px; }
+    .vdms-cert-master__search, .vdms-cert-master__category { flex: 1 1 0; }
+    .vdms-cert-master__actions { flex: 1 1 100%; }
+    .vdms-cert-master__actions > button { width: 100%; justify-content: center; height: 30px !important; font-size: 11.5px !important; }
+
+    .vdms-cert-master__legend { font-size: 10.5px; padding: 5px 8px; row-gap: 4px; }
+    .vdms-cert-master__legend > div:first-child { gap: 4px 8px; }
+    .vdms-cert-master__legend > div:first-child > span:first-child { display: none; } // "Legend:"
+    // Mandatory and Exempt share the first line, Conditional (the longest) takes the second
+    .vdms-cert-master__legend > div:first-child > span:nth-child(4) { order: -1; }
+    .vdms-cert-master__legend > div:first-child > span:nth-child(2) { order: -2; }
+    .certificate-master-page-i27 { display: none; } // "Authority & Term" (each row still shows them)
+
+    .certificate-master-page-i23 col:first-child,
+    .certificate-master-page-i25,
+    .certificate-master-page-i37 { width: 140px !important; min-width: 140px !important; max-width: 140px !important; }
+    .certificate-master-page-i25 { padding: 6px 8px; font-size: 10.5px; }
+    .certificate-master-page-i37 { padding: 6px 8px; }
+    .certificate-master-page-i29 { font-size: 10px; }
+    .certificate-master-page-i30 { font-size: 9.5px; }
+  }
+}

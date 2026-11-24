@@ -1,0 +1,219 @@
+// users-page — styles
+@use '../breakpoints' as *;
+
+// ── Converted inline styles (users-page) ──────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.users-page-i1 {
+  padding: 14px 16px;
+  background: var(--vdms-surface-alt);
+  border-top: 1px solid var(--vdms-line);
+  border-bottom: 1px solid var(--vdms-line);
+}
+.users-page-i2 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vdms-text);
+  margin-bottom: 8px;
+}
+.vessel-dms-app .users-page-i2 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i3 {
+  font-size: 12px;
+  color: var(--vdms-text-faint);
+  margin-bottom: 10px;
+}
+.vessel-dms-app .users-page-i3 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i4 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.users-page-i5 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--vdms-line);
+  padding: 8px 12px;
+}
+.users-page-i6 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vdms-text);
+  flex: 1 1 160px;
+}
+.vessel-dms-app .users-page-i6 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i7 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .users-page-i7 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i8 {
+  margin-left: auto;
+  border: none;
+  background: none;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.vessel-dms-app .users-page-i8 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i9 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.users-page-i10 {
+  display: flex;
+  gap: 8px;
+}
+.users-page-i11 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.users-page-i12 {
+  font-size: 12px;
+}
+.users-page-i13 {
+  height: 28px;
+  border-radius: 50%;
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.vessel-dms-app .users-page-i13 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i14 {
+  font-weight: 600;
+}
+.users-page-i15 {
+  font-weight: 600;
+  font-size: 13px;
+}
+.vessel-dms-app .users-page-i15 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i16 {
+  font-size: 11px;
+  color: var(--vdms-text-faint);
+}
+.vessel-dms-app .users-page-i16 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i17 {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+}
+.vessel-dms-app .users-page-i17 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i18 {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.users-page-i19 {
+  font-size: 11px;
+}
+.users-page-i20 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .users-page-i20 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.users-page-i21 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.users-page-i22 {
+  padding: 0;
+}
+
+// ── Converted inline styles (users-page) ──────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.users-page-j1 {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.users-page-j2 {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+}
+.users-page-j3 {
+  font-size: 11px;
+}
+.users-page-j4 {
+  font-size: 10.5px;
+  color: var(--vdms-text-muted);
+}
+.users-page-j5 {
+  font-size: 10.5px;
+  color: var(--vdms-text-faint);
+}
+
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+// Users table columns: 1 Name, 2 Email, 3 Role, 4 Status, 5 Module Access, 6 Site Access,
+// 7 Certificate Approver, 8 Last Login, 9 Actions. Rows that span all columns (the inline site-access
+// editor and "No users found") are left alone. Hidden columns stay available in the Edit dialog.
+// The table cells write their padding and font size inline, hence !important.
+
+// Below 1440 (laptops with the sidebar open, e.g. 1920×1200 at 150% scaling = 1280px): smaller text
+// and padding, long emails wrap, so all nine columns fit without scrolling sideways.
+@media (max-width: #{$bp-xxl - 1px}) {
+  .vdms-users {
+    gap: 12px;
+    .vdms-users__toolbar { padding: 8px 10px !important; gap: 8px !important; }
+    .vdms-users__table th { padding: 8px 8px !important; font-size: 10px !important; letter-spacing: 0.03em !important; white-space: normal !important; }
+    .vdms-users__table td { padding: 8px 8px !important; font-size: 12px !important; }
+    .vdms-users__table td:nth-child(2) { overflow-wrap: anywhere; }
+    .vdms-users__table td:last-child button { padding: 3px 6px !important; font-size: 11.5px !important; }
+  }
+}
+
+// Columns: 1 Name, 2 Email, 3 Role, 4 Status, 5 Login, 6 Certificate Approver, 7 Last Login, 8 Actions.
+// Tablet and below (<1024): Last Login is hidden; the page title is hidden because the top bar shows it;
+// the search box takes the free width.
+@media (max-width: #{$tablet}) {
+  .vdms-users {
+    > .dms-design-system-i1 { display: none; }
+    .vdms-users__search { flex: 1 1 200px; width: auto !important; min-width: 0; }
+    .vdms-users__table th:nth-child(7),
+    .vdms-users__table tr:not(:has(td[colspan])) > td:nth-child(7) { display: none; }
+  }
+}
+
+// Large phone and below (<768): Role and Certificate Approver are hidden too (Last Login already is), and the row buttons
+// show only their icons.
+@media (max-width: #{$phone}) {
+  .vdms-users {
+    .vdms-users__toolbar > button { flex: 1 1 auto; justify-content: center; padding: 6px 10px !important; font-size: 12px !important; }
+    .vdms-users__table th:nth-child(3), .vdms-users__table th:nth-child(6),
+    .vdms-users__table tr:not(:has(td[colspan])) > td:nth-child(3),
+    .vdms-users__table tr:not(:has(td[colspan])) > td:nth-child(6) { display: none; }
+    .vdms-users__table th:last-child { font-size: 0 !important; } // "Actions"
+    .vdms-users__table td { padding: 8px 6px !important; font-size: 11.5px !important; }
+    .vdms-users__table td:first-child { padding-left: 10px !important; }
+    .vdms-users__table td:last-child button { font-size: 0 !important; gap: 0 !important; padding: 5px 6px !important; }
+    .vdms-users__table td:last-child button i { font-size: 13px !important; }
+  }
+}

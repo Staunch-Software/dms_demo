@@ -1,0 +1,1161 @@
+// Documents page, the "Vessel DMS" item in the sidebar (pages/DocumentsPage.tsx).
+// First part: CSS moved out of the component's inline <style> elements (unchanged). Then the generated
+// classes from its inline styles. Responsive rules are in the last section; they use the hooks
+// `vdms-docs__vessels`, `__tiles`, `__tools`, `__actions`, `__title` and `__table-scroll`.
+@use '../breakpoints' as *;
+
+@keyframes dmsUploadSpin{to{transform:rotate(360deg)}}
+
+/* Surfaces / borders: the Documents module inherits the same
+   app-wide --vdms-* / --clay-* tokens as the Dashboard (all solid
+   now), so Settings → Color Management and Night/Light mode re-theme
+   it exactly like every other redesigned page. */
+.dms-docs-root div[style*="var(--vdms-surface)"],
+.dms-docs-root .dms-docs-nav, .dms-docs-root .dms-filter-bar { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+@keyframes dms-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Folder / library / vessel cards — subtle lift on hover. */
+.dms-docs-root .dms-tile:hover { border-color: var(--clay-accent, #0e7490) !important; box-shadow: var(--clay-shadow-raised-hover) !important; transform: translateY(-1px); }
+.dms-docs-root .dms-tile:active { transform: translateY(0); }
+.dms-docs-root .dms-tile:hover [data-icon-name="ChevronRight"] { color: var(--clay-accent, #0e7490) !important; }
+
+/* Tables — row hover + quiet links. */
+.dms-docs-root .dms-table tbody tr { transition: background 120ms ease; }
+.dms-docs-root .dms-table tbody tr:hover { background: var(--clay-surface-hover, #eaf0f6); }
+.dms-docs-root .dms-table tbody tr:last-child { border-bottom: none !important; }
+.dms-docs-root .dms-file-link:hover { text-decoration: underline !important; }
+.dms-docs-root .dms-result-row { transition: background 120ms ease; }
+.dms-docs-root .dms-result-row:hover { background: var(--clay-surface-hover, #eaf0f6) !important; }
+.dms-docs-root .dms-result-row:last-child { border-bottom: none !important; }
+
+/* Toolbar buttons — subtle hover states for the button hierarchy. */
+.dms-docs-root .dms-btn:not(:disabled) { cursor: pointer; }
+.dms-docs-root .dms-btn-primary:hover { background: var(--clay-accent-hover, #0b5c72) !important; }
+.dms-docs-root .dms-btn-secondary:not(:disabled):hover { border-color: var(--clay-accent, #0e7490) !important; color: var(--clay-accent, #0e7490) !important; }
+.dms-docs-root .dms-btn-ghost:not(:disabled):hover { background: var(--clay-surface-hover, #eaf0f6) !important; color: var(--vdms-text) !important; }
+.dms-docs-root .dms-btn-danger:not(:disabled):hover { filter: brightness(0.97); box-shadow: inset 0 0 0 1px currentColor; }
+
+/* Title row: everything on one centre line; toggle never clips. */
+.dms-docs-head { align-items: center !important; }
+.dms-docs-head .dms-site-picker select { height: 34px; box-sizing: border-box; min-width: 200px !important; padding: 0 32px 0 12px !important; border-radius: 8px !important; border: 1px solid var(--vdms-line-strong) !important; background-color: var(--vdms-surface) !important; color: var(--vdms-text) !important; font-weight: 600; font-size: 13px; appearance: none; -webkit-appearance: none; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease;
+  background-repeat: no-repeat; background-position: right 11px center; background-size: 11px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 4.2 6 8l4-3.8' fill='none' stroke='%2364748b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.dms-docs-head .dms-site-picker select:hover { border-color: var(--clay-accent, #0e7490) !important; }
+.dms-docs-head .dms-site-picker select:focus { outline: none; border-color: var(--clay-accent, #0e7490) !important; box-shadow: 0 0 0 3px var(--vdms-focus-soft); }
+.dms-docs-head .dms-site-picker select option { background: var(--vdms-surface); color: var(--vdms-text); }
+.dms-view-toggle { white-space: nowrap; }
+/* The app-wide hover/focus glow (outline + 4px shadow) overflows this small segmented control and looks cut off: hover is just the soft brightness change, keyboard focus is an inset ring. */
+html .vessel-dms-app .dms-view-toggle button:hover:not(:disabled) { outline: none !important; box-shadow: none !important; }
+html .vessel-dms-app .dms-view-toggle button:focus-visible { outline: 2px solid var(--clay-accent, #0e7490) !important; outline-offset: -2px !important; box-shadow: none !important; border-radius: 8px; }
+
+/* Filter row: compact — search shares the line with the dropdowns
+   and every control grows evenly to fill it, so the bar stays short
+   and the results get the space. */
+/* One compact, wrapping row: every control is 34px tall with the same
+   border/font, sized to its content (no equal-width grid columns, so no
+   blank cell beside "All categories"); Clear is a small auto-width button. */
+.dms-filter-bar .dms-filter-row { display: flex !important; flex-wrap: wrap; gap: 8px !important; align-items: center !important; }
+.dms-filter-bar .dms-filter-row > .dms-filter-search { flex: 1 1 240px !important; min-width: 200px !important; max-width: 340px !important; }
+.dms-filter-bar .dms-filter-row > .dms-filter-loading { flex: 1 1 100%; justify-content: flex-start; }
+.dms-filter-bar .dms-filter-row > div:empty { display: none !important; }
+.dms-filter-bar .dms-filter-row > div:not(.dms-filter-search):not(.dms-filter-loading) { display: block !important; flex: 0 1 190px; min-width: 150px; max-width: 230px; }
+.dms-filter-bar .dms-filter-row > div > button { width: 100%; display: flex !important; align-items: center; justify-content: space-between; text-align: left; }
+.dms-filter-bar .dms-filter-row > select { flex: 0 1 190px; width: auto !important; min-width: 140px !important; max-width: 230px !important; height: 34px !important; }
+.dms-filter-bar .dms-filter-row > button.dms-filter-clear { flex: 0 0 auto; width: auto !important; height: 34px; padding: 0 12px !important; gap: 6px; white-space: nowrap; }
+
+/* Header block spacing (compact, so the results get the room). */
+.dms-docs-sticky { gap: 8px !important; padding-bottom: 8px !important; padding-top: 4px !important; }
+.dms-docs-nav { min-height: 28px !important; }
+/* In the top bar the route may wrap to a 2nd line inside its own area (the bar is a fixed height, the title is nowrap and centred, so it never moves). */
+.vessel-dms-topbar .dms-docs-nav { flex-wrap: wrap; row-gap: 2px; line-height: 1.25; max-height: 58px; overflow: hidden; min-width: 0; padding: 4px !important; margin: -4px; }
+.dms-docs-head p { margin-top: 1px !important; }
+/* Smaller Shared Documents header card: tighter padding, title and controls. */
+.dms-docs-head { padding: 8px 12px !important; gap: 10px !important; border-radius: 12px !important; }
+.dms-docs-head h2 { font-size: 16px !important; }
+.dms-docs-head .dms-btn { height: 30px !important; padding: 0 12px !important; }
+.dms-docs-head .dms-site-picker select { height: 30px !important; }
+.dms-docs-head .dms-view-toggle button { height: 24px !important; }
+
+/* Back / forward arrows — quiet square buttons, accent on hover. */
+.dms-nav-arrow:not(:disabled):hover { background: var(--clay-accent-soft, #dceef2) !important; color: var(--clay-accent, #0e7490) !important; border-color: transparent !important; }
+.dms-nav-arrow:not(:disabled):active { transform: scale(0.96); }
+
+/* Breadcrumb — compact, low-weight trail (no heavy pill). */
+.dms-docs-nav { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; min-height: 34px; padding: 0; box-sizing: border-box; background: transparent; border: none; }
+.dms-docs-nav .dms-crumb-sep { display: inline-flex; align-items: center; color: var(--vdms-text-faint); font-size: 9px; padding: 0 1px; }
+.dms-docs-nav .dms-crumb-link { padding: 3px 7px; border-radius: 6px; color: var(--vdms-text-muted); font-weight: 600; font-size: 12.5px; transition: background .15s ease, color .15s ease; }
+.dms-docs-nav .dms-crumb-link:hover { background: var(--clay-accent-soft, #dceef2); color: var(--clay-accent, #0e7490); }
+.dms-docs-nav .dms-crumb-current { padding: 3px 10px; border-radius: 99px; color: var(--clay-accent, #0e7490); font-weight: 700; font-size: 12.5px; background: var(--clay-accent-soft, #dceef2); }
+
+/* Filter toolbar — compact, consistent 34px controls with subtle
+   borders. Inline styles on the controls are overridden here so
+   every dropdown looks the same. */
+.dms-filter-bar { background: var(--vdms-surface) !important; border: 1px solid var(--vdms-line) !important; border-radius: 14px !important; padding: 10px 12px !important; box-shadow: var(--clay-shadow-raised); }
+.dms-filter-bar select, .dms-filter-bar .dms-filter-search input, .dms-filter-bar > div > div > button {
+  height: 34px; box-sizing: border-box; border-radius: 8px !important; border: 1px solid var(--vdms-border) !important;
+  background-color: var(--vdms-surface) !important; color: var(--vdms-text) !important; font-size: 13px !important; font-weight: 500;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+html .vessel-dms-app .dms-filter-bar select { appearance: none; -webkit-appearance: none; padding: 0 28px 0 11px !important; cursor: pointer; text-overflow: ellipsis;
+  background-repeat: no-repeat !important; background-position: right 10px center !important; background-size: 11px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 4.2 6 8l4-3.8' fill='none' stroke='%2364748b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important; }
+html [data-vessel-theme="night"] .vessel-dms-app .dms-filter-bar select, html .vessel-dms-app[data-vessel-theme="night"] .dms-filter-bar select { background-color: var(--vdms-surface) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 4.2 6 8l4-3.8' fill='none' stroke='%238ca0b5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important; }
+.dms-filter-bar select:hover:not(:disabled), .dms-filter-bar .dms-filter-search input:hover, .dms-filter-bar > div > div > button:hover:not(:disabled) { border-color: var(--vdms-line-strong) !important; background-color: var(--vdms-surface-alt) !important; }
+.dms-filter-bar select:disabled { opacity: .6; cursor: not-allowed !important; background-color: var(--vdms-surface-alt) !important; color: var(--vdms-text-faint) !important; }
+.dms-filter-bar .dms-filter-search input { padding: 0 12px 0 34px !important; width: 100%; }
+.dms-filter-bar select:focus, .dms-filter-bar .dms-filter-search input:focus { outline: none; border-color: var(--clay-accent, #0e7490) !important; box-shadow: 0 0 0 3px var(--vdms-focus-soft); background-color: var(--vdms-surface) !important; }
+.dms-filter-bar .dms-filter-search input::placeholder { color: var(--vdms-text-faint); }
+.dms-filter-bar select option, .dms-filter-bar select optgroup { background: var(--vdms-surface); color: var(--vdms-text); }
+.dms-filter-bar > div > div > button { padding: 0 12px !important; }
+/* Fluent dropdowns (Vessel / Category) take the same typography as the native selects. */
+html .vessel-dms-app .dms-filter-bar .ms-Dropdown, html .vessel-dms-app .dms-filter-bar .ms-Dropdown-title, html .vessel-dms-app .dms-filter-bar .ms-Dropdown-title *,
+html .vessel-dms-app .dms-filter-callout .ms-Dropdown-item, html .vessel-dms-app .dms-filter-callout .ms-Dropdown-item *,
+html .dms-filter-callout .ms-Dropdown-item, html .dms-filter-callout .ms-Dropdown-item * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; font-size: 13px !important; font-weight: 600 !important; letter-spacing: normal !important; }
+.dms-filter-bar .dms-filter-export:not(:disabled):hover { border-color: var(--clay-accent, #0e7490) !important; color: var(--clay-accent, #0e7490) !important; }
+
+// ── Converted inline styles (documents-page) ──────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.documents-page-i1 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  border: 1px solid transparent;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+.vessel-dms-app .documents-page-i1 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i2 {
+  font-size: 11px;
+}
+.documents-page-i3 {
+  display: none;
+}
+.documents-page-i4 {
+  height: 13px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  display: inline-block;
+  animation: dmsUploadSpin 0.8s linear infinite;
+}
+.documents-page-i5 {
+  font-size: 13px;
+}
+.documents-page-i6 {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--vdms-line);
+  background: var(--vdms-surface-alt);
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.vessel-dms-app .documents-page-i6 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i7 {
+  text-decoration: none;
+}
+.documents-page-i8 {
+  padding: 16px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .documents-page-i8 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i9 {
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 6px;
+}
+.documents-page-i10 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  padding: 8px;
+}
+.vessel-dms-app .documents-page-i10 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i11 {
+  padding: 7px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-dms-app .documents-page-i11 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i12 {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.documents-page-i13 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.documents-page-i14 {
+  padding: 7px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-dms-app .documents-page-i14 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i15 {
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  flex-shrink: 0;
+}
+.documents-page-i16 {
+  word-break: break-word;
+}
+.documents-page-i17 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.documents-page-i18 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.documents-page-i19 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .documents-page-i19 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i20 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.documents-page-i21 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.documents-page-i22 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.documents-page-i23 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.documents-page-i24 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vdms-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .documents-page-i24 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i25 {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vdms-text-muted);
+  margin-top: 1px;
+}
+.vessel-dms-app .documents-page-i25 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i26 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.documents-page-i27 {
+  flex: 1;
+}
+.documents-page-i28 {
+  color: var(--vdms-text-faint);
+  font-size: 11px;
+}
+.vessel-dms-app .documents-page-i28 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i29 {
+  overflow-x: auto;
+}
+.documents-page-i30 {
+  height: 18px;
+  background: var(--vdms-line);
+  margin: 0 6px 0 4px;
+  flex-shrink: 0;
+}
+.documents-page-i31 {
+  font-size: 13px;
+  color: var(--vdms-text-faint);
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+.documents-page-i32 {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.documents-page-i33 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+  white-space: nowrap;
+}
+.vessel-dms-app .documents-page-i33 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i34 {
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--vdms-border);
+  font-size: 13px;
+  font-weight: 700;
+  outline: none;
+}
+.vessel-dms-app .documents-page-i34 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i35 {
+  margin: 0;
+  font-size: clamp(18px, 1.6vw, 21px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--vdms-text);
+  word-break: break-word;
+}
+.documents-page-i36 {
+  margin: 1px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .documents-page-i36 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i37 {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 9px;
+}
+.vessel-dms-app .documents-page-i37 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i38 {
+  font-size: 10px;
+}
+.documents-page-i39 {
+  flex: 1 1 460px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.documents-page-i40 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+  row-gap: 8px;
+}
+.documents-page-i41 {
+  font-size: 12px;
+}
+.documents-page-i42 {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.documents-page-i43 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--vdms-border-soft);
+}
+.documents-page-i44 {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-dms-app .documents-page-i44 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i45 {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+  z-index: 1;
+  pointer-events: none;
+  line-height: 1;
+}
+.documents-page-i46 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.documents-page-i47 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-dms-app .documents-page-i47 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i48 {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+.vessel-dms-app .documents-page-i48 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i49 {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  box-sizing: border-box;
+  border: 1px dashed var(--vdms-line-strong);
+  background: transparent;
+  cursor: pointer;
+  margin-left: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.vessel-dms-app .documents-page-i49 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i50 {
+  border: 1px solid transparent;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.vessel-dms-app .documents-page-i50 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i51 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.documents-page-i52 {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+}
+.documents-page-i53 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 4px;
+}
+.documents-page-i54 {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--vdms-line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.documents-page-i55 {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+.vessel-dms-app .documents-page-i55 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i56 {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .documents-page-i56 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i57 {
+  display: flex;
+  flex-direction: column;
+}
+.documents-page-i58 {
+  display: block;
+  color: var(--vdms-text);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.documents-page-i59 {
+  display: block;
+  color: var(--vdms-text-muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+.vessel-dms-app .documents-page-i59 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i60 {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-dms-app .documents-page-i60 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i61 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.documents-page-i62 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .documents-page-i62 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i63 {
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+}
+.documents-page-i64 {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 7px;
+}
+.documents-page-i65 {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 4px 2px;
+}
+.vessel-dms-app .documents-page-i65 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i66 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .documents-page-i66 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i67 {
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-dms-app .documents-page-i67 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i68 {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+  word-break: break-word;
+}
+.vessel-dms-app .documents-page-i68 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i69 {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.documents-page-i70 {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.vessel-dms-app .documents-page-i70 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i71 {
+  font-size: 11px;
+  font-style: italic;
+  border-left: 2px solid #0284c7;
+  padding: 3px 8px;
+  border-radius: 0 4px 4px 0;
+  word-break: break-word;
+  margin-top: 2px;
+}
+.vessel-dms-app .documents-page-i71 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i72 {
+  color: var(--vdms-text);
+  font-weight: 600;
+}
+.documents-page-i73 {
+  font-size: 9px;
+}
+.documents-page-i74 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.documents-page-i75 {
+  padding: 10px 14px;
+  color: var(--vdms-text-muted);
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--vdms-line);
+  background: var(--vdms-surface-alt);
+}
+.vessel-dms-app .documents-page-i75 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i76 {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.documents-page-i77 {
+  padding: 0 4px;
+}
+.documents-page-i78 {
+  border-radius: 16px;
+  border: 1px solid var(--vdms-line);
+  padding: 36px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.documents-page-i79 {
+  margin-bottom: 10px;
+}
+.documents-page-i80 {
+  font-weight: 700;
+  font-size: 15px;
+}
+.vessel-dms-app .documents-page-i80 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i81 {
+  font-size: 13px;
+  margin-top: 4px;
+}
+.vessel-dms-app .documents-page-i81 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i82 {
+  font-weight: 700;
+  color: var(--vdms-text);
+  font-size: 15px;
+}
+.vessel-dms-app .documents-page-i82 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i83 {
+  font-size: 13px;
+  margin-top: 4px;
+  max-width: 520px;
+  line-height: 1.5;
+}
+.vessel-dms-app .documents-page-i83 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i84 {
+  display: grid;
+  gap: 12px;
+}
+.documents-page-i85 {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.documents-page-i86 {
+  font-size: 15px;
+}
+.documents-page-i87 {
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--vdms-text-muted);
+  word-break: break-all;
+}
+.vessel-dms-app .documents-page-i87 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i88 {
+  height: 15px;
+  cursor: pointer;
+  margin: 0;
+  vertical-align: middle;
+}
+.documents-page-i89 {
+  border: 1px solid transparent;
+  padding: 1px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.vessel-dms-app .documents-page-i89 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i90 {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.documents-page-i91 {
+  border: 1px solid var(--vdms-line);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.documents-page-i92 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+}
+.documents-page-i93 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vdms-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vessel-dms-app .documents-page-i93 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i94 {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+}
+.vessel-dms-app .documents-page-i94 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i95 {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .documents-page-i95 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i96 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.documents-page-i97 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-border-soft);
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.documents-page-i98 {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.documents-page-i99 {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .documents-page-i99 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i100 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  margin-left: 8px;
+  word-break: break-word;
+}
+.vessel-dms-app .documents-page-i100 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i101 {
+  overflow-x: auto;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.documents-page-i102 {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  font-size: 12px;
+}
+.vessel-dms-app .documents-page-i102 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i103 {
+  width: 48px;
+}
+.documents-page-i104 {
+  width: 82px;
+}
+.documents-page-i105 {
+  padding: 48px 16px;
+  text-align: center;
+}
+.documents-page-i106 {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.documents-page-i107 {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--vdms-text);
+}
+.documents-page-i108 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  max-width: 360px;
+}
+.vessel-dms-app .documents-page-i108 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i109 {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.documents-page-i110 {
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .documents-page-i110 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i111 {
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+  max-width: 420px;
+}
+.vessel-dms-app .documents-page-i111 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i112 {
+  border-bottom: 1px solid var(--vdms-border-soft);
+  transition: background 0.1s;
+}
+.documents-page-i113 {
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.documents-page-i114 {
+  margin-top: 4px;
+  color: var(--vdms-text-muted);
+  font-size: 10px;
+  word-break: break-all;
+}
+.vessel-dms-app .documents-page-i114 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i115 {
+  height: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+.documents-page-i116 {
+  font-size: 13px;
+  flex-shrink: 0;
+  color: var(--vdms-text-muted);
+}
+.documents-page-i117 {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.vessel-dms-app .documents-page-i117 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i118 {
+  border: 1px solid transparent;
+  padding: 1px 7px;
+  font-size: 10.5px;
+  flex-shrink: 0;
+  cursor: pointer;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.documents-page-i119 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.documents-page-i120 {
+  padding: 10px 14px;
+  color: var(--vdms-text-muted);
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--vdms-surface-alt);
+  border-top: 1px solid var(--vdms-line);
+}
+.vessel-dms-app .documents-page-i120 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.documents-page-i121 {
+  font-variant-numeric: tabular-nums;
+}
+
+// ── Responsive: Vessel DMS page (320px → 1920px) ─────────────────────────────────────────────────
+// This page is the Documents view (the sidebar item "Vessel DMS"). Everything here is scoped to it:
+// page rules sit under `.dms-docs-root`, and the few rules for the shared top bar are scoped with
+// `.vessel-dms-app:has(.dms-docs-root)` so no other page's top bar changes.
+//
+// Root causes this section fixes
+//  1. Top bar: the breadcrumb is portalled into the bar and was allowed to wrap into a 58px box
+//     (the last crumb got clipped on desktop). At tablet width the left block (`flex: 1 1 auto`
+//     inline) claimed the whole row because the breadcrumb is a 100%-wide child, so the
+//     fullscreen / bell / avatar / logout buttons dropped to a third row, making the bar ~215px.
+//  2. Toolbar: the right-hand tool group had a 460px flex basis, which forced the buttons onto a new
+//     row long before the space actually ran out, and the site picker had a 200px minimum.
+//  3. Filters: seven controls laid out as wrapping flex items gave uneven rows with "Clear" alone.
+//  4. Folder cards: `auto-fit` stretched a single card across the row; tiles top-aligned their icon.
+//
+//   1440–1920   spacious desktop     64px top bar, wide filter columns, 280px+ folder cards
+//   1280–1439   desktop              same, compact spacing
+//   1024–1279   small laptop         single-line breadcrumb that truncates, user name truncates
+//   768–1023    tablet               title row + breadcrumb row; toolbar single row when it fits
+//   576–767     large phone          toolbar buttons wrap right-aligned
+//   480–575     phone                buttons 2×2, filters in pairs
+//   320–479     small phone          one column everywhere, icons stay on the title row
+
+$dms: '.vessel-dms-app:has(.dms-docs-root)';
+
+// ── 1. Top bar (this page only) ──────────────────────────────────────────────────────────────────
+#{$dms} .vessel-dms-topbar {
+  // The action icons are one row on every width; only the left block is allowed to shrink.
+  .vdms-topbar-right { flex: 0 0 auto; flex-wrap: nowrap; }
+  .vdms-topbar-left { min-width: 0; }
+  // The signed-in name shortens with an ellipsis instead of pushing the icons around.
+  .vdms-topbar-user { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  // Breadcrumb: one line. Arrows and separators keep their size; the crumbs shrink with an ellipsis.
+  #vdms-header-route { min-width: 0; max-height: none !important; overflow: hidden !important; }
+  // The nav fills the breadcrumb slot (a definite width), so the crumbs have something to shrink against.
+  // (A `max-width: 100%` on the crumbs made them collapse to nothing inside the shrink-to-fit nav.)
+  .dms-docs-nav { flex: 1 1 auto; width: 100%; flex-wrap: nowrap !important; max-height: none !important; overflow: hidden !important; min-width: 0; margin: 0 !important; line-height: 1.3; }
+  .dms-docs-nav > * { flex-shrink: 0; }
+  .dms-docs-nav .dms-crumb-link,
+  .dms-docs-nav .dms-crumb-current { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+// Desktop and small laptop: a compact single-row bar (it used to be 76px with a clipped second line)
+@media (min-width: #{$bp-lg}) {
+  #{$dms} .vessel-dms-topbar { height: 64px !important; }
+}
+
+// Tablet and phone: row one is [menu] [title] … [action icons]; the breadcrumb sits under the title.
+// A zero flex basis on the left block stops it claiming the whole row (which pushed the icons down).
+@media (max-width: #{$tablet}) {
+  #{$dms} .vessel-dms-topbar {
+    min-height: 48px;
+    // Compact: less padding, 34px controls (they were 42–44px), 24px breadcrumb arrows, tighter rows.
+    // Sizes are written inline by the component, hence !important. About 84px tall instead of about 125px.
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    row-gap: 2px !important;
+    .vdms-topbar-left { flex: 1 1 0 !important; row-gap: 2px; }
+    .vdms-topbar-left button, .vdms-topbar-right button { width: 34px !important; height: 34px !important; min-width: 34px !important; min-height: 34px !important; }
+    .dms-nav-arrow { width: 24px !important; height: 24px !important; min-height: 24px !important; min-width: 24px !important; }
+    .dms-docs-nav { min-height: 24px !important; }
+    // The left block is two rows tall (title, then breadcrumb). Centring the icons against it left them
+    // level with the breadcrumb; pin them to the title row instead.
+    .vdms-topbar-right { align-self: flex-start; }
+    #vdms-header-route { margin: 0 !important; padding: 0 !important; }
+  }
+}
+
+// ── 2. Page frame ────────────────────────────────────────────────────────────────────────────────
+.dms-docs-root {
+  min-width: 0;
+  max-width: 100%;
+  .dms-docs-sticky { min-width: 0; }
+}
+
+// ── 3. SharePoint toolbar: site picker left, actions right ───────────────────────────────────────
+.dms-docs-root {
+  .dms-docs-head { flex-wrap: wrap; gap: 8px 12px !important; padding: 6px 0 !important; }
+  .vdms-docs__title { flex: 0 1 auto; min-width: 0 !important; }
+  // Only wrap the buttons onto their own row when they truly do not fit (the old 460px basis forced it early).
+  .vdms-docs__tools { flex: 1 1 auto; min-width: 0; justify-content: flex-end; }
+  // The four actions (Archive, New Folder, Upload Folder, Upload Files) are always ONE row. The container
+  // used to wrap item by item, and since "Upload Folder + Upload Files" is a sub-group of its own, a tight
+  // row broke after Archive and left it alone on a line. Buttons keep their size and never wrap their label.
+  .vdms-docs__actions { justify-content: flex-end; flex-wrap: nowrap; gap: 4px; max-width: 100%; }
+  .vdms-docs__upload-group { flex-wrap: nowrap; flex: 0 0 auto; gap: 4px; }
+  .vdms-docs__actions > .dms-btn, .vdms-docs__upload-group > .dms-btn { flex: 0 0 auto; white-space: nowrap; }
+  // New Folder, Upload Folder and Upload Files share one size (150px wide on desktop, scaling down on narrower
+  // screens); the phone grid below overrides this with 100%-wide cells, which are equal too.
+  // min-height: 0 cancels the touch-screen "button { min-height: 40px }" rule, which made only the <button>
+  // (New Folder) taller than the two <label> buttons.
+  .vdms-docs__tool-btn { box-sizing: border-box; width: clamp(128px, 12vw, 150px); min-height: 0; padding-left: 6px !important; padding-right: 6px !important; overflow: hidden; text-overflow: ellipsis; align-self: center; justify-content: center; text-align: center; }
+  // Extra buttons only appear while files are selected (Delete, Folder view...). Then there are more than four
+  // actions, so the row may wrap again rather than overflow the page.
+  .vdms-docs__actions:has(.dms-btn-danger) { flex-wrap: wrap; }
+  // One height for every control in the row, with compact horizontal padding
+  .dms-docs-head .dms-btn { height: 32px !important; padding: 0 7px !important; font-size: 12.5px; gap: 4px; }
+  .vdms-docs__title select { height: 32px !important; min-width: 0 !important; max-width: 100% !important; width: clamp(120px, 12vw, 190px) !important; }
+}
+
+// ── 4. Search and filters: a grid that fills the width ───────────────────────────────────────────
+// Search takes two columns (a full row on narrow screens), every dropdown one, and "Clear" sits in the
+// last cell of the final row.
+.dms-docs-root .dms-filter-bar .dms-filter-row {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr));
+  gap: 8px !important;
+  align-items: center !important;
+  > * { min-width: 0 !important; max-width: none !important; width: auto !important; flex: none !important; }
+  > .dms-filter-search { grid-column: 1 / -1; }
+  > .dms-filter-loading { grid-column: 1 / -1; }
+  > button.dms-filter-clear { justify-self: start; }
+}
+@media (min-width: #{$bp-wide}) {
+  .dms-docs-root .dms-filter-bar .dms-filter-row > .dms-filter-search { grid-column: span 2; }
+}
+@media (min-width: #{$bp-xl}) {
+  // Roomy desktop: wider dropdowns so labels such as "All attachment status" are not cut off.
+  .dms-docs-root .dms-filter-bar .dms-filter-row { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+
+// ── 5. Folder cards ──────────────────────────────────────────────────────────────────────────────
+.dms-docs-root {
+  // auto-fill keeps a lone card at column width instead of stretching it across the row
+  // Cards are at least 290px wide (enough for the name and the counts on one line each) and share the whole row
+  // evenly, so there is no empty strip at the right. A lone card is capped at 360px (rule below).
+  .vdms-docs__tiles { grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 12px; }
+  // Every grid that holds folder cards. Most of them are built with the shared dmsGrid(250) helper, which writes
+  // `grid-template-columns` inline (a 250px minimum), so the class rule above never reached them. The vessel
+  // grid keeps its own rule below.
+  div:has(> .dms-tile):not(.vdms-docs__vessels) { grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)) !important; }
+  // A lone card (one folder) is capped so it is not stretched across the row.
+  div:has(> .dms-tile:only-child):not(.vdms-docs__vessels) { grid-template-columns: minmax(min(100%, 300px), 360px) !important; }
+  // Icon on the left, text block in the middle, chevron at the right edge, all on one centre line;
+  // every card has the same minimum height.
+  .dms-tile { align-items: center !important; min-height: 76px; box-sizing: border-box; }
+  .dms-tile > .dms-design-system-i5 { flex-shrink: 0; }
+  .dms-tile > .dms-design-system-i6 { flex-shrink: 0; margin-left: auto; }
+  // The folder / file counts stay on one line. The name may use up to two lines, only when it must.
+  .dms-tile > div:nth-child(2) { flex: 1 1 auto; min-width: 0; }
+  .dms-tile > div:nth-child(2) > div:nth-child(2) { flex-wrap: nowrap !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+
+// Vessel cards (set to 2 / 4 columns by the component from the window width, ignoring the sidebar):
+// below 1280px the grid uses the width it really has.
+@media (max-width: 1279px) {
+  .dms-docs-root .vdms-docs__vessels { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)) !important; }
+}
+
+// The file table is 1420px wide and scrolls sideways inside its own box; the page itself never does.
+.dms-docs-root .vdms-docs__table-scroll { max-width: 100%; -webkit-overflow-scrolling: touch; }
+
+// ── 6. Large phone (<768) ────────────────────────────────────────────────────────────────────────
+@media (max-width: #{$phone}) {
+  .dms-docs-root { gap: 12px; }
+  .dms-docs-root .dms-docs-head { align-items: center !important; }
+  // Site picker on its own row, action buttons right-aligned under it
+  .dms-docs-root .vdms-docs__tools { flex: 1 1 100%; }
+  // The file table already scrolls sideways; a 70vh height cap on top made a second, nested scroll area
+  // (its horizontal scrollbar could sit below the fold), so on phones the page scrolls instead.
+  .dms-docs-root .documents-page-i101 { max-height: none; }
+}
+
+// ── 7. Phone (<576) ──────────────────────────────────────────────────────────────────────────────
+@media (max-width: #{$bp-wide - 1px}) {
+  .dms-docs-root {
+    .vdms-docs__title { flex: 1 1 100%; }
+    .vdms-docs__title label { flex: 1 1 auto; min-width: 0; }
+    .vdms-docs__title select { width: 100% !important; }
+    // Buttons: a neat 2×2 grid
+    .vdms-docs__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 6px; }
+    // The upload sub-group dissolves so Upload Folder / Upload Files become cells of the 2×2 grid
+    .vdms-docs__upload-group { display: contents; }
+    .vdms-docs__actions > *, .vdms-docs__upload-group > * { width: 100%; justify-content: center; }
+    // Delete (only shown while files are selected) is the odd fifth button: give it a full row instead of a lone half cell
+    .vdms-docs__actions .dms-btn-danger { grid-column: 1 / -1; }
+    .dms-filter-bar { padding: 8px 10px !important; }
+  }
+}
+
+// ── 8. Small phone (<480) ────────────────────────────────────────────────────────────────────────
+@media (max-width: #{$bp-xs - 1px}) {
+  .dms-docs-root {
+    .vdms-docs__vessels { grid-template-columns: minmax(0, 1fr) !important; }
+    .dms-filter-bar .dms-filter-row { grid-template-columns: minmax(0, 1fr); }
+    .dms-filter-bar .dms-filter-row > button.dms-filter-clear { justify-self: stretch; }
+  }
+}
+
+// ── Vessel DMS, 638–851px: compact one-row header and one-row toolbar ────────────────────────────
+// Header: the breadcrumb moves up beside the title (it used to wrap to its own row), so the bar is a single
+// row about 56px tall instead of about 100px. The breadcrumb takes whatever is left and shortens with "…".
+// Toolbar: the SharePoint picker and Archive / New Folder / Upload Folder / Upload Files share one row.
+// To make that fit, the text label "SharePoint sites" is hidden (the dropdown keeps its aria-label and the
+// folder icon still identifies it), the dropdown is 120px, and the buttons use 5px side padding.
+// Arithmetic at the narrow end (638px, content about 590px): picker 160 + buttons about 400 + gap 8 = 568px.
+// The one-row header applies up to 1023px (it was 851px, so at 852–1023 the breadcrumb wrapped onto a second
+// row and the bar was about 125px tall).
+@media (min-width: 638px) and (max-width: 1023px) {
+  .vessel-dms-app:has(.dms-docs-root) .vessel-dms-topbar {
+    min-height: 0;
+    .vdms-topbar-left { flex-wrap: nowrap; align-items: center; gap: 8px; }
+    .vdms-topbar-title { flex: 0 0 auto !important; max-width: none !important; overflow: visible !important; }
+    #vdms-header-route { flex: 1 1 0 !important; order: 0 !important; min-width: 0 !important; }
+    .vdms-topbar-right { align-self: center; }
+  }
+}
+
+@media (min-width: 638px) and (max-width: 851px) {
+  .dms-docs-root {
+    .dms-docs-head { flex-wrap: nowrap; align-items: center !important; gap: 8px !important; }
+    .vdms-docs__title { flex: 0 0 auto; gap: 8px; }
+    .vdms-docs__title label { font-size: 0 !important; gap: 0 !important; }
+    .vdms-docs__title select { width: 120px !important; font-size: 13px !important; }
+    .vdms-docs__tools { flex: 1 1 auto; min-width: 0; }
+    .vdms-docs__actions, .vdms-docs__upload-group { gap: 3px; }
+    .dms-docs-head .dms-btn { padding: 0 5px !important; font-size: 12px; gap: 3px; }
+    // Same size for the three shared buttons, but narrow enough for the one-row arithmetic above
+    // (picker 160 + Archive 76 + 3 x 112 + gaps = about 590px at 638px). 112px is the least that holds
+    // "Upload Folder" in full (about 108px of icon, text and padding), and it grows with the screen so the
+    // label is never clipped (it was 14vw, which gave only 107px at 762px).
+    .vdms-docs__tool-btn { width: clamp(112px, 17vw, 140px); }
+    // With files selected a fifth button (Delete) appears: let the header wrap so the toolbar drops under the picker
+    .dms-docs-head:has(.dms-btn-danger) { flex-wrap: wrap; }
+    .dms-docs-head:has(.dms-btn-danger) .vdms-docs__tools { flex: 1 1 100%; }
+  }
+}

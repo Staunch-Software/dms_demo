@@ -1,0 +1,1854 @@
+// Vessel Master page (components/pages/VesselsPage.tsx, VesselDocumentPanel.tsx).
+// Layout and component styles first; responsive rules for this page are in the block at the bottom.
+@use '../tokens' as *;
+@use '../breakpoints' as *;
+
+// ── Page shell ───────────────────────────────────────────────────────────────
+.vdms-vessels-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 0;
+  overflow: hidden;
+
+  // Stationary header + filters; the card area below scrolls.
+  .vdms-vessels-controls { flex-shrink: 0; padding-top: 8px; }
+  .vdms-vessels-header { margin-bottom: 16px; padding-right: 8px; }
+
+  // Round icon buttons in the header (refresh / edit / delete / add). Colours stay inline: the
+  // hover handlers and the admin colour theme set them at runtime.
+  .vdms-icon-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    font-size: 15.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.18s ease;
+
+    &--primary { font-size: 16px; font-weight: 700; }
+  }
+
+  // Search + filters + view toggle
+  .vdms-vessels-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .vdms-vessels-search { position: relative; flex: 1 1 220px; min-width: 180px; }
+  .vdms-vessels-search__icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--vdms-text-faint);
+    font-size: 14px;
+  }
+  // Cards/List toggle + vessel count travel together; the pair is pushed to the right edge, and
+  // when the toolbar wraps it moves to the next row as one unit (nothing is clipped).
+  .vdms-vessels-viewbar { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .vdms-vessels-viewtoggle {
+    display: inline-flex;
+    border: 1px solid var(--vdms-line, rgba(16, 84, 138, 0.13));
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .vdms-vessels-viewtoggle__btn {
+    border: none;
+    cursor: pointer;
+    padding: 7px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vdms-vessels-count { font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+
+  // Card area. Rows size to their content so a card is never clipped (the page used to force a
+  // fixed row height computed from the visible height); the area scrolls and leaves room at the
+  // bottom for the floating assistant button.
+  .vdms-scroll-clean { padding-bottom: 80px !important; }
+  .vdms-vessels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    grid-auto-rows: auto !important;
+    // Room for the hover lift (translateY -4px) and the 3px selected ring, so the first row of cards is
+    // not clipped by the scroll area's top (and the sides) when hovered or selected.
+    padding: 8px 4px 0;
+  }
+
+  // ── Vessel card ────────────────────────────────────────────────────────────
+  .vessel-card {
+    background: var(--vdms-glass, rgba(255, 255, 255, 0.6));
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    border-radius: 18px;
+    border: 1px solid var(--vdms-line, rgba(16, 84, 138, 0.13));
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(.2, .8, .2, 1), box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+  .vdms-vcard__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 58px;
+    padding: 6px 14px 2px;
+    box-sizing: border-box;
+  }
+  .vdms-vcard__id { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .vdms-vcard__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: $font-display;
+    font-size: 13.5px;
+    font-weight: 800;
+  }
+  .vdms-vcard__text { min-width: 0; }
+  .vdms-vcard__name {
+    margin: 0;
+    font-family: $font-display;
+    font-size: 14.5px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vdms-vcard__type {
+    margin: 2px 0 0;
+    font-family: $font-mono;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--vdms-text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vdms-vcard__status {
+    border-radius: 20px;
+    padding: 1px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    flex-shrink: 0;
+  }
+  .vdms-vcard__body {
+    padding: 4px 14px 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .vdms-vcard__actions { display: flex; gap: 6px; margin-top: 0; }
+
+  // ── Document figures inside a card (VesselDocumentPanel, compact) ──────────
+  .vdms-vdoc { padding: 0; gap: 10px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  // Four tiles in one row (the original card layout). Labels truncate on narrow cards; phones
+  // under 480px switch to two rows of two (see the responsive block).
+  .vdms-vdoc__tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .vdms-vdoc__tile {
+    border-radius: 10px;
+    padding: 9px 4px;
+    text-align: center;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .vdms-vdoc__num { font-size: 15.5px; font-weight: 800; color: var(--vdms-text); line-height: 1.2; }
+  .vdms-vdoc__label {
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 2px;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vdms-vdoc__bar {
+    display: flex;
+    height: 6px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--vdms-surface-alt, #eef2f6);
+    margin: 2px 0;
+  }
+  .vdms-vdoc__meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.5px;
+    color: var(--vdms-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vdms-vdoc__meta-text { overflow: hidden; text-overflow: ellipsis; }
+}
+
+// Stat tiles (Drawings / Manuals / Certificates / To classify) stay four in a row. What changes is the label,
+// based on the card's own width (so it works with the sidebar open or closed, at any viewport):
+//   card 330px and up   full labels            Drawings  Manuals  Certificates  To classify
+//   card 250–329px      short labels           Drawings  Manuals  Certs         To sort
+//   card under 250px    tiny labels            Dwgs      Man.     Certs         Sort
+// The full text stays in the tile's tooltip. (At 350–479px the existing 2x2 layout takes over instead.)
+.vdms-vessels-page .vessel-card { container-type: inline-size; }
+.vdms-vessels-page .vdms-vdoc__label::after { display: none; }
+@media (min-width: #{$bp-xs}) {
+  @container (max-width: 329px) {
+    .vdms-vessels-page .vdms-vdoc__label > span { display: none; }
+    .vdms-vessels-page .vdms-vdoc__label::after { display: inline; content: attr(data-short); }
+    .vdms-vessels-page .vdms-vdoc__tile { padding-left: 2px; padding-right: 2px; }
+  }
+  @container (max-width: 249px) {
+    .vdms-vessels-page .vdms-vdoc__label::after { content: attr(data-tiny); }
+  }
+}
+
+// Card banner zoom on hover (banner image is off by default, kept for when it is enabled).
+.vessel-card .vessel-card-image { transition: transform 0.4s ease; transform: scale(1); will-change: transform; }
+.vessel-card:hover .vessel-card-image { transform: scale(1.045); }
+@media (prefers-reduced-motion: reduce) {
+  .vessel-card .vessel-card-image { transition: none !important; transform: none !important; }
+}
+
+// ── Responsive (350px → 1440px+) ─────────────────────────────────────────────
+// Widest first, narrowest last, so each smaller step only overrides what it changes.
+//
+//   1440+        large desktop   roomier cards
+//   1280–1439    laptop          default layout, slightly wider cards
+//   1024–1279    small laptop    default layout (sidebar open)
+//   768–1023     tablet          sidebar collapsed, compact controls, 3-column cards
+//   576–767      large phone     search on its own row, 2-column cards
+//   480–575      phone           toolbar controls stack in pairs
+//   350–479      small phone     one column, every control full width
+//
+// "short": any width below 760px tall also gets the compact controls block.
+
+// 1256px and up (including above 1440): five cards per row. The column width is one fifth of the row,
+// but never narrower than 200px — if the content area is too narrow for five (for example the sidebar
+// is open), the row simply holds fewer, bigger cards instead of squeezing five unreadable ones.
+@media (min-width: #{$bp-5col}) {
+  .vdms-vessels-page .vdms-vessels-grid {
+    // The "- 2px" matters: five columns of exactly (100% - gaps) / 5 fit with zero spare room, and
+    // sub-pixel rounding can make the browser count only four. Leaving 2px spare keeps it at five.
+    grid-template-columns: repeat(auto-fill, minmax(max(200px, calc((100% - 4 * 12px) / 5 - 2px)), 1fr));
+    gap: 12px;
+  }
+}
+
+// Tablet and below, and short windows: compact the controls block so it stops eating the room the
+// cards need.
+@media (max-width: #{$tablet}), (max-height: #{$short-height}) {
+  .vdms-vessels-page {
+    .vdms-vessels-controls { padding-top: 0; }
+    // Every block in the controls area (header, toolbar, folders row, banners)
+    .vdms-vessels-controls > div { margin-bottom: 8px !important; padding-right: 0 !important; }
+    // DmsPageHeader is a shared component with inline spacing, hence !important
+    .vdms-vessels-header > div { gap: 6px 12px !important; }
+    .vdms-vessels-header p { margin-top: 1px !important; }
+    .vdms-vessels-header > div > div:last-child { gap: 8px !important; }
+    .vdms-icon-btn { width: 34px; height: 34px; min-height: 34px; font-size: 14px; }
+    .vdms-vessels-toolbar { gap: 8px; }
+  }
+}
+
+// Shorter top bar on this page (tablet and phone widths). The bar is shared by every page, so the rule
+// is scoped to the app shell that contains the Vessels page. At these widths the bar wraps an empty
+// "folder route" slot (only the Documents page fills it) onto a second row, which made the bar about
+// 98px tall with its content pinned to the top; with the slot hidden and the 76px minimum lowered the
+// bar is 60px and its buttons and title are centered.
+@media (max-width: #{$tablet}) {
+  .vessel-dms-app:has(.vdms-vessels-page) .vessel-dms-topbar {
+    min-height: 60px;
+    #vdms-header-route:empty { display: none; }
+  }
+}
+
+// Tablet (768–1023): sidebar is collapsed, so the content is ~720px wide at the low end.
+@media (min-width: #{$bp-md}) and (max-width: #{$tablet}) {
+  .vdms-vessels-page .vdms-vessels-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+}
+
+// Large phone and tablet (576–1023): the refresh / edit / delete / add buttons stay on the right of the title block
+// instead of wrapping underneath it; the subtitle wraps in the space that is left. DmsPageHeader is a
+// shared component with inline `flex-wrap: wrap`, hence !important.
+@media (min-width: #{$bp-wide}) and (max-width: #{$tablet}) {
+  .vdms-vessels-page {
+    .vdms-vessels-header > div { flex-wrap: nowrap !important; align-items: center !important; }
+    .vdms-vessels-header > div > div:first-child { min-width: 0; flex: 1 1 auto; }
+    .vdms-vessels-header > div > div:last-child { flex: 0 0 auto; margin-left: auto; }
+  }
+}
+
+// One-row toolbar from 576px up: search, status, site, Clear and the view group stay on a single
+// line. The filter wrappers set an inline min-width (SiteSelector), hence !important to let them shrink.
+@media (min-width: #{$bp-wide}) {
+  .vdms-vessels-page {
+    .vdms-vessels-toolbar { flex-wrap: nowrap; }
+    .vdms-vessels-search { flex: 1 1 140px; min-width: 90px; }
+    .vdms-vessels-toolbar > div:not(.vdms-vessels-search):not(.vdms-vessels-viewbar) { flex: 0 1 auto; min-width: 0 !important; }
+    .vdms-vessels-toolbar > button { flex-shrink: 0; }
+  }
+}
+
+// Narrower content (tablet, and laptops with the sidebar open): shrink the filters and show Clear as
+// an icon so everything still fits on the one row.
+@media (min-width: #{$bp-wide}) and (max-width: #{$bp-xl - 1px}) {
+  .vdms-vessels-page {
+    .vdms-vessels-toolbar { gap: 6px; }
+    .vdms-vessels-search { flex-basis: 110px; }
+    .vdms-vessels-toolbar > div:nth-child(2) { flex: 0 1 120px; }
+    .vdms-vessels-toolbar > div:nth-child(3) { flex: 0 1 150px; }
+    .vdms-vessels-toolbar > button { font-size: 0; padding: 0 10px; gap: 0; } // Clear: text hidden, icon stays
+    .vdms-vessels-viewbar { gap: 6px; }
+    .vdms-vessels-viewtoggle__btn { padding: 7px 9px; gap: 4px; }
+    .vdms-vessels-count { font-size: 12px; }
+  }
+}
+
+// 576–660: the content is only ~530–600px wide, so the Cards/List toggle shows icons only (names stay
+// in the tooltip) to keep search, filters, Clear and the toggle on the one row.
+@media (min-width: #{$bp-wide}) and (max-width: #{$bp-tab-sm - 1px}) {
+  .vdms-vessels-page {
+    // Search had shrunk to about 70px (unusable). It gets its own row; the filters, Clear and the toggle share the next one.
+    .vdms-vessels-toolbar { flex-wrap: wrap; row-gap: 8px; }
+    .vdms-vessels-search { flex: 1 1 100%; min-width: 0; }
+    .vdms-vessels-toolbar > div:nth-child(2) { flex: 0 1 100px; }
+    .vdms-vessels-toolbar > div:nth-child(3) { flex: 0 1 120px; }
+    .vdms-vessels-viewtoggle__btn { font-size: 0; padding: 8px 10px; gap: 0; }
+    .vdms-vessels-count { font-size: 11.5px; }
+  }
+}
+
+// Phone (<576): toolbar stacks in rows.
+@media (max-width: #{$bp-wide - 1px}) {
+  .vdms-vessels-page {
+    .vdms-vessels-toolbar { row-gap: 8px; }
+    // Search gets a full row; the filters share the next row.
+    .vdms-vessels-search { flex: 1 1 100%; min-width: 0; }
+    .vdms-vessels-toolbar > div:not(.vdms-vessels-search):not(.vdms-vessels-viewbar) {
+      flex: 1 1 140px;
+      min-width: 0 !important; // SiteSelector sets an inline min-width
+      width: auto !important;
+    }
+    .vdms-vessels-toolbar > div:not(.vdms-vessels-search):not(.vdms-vessels-viewbar) > * { min-width: 0; }
+    // View toggle and count get their own full row, count at the right end.
+    .vdms-vessels-viewbar { flex: 1 1 100%; margin-left: 0; justify-content: space-between; }
+  }
+}
+
+// Large phone and below (<768): card grid and card padding.
+@media (max-width: #{$phone}) {
+  // The global phone rule reserves 88px under every page for the floating assistant button. The
+  // Vessels card area already keeps its own 80px of scroll padding for that, so reserving it twice
+  // left a tall empty strip under the cards. Only a small margin is kept here.
+  .vessel-dms-app .vdms-main-scroll:has(.vdms-vessels-page) { padding-bottom: 12px !important; }
+
+  .vdms-vessels-page {
+    .vdms-vessels-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); }
+    .vdms-vcard__head { padding-left: 12px; padding-right: 12px; }
+    .vdms-vcard__body { padding-left: 12px; padding-right: 12px; }
+  }
+}
+
+// Phone (480–575): two cards fit side by side only if there is room, otherwise one.
+@media (max-width: #{$bp-sm - 1px}) {
+  .vdms-vessels-page {
+    .vdms-vessels-header > div { row-gap: 8px !important; }
+    // Header action buttons share one row under the title.
+    .vdms-vessels-header > div > div:last-child { flex: 1 1 100%; }
+    .vdms-vessels-toolbar > div:not(.vdms-vessels-search):not(.vdms-vessels-viewbar) { flex-basis: calc(50% - 4px); }
+  }
+}
+
+// Small phone (350–479): one column, every control full width.
+@media (max-width: #{$bp-xs - 1px}) {
+  .vdms-vessels-page {
+    .vdms-vessels-toolbar > div:not(.vdms-vessels-search):not(.vdms-vessels-viewbar) { flex-basis: 100%; }
+    .vdms-vessels-toolbar > button { flex: 1 1 100%; justify-content: center; }
+    .vdms-vessels-viewbar .vdms-vessels-viewtoggle { flex: 1 1 auto; }
+    .vdms-vessels-viewtoggle__btn { flex: 1; justify-content: center; }
+    .vdms-vessels-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .vdms-vcard__avatar { width: 34px; height: 34px; }
+    // Single wide column: tiles go two by two so the labels stay readable.
+    .vdms-vdoc__tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .vdms-vdoc__label { white-space: normal; overflow-wrap: anywhere; }
+    .vdms-vdoc__tile { padding: 8px 2px; }
+  }
+}
+
+// ── Converted inline styles (vessels-page) ────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessels-page-i1 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessels-page-i2 {
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.vessels-page-i3 {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  min-height: 44px;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--vdms-text-faint);
+}
+.vessel-dms-app .vessels-page-i3 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i4 {
+  font-size: 18px;
+}
+.vessels-page-i5 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.vessels-page-i6 {
+  font-size: 44px;
+  margin-bottom: 10px;
+}
+.vessels-page-i7 {
+  font-size: 44px;
+}
+.vessels-page-i8 {
+  margin: 0 0 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessels-page-i8 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i9 {
+  margin: 0;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  line-height: 1.5;
+}
+.vessel-dms-app .vessels-page-i9 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i10 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  padding: 8px 12px;
+  margin-bottom: 22px;
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  word-break: break-all;
+}
+.vessel-dms-app .vessels-page-i10 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i11 {
+  font-size: 11px;
+}
+.vessels-page-i12 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.vessels-page-i13 {
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text);
+  border: 2px solid var(--vdms-line);
+  padding: 14px 18px;
+  min-height: 44px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.vessels-page-i14 {
+  font-size: 26px;
+}
+.vessels-page-i15 {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 2px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessels-page-i15 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i16 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessels-page-i16 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i17 {
+  border: none;
+  padding: 14px 18px;
+  min-height: 44px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.vessels-page-i18 {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+.vessel-dms-app .vessels-page-i18 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i19 {
+  font-size: 12px;
+}
+.vessel-dms-app .vessels-page-i19 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i20 {
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.vessels-page-i21 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  padding: 8px 12px;
+  margin-bottom: 22px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--vdms-text);
+  text-align: center;
+  word-break: break-word;
+}
+.vessel-dms-app .vessels-page-i21 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i22 {
+  display: flex;
+  gap: 10px;
+}
+.vessels-page-i23 {
+  flex: 1;
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text);
+  border: 2px solid var(--vdms-line);
+  padding: 12px 18px;
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+}
+.vessel-dms-app .vessels-page-i23 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i24 {
+  flex: 1;
+  border: none;
+  padding: 12px 18px;
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+}
+.vessel-dms-app .vessels-page-i24 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i25 {
+  text-align: center;
+  padding: 12px 0;
+}
+.vessels-page-i26 {
+  font-size: 52px;
+  margin-bottom: 12px;
+}
+.vessels-page-i27 {
+  font-size: 52px;
+}
+.vessels-page-i28 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessels-page-i28 { font-size: 18px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i29 {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  line-height: 1.5;
+}
+.vessel-dms-app .vessels-page-i29 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i30 {
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  font-size: 12px;
+  text-align: left;
+}
+.vessel-dms-app .vessels-page-i30 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i31 {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.vessels-page-i32 {
+  font-size: 12px;
+}
+.vessels-page-i33 {
+  font-size: 12px;
+  color: var(--vdms-text-faint);
+  margin-bottom: 12px;
+}
+.vessel-dms-app .vessels-page-i33 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i34 {
+  text-align: center;
+  padding: 8px 0;
+}
+.vessels-page-i35 {
+  font-size: 44px;
+  margin-bottom: 12px;
+}
+.vessels-page-i36 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i36 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i37 {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  line-height: 1.5;
+}
+.vessel-dms-app .vessels-page-i37 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i38 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+.vessel-dms-app .vessels-page-i38 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i39 {
+  font-size: 16px;
+}
+.vessels-page-i40 {
+  background: var(--vdms-line);
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.vessels-page-i41 {
+  height: 100%;
+  transition: width 0.8s ease-out;
+}
+.vessels-page-i42 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 12px;
+}
+.vessel-dms-app .vessels-page-i42 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i43 {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessels-page-i44 {
+  font-size: 14px;
+}
+.vessels-page-i45 {
+  color: var(--vdms-text-faint);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessels-page-i46 {
+  padding: 10px 12px;
+  margin-top: 12px;
+  text-align: left;
+  font-size: 11px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.vessel-dms-app .vessels-page-i46 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i47 {
+  display: flex;
+  gap: 6px;
+  padding: 2px 0;
+}
+.vessels-page-i48 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessels-page-i49 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i49 { font-size: 18px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i50 {
+  border: none;
+  padding: 12px 32px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+}
+.vessel-dms-app .vessels-page-i50 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i51 {
+  font-size: 42px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.vessels-page-i52 {
+  font-size: 42px;
+}
+.vessels-page-i53 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--vdms-text);
+  text-align: center;
+}
+.vessel-dms-app .vessels-page-i53 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i54 {
+  margin: 0 0 20px;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  text-align: center;
+}
+.vessel-dms-app .vessels-page-i54 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i55 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  word-break: break-all;
+}
+.vessel-dms-app .vessels-page-i55 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i56 {
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.vessel-dms-app .vessels-page-i56 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i57 {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+  text-align: center;
+}
+.vessel-dms-app .vessels-page-i57 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i58 {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+.vessels-page-i59 {
+  border: none;
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.vessels-page-i60 {
+  font-size: 28px;
+}
+.vessels-page-i61 {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.vessel-dms-app .vessels-page-i61 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i62 {
+  color: var(--vdms-text);
+  border: 2px solid var(--vdms-line);
+  padding: 16px 20px;
+}
+.vessels-page-i63 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.vessels-page-i64 {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--vdms-text);
+  margin-bottom: 2px;
+}
+.vessel-dms-app .vessels-page-i64 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i65 {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.vessels-page-i66 {
+  padding: 9px;
+  border: 1px solid var(--vdms-line-strong);
+}
+.vessels-page-i67 {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessels-page-i67 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i68 {
+  margin-top: 12px;
+  min-height: 44px;
+  padding: 9px 14px;
+  font-weight: 700;
+}
+.vessels-page-i69 {
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text);
+  border: 2px solid var(--vdms-line);
+  padding: 16px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.vessels-page-i70 {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 2px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessels-page-i70 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i71 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.vessels-page-i72 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.vessels-page-i73 {
+  display: grid;
+  gap: 8px;
+}
+.vessels-page-i74 {
+  border: none;
+  padding: 14px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.vessels-page-i75 {
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text);
+  border: 2px solid var(--vdms-line);
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.vessels-page-i76 {
+  border-radius: 20px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+  position: relative;
+}
+.vessels-page-i77 {
+  margin-top: 32px;
+  border-radius: 16px;
+  padding: 24px;
+}
+.vessels-page-i78 {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.vessels-page-i79 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessel-dms-app .vessels-page-i79 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i80 {
+  border-radius: 20px;
+  padding: 1px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i80 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i81 {
+  margin: 0;
+  font-size: 12px;
+}
+.vessel-dms-app .vessels-page-i81 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i82 {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 4px rgba(245,158,11,0.08);
+}
+.vessels-page-i83 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+.vessels-page-i84 {
+  font-size: 11px;
+  color: var(--vdms-text-faint);
+}
+.vessel-dms-app .vessels-page-i84 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i85 {
+  font-size: 10px;
+  color: var(--vdms-text-faint);
+  margin-top: 2px;
+}
+.vessel-dms-app .vessels-page-i85 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i86 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vessels-page-i87 {
+  border: none;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.vessel-dms-app .vessels-page-i87 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i88 {
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.vessel-dms-app .vessels-page-i88 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i89 {
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text-muted);
+  border: 1px solid var(--vdms-line-strong);
+  padding: 7px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i89 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i90 {
+  margin-top: 36px;
+}
+.vessels-page-i91 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.vessels-page-i92 {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--vdms-line-strong), transparent);
+}
+.vessels-page-i93 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vdms-text-muted);
+  background: var(--vdms-surface-alt);
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--vdms-line);
+  white-space: nowrap;
+}
+.vessel-dms-app .vessels-page-i93 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i94 {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to left, var(--vdms-line-strong), transparent);
+}
+.vessels-page-i95 {
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  line-height: 1.5;
+}
+.vessel-dms-app .vessels-page-i95 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i96 {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.vessel-dms-app .vessels-page-i96 { font-size: 21.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i97 {
+  font-size: 24px;
+}
+.vessels-page-i98 {
+  flex: 1;
+}
+.vessels-page-i99 {
+  font-size: 10px;
+  color: var(--vdms-text-faint);
+  margin-top: 2px;
+  word-break: break-all;
+}
+.vessel-dms-app .vessels-page-i99 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i100 {
+  font-size: 10px;
+  color: var(--vdms-text-faint);
+  margin-top: 4px;
+}
+.vessel-dms-app .vessels-page-i100 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i101 {
+  margin-top: 12px;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11.5px;
+  max-height: 130px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+.vessel-dms-app .vessels-page-i101 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i102 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+}
+.vessels-page-i103 {
+  font-size: 11.5px;
+}
+.vessels-page-i104 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessels-page-i105 {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  text-align: left;
+}
+.vessel-dms-app .vessels-page-i105 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i106 {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.vessels-page-i107 {
+  max-height: 100px;
+  overflow-y: auto;
+}
+.vessels-page-i108 {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+}
+.vessels-page-i109 {
+  font-size: 15px;
+}
+.vessels-page-i110 {
+  font-weight: 600;
+}
+.vessels-page-i111 {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vessels-page-i112 {
+  border: none;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 3px 8px rgba(217,119,6,0.35);
+}
+.vessel-dms-app .vessels-page-i112 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i113 {
+  font-size: 12px;
+  color: var(--vdms-text-faint);
+  margin-bottom: 14px;
+}
+.vessel-dms-app .vessels-page-i113 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i114 {
+  background: var(--vdms-line);
+  height: 4px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.vessels-page-i115 {
+  height: 100%;
+  transition: width 1s linear;
+}
+.vessels-page-i116 {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.vessels-page-i117 {
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text-muted);
+  border: 1px solid var(--vdms-line-strong);
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i117 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i118 {
+  border: none;
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+}
+.vessel-dms-app .vessels-page-i118 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i119 {
+  font-size: 13px;
+}
+.vessels-page-i120 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+.vessels-page-i121 {
+  font-size: 48px;
+}
+.vessels-page-i122 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 700;
+}
+.vessels-page-i123 {
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  text-align: left;
+}
+.vessel-dms-app .vessels-page-i123 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i124 {
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text-muted);
+  border: 1px solid var(--vdms-line-strong);
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i124 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i125 {
+  border: none;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-dms-app .vessels-page-i125 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i126 {
+  background: transparent;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i126 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i127 {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.vessels-page-i128 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessels-page-i128 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i129 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  line-height: 1.5;
+}
+.vessel-dms-app .vessels-page-i129 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i130 {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.vessels-page-i131 {
+  border: none;
+  padding: 10px 26px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i131 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i132 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.vessels-page-i133 {
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.vessels-page-i134 {
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+.vessels-page-i135 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessels-page-i135 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i136 {
+  margin: 0 0 20px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessels-page-i136 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i137 {
+  border: none;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i137 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i138 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.vessels-page-i139 {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.vessel-dms-app .vessels-page-i139 { font-size: 21.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i140 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessels-page-i140 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i141 {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessels-page-i141 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i142 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+.vessels-page-i143 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.vessels-page-i144 {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--vdms-text);
+  word-break: break-all;
+}
+.vessel-dms-app .vessels-page-i144 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i145 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  word-break: break-all;
+}
+.vessel-dms-app .vessels-page-i145 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i146 {
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+.vessel-dms-app .vessels-page-i146 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i147 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessels-page-i147 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i148 {
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text);
+  border: 2px solid var(--vdms-line);
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.vessels-page-i149 {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--vdms-text);
+  margin-bottom: 2px;
+}
+.vessel-dms-app .vessels-page-i149 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i150 {
+  padding: 14px 16px;
+}
+.vessels-page-i151 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.vessels-page-i152 {
+  font-weight: 700;
+  font-size: 13px;
+}
+.vessel-dms-app .vessels-page-i152 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i153 {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.vessel-dms-app .vessels-page-i153 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i154 {
+  border: none;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i154 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i155 {
+  border-radius: 16px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+}
+.vessels-page-i156 {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--vdms-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.vessels-page-i157 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessels-page-i157 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i158 {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessels-page-i158 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i159 {
+  border: none;
+  background: none;
+  color: var(--vdms-text-muted);
+  font-size: 20px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i159 { font-size: 18px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i160 {
+  font-size: 20px;
+}
+.vessels-page-i161 {
+  padding: 16px;
+  max-height: calc(84vh - 100px);
+  overflow-y: auto;
+}
+.vessels-page-i162 {
+  padding: 20px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .vessels-page-i162 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i163 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 1px solid var(--vdms-line);
+  text-align: left;
+  cursor: pointer;
+}
+.vessels-page-i164 {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.vessel-dms-app .vessels-page-i164 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i165 {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--vdms-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .vessels-page-i165 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i166 {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessels-page-i166 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i167 {
+  font-size: 12px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i167 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i168 {
+  padding: 16px;
+}
+.vessels-page-i169 {
+  display: grid;
+  gap: 14px;
+}
+.vessels-page-i170 {
+  border: 1px solid var(--vdms-line);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.vessels-page-i171 {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--vdms-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.vessels-page-i172 {
+  font-size: 12px;
+  color: var(--vdms-text);
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i172 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i173 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vessels-page-i174 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+}
+.vessel-dms-app .vessels-page-i174 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i175 {
+  border: 1px solid var(--vdms-line-strong);
+  color: var(--vdms-text);
+  padding: 5px 9px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i175 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i176 {
+  padding: 10px;
+  overflow-y: auto;
+  flex: 1;
+}
+.vessels-page-i177 {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.vessels-page-i178 {
+  height: 16px;
+  cursor: pointer;
+}
+.vessels-page-i179 {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessels-page-i179 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i180 {
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i180 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i181 {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.vessels-page-i182 {
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.vessels-page-i183 {
+  border: none;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i183 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i184 {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+.vessels-page-i185 {
+  margin-top: 8px;
+  padding: 12px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.vessel-dms-app .vessels-page-i185 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i186 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 9px;
+}
+.vessels-page-i187 {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .vessels-page-i187 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i188 {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+}
+.vessel-dms-app .vessels-page-i188 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i189 {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i189 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i190 {
+  margin: 0 12px 12px;
+  padding: 8px;
+  font-size: 12px;
+}
+.vessel-dms-app .vessels-page-i190 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i191 {
+  padding: 0 12px 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.vessels-page-i192 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line-strong);
+  color: var(--vdms-text);
+  padding: 7px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i192 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i193 {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.vessels-page-i194 {
+  border-radius: 20px;
+  padding: 3px 14px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i194 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i195 {
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.vessel-dms-app .vessels-page-i195 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i196 {
+  margin-bottom: 12px;
+}
+.vessels-page-i197 {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.vessel-dms-app .vessels-page-i197 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i198 {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+.vessels-page-i199 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.vessels-page-i200 {
+  font-weight: 600;
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.vessels-page-i201 {
+  border: none;
+}
+.vessels-page-i202 {
+  background: var(--vdms-glass, rgba(255,255,255,0.6));
+  border: 1px solid var(--vdms-line, rgba(16,84,138,0.13));
+  border-radius: 14px;
+  overflow: hidden;
+  flex: 1 1 0;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+.vessels-page-i203 {
+  position: sticky;
+  top: 0;
+  white-space: nowrap;
+  z-index: 2;
+  background: var(--vdms-surface, #ffffff);
+  border-bottom: 1px solid var(--vdms-line, rgba(16,84,138,0.13));
+  display: grid;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--vdms-text-3, #52708a);
+}
+.vessels-page-i204 {
+  text-align: center;
+}
+.vessels-page-i205 {
+  display: grid;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 16px;
+  border-top: 1px solid var(--vdms-line, rgba(16,84,138,0.13));
+  cursor: pointer;
+}
+.vessels-page-i206 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vessels-page-i207 {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+.vessel-dms-app .vessels-page-i207 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i208 {
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .vessels-page-i208 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i209 {
+  font-size: 12.5px;
+  color: var(--vdms-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .vessels-page-i209 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i210 {
+  border-radius: 20px;
+  padding: 1px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  justify-self: start;
+  white-space: nowrap;
+}
+.vessel-dms-app .vessels-page-i210 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i211 {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.vessels-page-i212 {
+  position: relative;
+  overflow: hidden;
+}
+.vessels-page-i213 {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(8,14,24,0.05) 0%, rgba(8,14,24,0.15) 55%, rgba(8,14,24,0.78) 100%);
+}
+.vessels-page-i214 {
+  position: absolute;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  border: none;
+}
+.vessels-page-i215 {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  border-radius: 50%;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+.vessel-dms-app .vessels-page-i215 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i216 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.vessels-page-i217 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .vessels-page-i217 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessels-page-i218 {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .vessels-page-i218 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes

@@ -1,0 +1,318 @@
+// Vessel checklist view (pages/VesselChecklistView.tsx)
+// Moved out of the component's inline <style> elements; the rules are unchanged.
+@use '../breakpoints' as *;
+
+html .vessel-dms-app button.vdms-chk-head, html .vessel-dms-app button.vdms-chk-head:hover, html .vessel-dms-app button.vdms-chk-head:focus, html .vessel-dms-app button.vdms-chk-head:active { outline: none !important; box-shadow: none !important; transform: none !important; filter: none !important; border: none !important; border-radius: 0 !important; }
+html .vessel-dms-app button.vdms-chk-head:focus-visible { background: var(--vdms-surface) !important; }
+.vdms-cert-no-link,
+.vdms-cert-no-link:hover,
+.vdms-cert-no-link:focus,
+.vdms-cert-no-link:focus-visible,
+.vdms-cert-no-link:active,
+.vdms-cert-no-link::before,
+.vdms-cert-no-link::after {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  content: none !important;
+}
+.vdms-cert-no-link:hover {
+  color: #0284c7 !important;
+  text-decoration: none !important;
+}
+.vdms-chk-table tbody tr:last-child { border-bottom: none !important; }
+.vdms-chk-table tbody tr:last-child td { border-bottom: none !important; }
+.vdms-chk-action-dropdown-item {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vdms-text, #1e293b);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.12s ease;
+}
+.vdms-chk-action-dropdown-item:hover {
+  background: var(--vdms-surface-alt, #f1f5f9);
+}
+.vdms-chk-table a, .vdms-chk-table a:hover, .vdms-chk-table a:visited {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+}
+
+.vdms-chk-scroll { scrollbar-width: auto; scrollbar-color: #8c8c8c #f1f1f1; } .vdms-chk-scroll::-webkit-scrollbar { width: 14px; } .vdms-chk-scroll::-webkit-scrollbar-track { background: #f1f1f1; } .vdms-chk-scroll::-webkit-scrollbar-thumb { background: #8c8c8c; border-radius: 8px; border: 3px solid #f1f1f1; } .vdms-chk-scroll::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+
+// ── Converted inline styles (vessel-checklist-view) ───────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-checklist-view-i1 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fca5a5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.vessel-checklist-view-i2 {
+  font-size: 13px;
+}
+.vessel-checklist-view-i3 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fdba74;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.vessel-checklist-view-i4 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #fde68a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.vessel-checklist-view-i5 {
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #bae6fd;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.vessel-checklist-view-i6 {
+  height: 26px;
+  border-radius: 50%;
+  background: var(--vdms-surface-alt);
+  color: #7c3aed;
+  border: 1px solid var(--vdms-line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.vessel-checklist-view-i7 {
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.vessel-checklist-view-i8 {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border: 1px solid var(--vdms-line);
+  overflow: hidden;
+}
+.vessel-checklist-view-i9 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vessel-checklist-view-i10 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-checklist-view-i11 {
+  font-size: 16px;
+}
+.vessel-checklist-view-i12 {
+  font-size: 14px;
+  font-weight: 800;
+}
+.vessel-dms-app .vessel-checklist-view-i12 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i13 {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border: 1px solid var(--vdms-line);
+}
+.vessel-dms-app .vessel-checklist-view-i13 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i14 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-checklist-view-i14 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i15 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-checklist-view-i16 {
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vessel-dms-app .vessel-checklist-view-i16 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i17 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+  margin-left: 4px;
+}
+.vessel-dms-app .vessel-checklist-view-i17 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i18 {
+  margin: 12px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.vessel-dms-app .vessel-checklist-view-i18 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i19 {
+  padding: 12px 14px;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .vessel-checklist-view-i19 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i20 {
+  overflow-x: auto;
+  max-height: calc(100vh - 280px);
+}
+.vessel-checklist-view-i21 {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .vessel-checklist-view-i21 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i22 {
+  width: 34%;
+}
+.vessel-checklist-view-i23 {
+  width: 50px;
+}
+.vessel-checklist-view-i24 {
+  width: 65px;
+}
+.vessel-checklist-view-i25 {
+  width: 85px;
+}
+.vessel-checklist-view-i26 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-checklist-view-i26 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i27 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-checklist-view-i27 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i28 {
+  color: var(--vdms-text-muted);
+}
+.vessel-checklist-view-i29 {
+  font-weight: 600;
+}
+.vessel-checklist-view-i30 {
+  font-size: 16px;
+  text-decoration: none;
+  border-bottom: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.vessel-dms-app .vessel-checklist-view-i30 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i31 {
+  text-decoration: none;
+}
+.vessel-checklist-view-i32 {
+  color: var(--vdms-text-faint);
+  font-size: 11px;
+}
+.vessel-dms-app .vessel-checklist-view-i32 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-checklist-view-i33 {
+  font-size: 12px;
+}
+.vessel-checklist-view-i34 {
+  position: relative;
+  display: inline-block;
+}
+.vessel-checklist-view-i35 {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 100;
+  padding: 5px;
+  background: var(--vdms-surface, #ffffff);
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.14), 0 2px 6px -1px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+.vessel-checklist-view-i36 {
+  font-size: 13px;
+  text-align: center;
+}
+.vessel-checklist-view-i37 {
+  font-size: 13px;
+  color: var(--vdms-text-secondary);
+  text-align: center;
+}
+.vessel-checklist-view-i38 {
+  font-size: 10px;
+}
+.vessel-checklist-view-i39 {
+  padding: 30px 0;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .vessel-checklist-view-i39 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+
+// Below 1440 (laptops with the sidebar open, tablet, phone): no scrolling inside a vessel card.
+// The card body loses its own height limit, and the table fits the card instead of keeping a 920px
+// minimum (inline, hence !important). Below 1024 the page is the only thing that scrolls (see
+// _certificates.scss).
+@media (max-width: #{$bp-xxl - 1px}) {
+  .vessel-checklist-view-i20 { max-height: none; overflow-x: visible; }
+  .vdms-chk-table { min-width: 0 !important; table-layout: auto !important; }
+  .vdms-chk-table col { width: auto !important; }
+  .vdms-chk-table th { font-size: 10px !important; padding: 9px 8px !important; }
+  .vdms-chk-table td { font-size: 12px !important; padding: 9px 8px !important; }
+
+  .vdms-chk-head { min-height: 0 !important; padding: 7px 10px !important; gap: 6px !important; }
+  .vessel-checklist-view-i12 { font-size: 13px; }
+  .vessel-checklist-view-i16 { padding: 2px 8px; font-size: 10.5px; }
+  .vessel-checklist-view-i17 { font-size: 10.5px; }
+}
+
+// Large phone and below (<768): Cert Number (2), Issue Date (3) and Doc (5) are hidden; they stay
+// available from the row's actions. Rows without a certificate span columns 2–5 with one message
+// cell (colspan) and are left alone.
+@media (max-width: #{$phone}) {
+  .vdms-chk-table th:nth-child(2),
+  .vdms-chk-table th:nth-child(3),
+  .vdms-chk-table th:nth-child(5),
+  .vdms-chk-table tr:not(:has(td[colspan])) > td:nth-child(2),
+  .vdms-chk-table tr:not(:has(td[colspan])) > td:nth-child(3),
+  .vdms-chk-table tr:not(:has(td[colspan])) > td:nth-child(5) { display: none; }
+  .vdms-chk-table th { padding: 8px 6px !important; }
+  .vdms-chk-table td { font-size: 11.5px !important; padding: 8px 6px !important; }
+  .vdms-chk-table th:first-child, .vdms-chk-table td:first-child { padding-left: 10px !important; }
+
+  .vessel-checklist-view-i15 { flex-wrap: wrap; row-gap: 4px; }
+  .vessel-checklist-view-i17 { display: none; } // "(n total required)": the All (n) pill shows it
+  .vessel-checklist-view-i13, .vessel-checklist-view-i14 { font-size: 10.5px; }
+}

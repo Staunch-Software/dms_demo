@@ -1,0 +1,444 @@
+// settings-page — styles
+@use '../breakpoints' as *;
+
+// ── Converted inline styles (settings-page) ───────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.settings-page-i1 {
+  font-size: 16px;
+  margin-right: 8px;
+  text-align: center;
+  vertical-align: -2px;
+}
+.settings-page-i2 {
+  margin: 14px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .settings-page-i2 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i3 {
+  padding-left: 4px;
+  flex-shrink: 0;
+}
+.settings-page-i4 {
+  flex-shrink: 0;
+  margin: 0 0 12px;
+}
+.settings-page-i5 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .settings-page-i5 { font-size: 21.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i6 {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .settings-page-i6 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i7 {
+  flex-shrink: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .settings-page-i7 { font-size: 21.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i8 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+}
+.settings-page-i9 {
+  color: var(--vdms-text-muted);
+  font-size: 14px;
+}
+.vessel-dms-app .settings-page-i9 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i10 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 4px;
+  border: 1px solid var(--vdms-line);
+  background: var(--vdms-surface-alt);
+}
+.settings-page-i11 {
+  border: none;
+  border-radius: 9px;
+  padding: 12px 0;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.vessel-dms-app .settings-page-i11 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i12 {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+.settings-page-i13 {
+  color: var(--vdms-text);
+  font-weight: 600;
+}
+.settings-page-i14 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .settings-page-i14 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i15 {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+}
+.settings-page-i16 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+.settings-page-i17 {
+  margin: 0;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .settings-page-i17 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i18 {
+  font-size: 12px;
+}
+.settings-page-i19 {
+  border: 1px solid var(--vdms-line);
+  font-size: 12px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+.vessel-dms-app .settings-page-i19 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i20 {
+  color: var(--vdms-text-faint);
+  font-size: 13px;
+  padding: 24px 0;
+  text-align: center;
+}
+.vessel-dms-app .settings-page-i20 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i21 {
+  width: 9%;
+}
+.settings-page-i22 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.settings-page-i23 {
+  border: 1px solid var(--vdms-line);
+  padding: 14px;
+}
+.settings-page-i24 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.vessel-dms-app .settings-page-i24 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i25 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  line-height: 1.5;
+}
+.vessel-dms-app .settings-page-i25 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i26 {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .settings-page-i26 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i27 {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+}
+.settings-page-i28 {
+  border: 1px solid var(--vdms-line);
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.vessel-dms-app .settings-page-i28 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i29 {
+  border: 1px solid var(--vdms-line);
+  padding: 16px;
+}
+.settings-page-i30 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.settings-page-i31 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .settings-page-i31 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i32 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .settings-page-i32 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i33 {
+  padding: 20px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .settings-page-i33 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i34 {
+  background: var(--vdms-surface-alt);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.vessel-dms-app .settings-page-i34 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i35 {
+  height: 16px;
+  cursor: pointer;
+}
+.settings-page-i36 {
+  height: 16px;
+}
+.settings-page-i37 {
+  max-height: 380px;
+  overflow-y: auto;
+  border: 1px solid var(--vdms-line);
+}
+.settings-page-i38 {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.settings-page-i39 {
+  padding: 20px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+}
+.settings-page-i40 {
+  font-size: 13px;
+}
+.settings-page-i41 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.settings-page-i42 {
+  font-size: 11px;
+  padding: 2px 8px;
+}
+.vessel-dms-app .settings-page-i42 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i43 {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.vessel-dms-app .settings-page-i43 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i44 {
+  font-size: 11px;
+}
+.settings-page-i45 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.settings-page-i46 {
+  border-radius: 16px;
+  padding: 24px;
+  width: 480px;
+  max-width: 95vw;
+  border: 1px solid var(--vdms-line);
+}
+.settings-page-i47 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.settings-page-i48 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .settings-page-i48 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i49 {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--vdms-text-faint);
+  cursor: pointer;
+}
+.vessel-dms-app .settings-page-i49 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i50 {
+  font-size: 18px;
+}
+.settings-page-i51 {
+  border: 1px solid var(--vdms-line);
+  padding: 8px 12px;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+.vessel-dms-app .settings-page-i51 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i52 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.vessel-dms-app .settings-page-i52 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i53 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.settings-page-i54 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+.settings-page-i55 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.settings-page-i56 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .settings-page-i56 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i57 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .settings-page-i57 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i58 {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+}
+.vessel-dms-app .settings-page-i58 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i59 {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+}
+.vessel-dms-app .settings-page-i59 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i60 {
+  font-size: 11px;
+  color: var(--vdms-text-faint);
+}
+.vessel-dms-app .settings-page-i60 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i61 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  padding: 10px;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+.vessel-dms-app .settings-page-i61 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.settings-page-i62 {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--vdms-text);
+}
+.settings-page-i63 {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+.settings-page-i64 {
+  font-weight: 600;
+}
+.settings-page-i65 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+// The shell, nav, body and their buttons write their layout and sizes inline, hence !important.
+// Below 900px the global rules in _responsive.scss already turn the nav into a row of tabs and let
+// the page scroll; the rules here cover laptops up to 1440.
+
+// 900–1439 (laptops with the sidebar open, e.g. 1920×1200 at 150% scaling = 1280px): the page title
+// is hidden (the top bar shows "Settings") and the left menu becomes a row of tabs above the content,
+// so each settings tab gets the full width (Audit Logs' columns were cut off) and more height.
+@media (min-width: 901px) and (max-width: #{$bp-xxl - 1px}) {
+  .vdms-settings > .settings-page-i3 { display: none; }
+  .vdms-settings { margin-top: 0 !important; }
+  .vdms-settings-shell { grid-template-columns: minmax(0, 1fr) !important; grid-template-rows: auto minmax(0, 1fr) !important; }
+  .vdms-settings-nav {
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    height: auto !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--vdms-line);
+    padding: 8px 12px !important;
+    gap: 6px !important;
+  }
+  .vdms-settings-body { height: auto !important; min-height: 0; padding: 12px 18px !important; }
+}
+
+// 900 and below: the global rules make the settings page grow with its content, but the shell kept
+// its inline flex: 1 1 0, so it collapsed to about 1px: the tab row was clipped and the table did not
+// show. The shell now takes its content height.
+@media (max-width: 900px) {
+  .vessel-dms-app .vdms-settings-shell { flex: 0 0 auto !important; grid-template-rows: auto auto !important; }
+  // Each tab's scroll box has flex: 1 1 0 for the desktop panel and collapsed to 0px the same way
+  // (Tag Configuration, Module Management's list, Color Management and Audit Logs); here they size to
+  // their content, up to most of the screen height, and scroll beyond that.
+  .vdms-settings-body .vdms-tag-scroll,
+  .vdms-settings-body .vdms-mod-scroll,
+  .vdms-settings-body .vdms-scroll-clean { flex: 0 0 auto !important; height: auto !important; max-height: 65vh; min-height: 0; }
+  // Tag Configuration's outer box grows with its content; only its table box (.vdms-tag-scroll) scrolls
+  .vdms-settings-body .tag-configuration-section-i20 { flex: 0 0 auto !important; height: auto !important; overflow: visible; }
+  // Tag Configuration tables (Name, Status, In SharePoint, Actions): on phones "In SharePoint" is
+  // hidden so the Rename / Archive buttons fit without scrolling sideways
+  @media (max-width: #{$phone}) {
+    .vdms-tag-scroll table th:nth-child(3),
+    .vdms-tag-scroll table tr:not(:has(td[colspan])) > td:nth-child(3) { display: none; }
+    // (.vdms-settings-body prefix: outranks the "below 1440" table rules later in this file)
+    .vdms-settings-body .vdms-tag-scroll table th, .vdms-settings-body .vdms-tag-scroll table td { padding-left: 6px !important; padding-right: 6px !important; }
+    .vdms-settings-body .vdms-tag-scroll table td button { padding: 0 8px !important; font-size: 11.5px !important; }
+  }
+  // Tag Configuration's sub-tabs (Domains, Groups, Categories, …) stay on one row that scrolls sideways
+  .vdms-settings-body [role="tablist"] { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; }
+  .vdms-settings-body [role="tablist"] > * { flex: 0 0 auto; }
+}
+
+// Below 1440 (all narrower screens): the group labels ("Personal", "Configuration") are dropped from
+// the tab row, the tabs are smaller, and the settings tables use shorter rows and smaller buttons so
+// more rows fit.
+@media (max-width: #{$bp-xxl - 1px}) {
+  .vdms-settings-nav > .settings-page-i2 { display: none; }
+  .vdms-settings-nav > button { flex: 0 0 auto; font-size: 13px !important; padding: 7px 12px !important; }
+  .vdms-settings-body table th { padding: 7px 10px !important; font-size: 10.5px !important; }
+  .vdms-settings-body table td { padding: 6px 10px !important; font-size: 12.5px !important; }
+  .vdms-settings-body table td button { height: 28px !important; min-height: 28px !important; padding: 0 10px !important; font-size: 12px !important; }
+}

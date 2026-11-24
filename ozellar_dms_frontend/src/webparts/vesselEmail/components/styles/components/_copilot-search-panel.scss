@@ -1,0 +1,244 @@
+// copilot-search-panel — styles
+
+// ── Converted inline styles (copilot-search-panel) ────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.copilot-search-panel-i1 {
+  font-size: 11.5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.vessel-dms-app .copilot-search-panel-i1 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+}
+.copilot-search-panel-i3 {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.copilot-search-panel-i4 {
+  flex: 1;
+}
+.copilot-search-panel-i5 {
+  font-size: 12.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .copilot-search-panel-i5 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i6 {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .copilot-search-panel-i6 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i7 {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.copilot-search-panel-i8 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.copilot-search-panel-i9 {
+  align-self: flex-end;
+  max-width: 85%;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 14px 14px 4px 14px;
+  font-size: 13px;
+}
+.vessel-dms-app .copilot-search-panel-i9 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i10 {
+  align-self: flex-start;
+  font-size: 12.5px;
+  border: 1px solid #fecaca;
+  padding: 8px 12px;
+}
+.vessel-dms-app .copilot-search-panel-i10 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i11 {
+  align-self: stretch;
+  border-radius: 4px 14px 14px 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.copilot-search-panel-i12 {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.vessel-dms-app .copilot-search-panel-i12 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i13 {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.copilot-search-panel-i14 {
+  font-size: 11px;
+  margin-right: 4px;
+}
+.copilot-search-panel-i15 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.copilot-search-panel-i16 {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+.vessel-dms-app .copilot-search-panel-i16 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i17 {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+}
+.copilot-search-panel-i18 {
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.copilot-search-panel-i19 {
+  width: 440px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(11, 42, 74, 0.28);
+}
+.copilot-search-panel-i20 {
+  color: #fff;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.copilot-search-panel-i21 {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.copilot-search-panel-i22 {
+  font-size: 18px;
+}
+.copilot-search-panel-i23 {
+  font-weight: 800;
+  font-size: 14.5px;
+}
+.copilot-search-panel-i24 {
+  font-size: 11px;
+}
+.vessel-dms-app .copilot-search-panel-i24 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i25 {
+  border: none;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.copilot-search-panel-i26 {
+  font-size: 13px;
+}
+.copilot-search-panel-i27 {
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.vessel-dms-app .copilot-search-panel-i27 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i28 {
+  font-size: 12px;
+}
+.copilot-search-panel-i29 {
+  flex: 1;
+  font-size: 12px;
+  padding: 4px 6px;
+}
+.vessel-dms-app .copilot-search-panel-i29 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i30 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.vessel-dms-app .copilot-search-panel-i30 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i31 {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.copilot-search-panel-i32 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.copilot-search-panel-i33 {
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.copilot-search-panel-i34 {
+  font-size: 11.5px;
+}
+.vessel-dms-app .copilot-search-panel-i34 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i35 {
+  align-self: flex-start;
+  font-size: 12.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.vessel-dms-app .copilot-search-panel-i35 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i36 {
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+}
+.copilot-search-panel-i37 {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+.vessel-dms-app .copilot-search-panel-i37 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.copilot-search-panel-i38 {
+  width: 42px;
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.copilot-search-panel-i39 {
+  font-size: 15px;
+}

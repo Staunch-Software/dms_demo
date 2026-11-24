@@ -1,0 +1,437 @@
+// migration-scan-tab — styles
+@use '../breakpoints' as *;
+
+// ── Converted inline styles (migration-scan-tab) ──────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.migration-scan-tab-i1 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.migration-scan-tab-i2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+}
+.migration-scan-tab-i3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+.vessel-dms-app .migration-scan-tab-i3 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i4 {
+  font-size: 12px;
+  margin-top: 2px;
+}
+.vessel-dms-app .migration-scan-tab-i4 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i5 {
+  display: flex;
+  gap: 8px;
+}
+.migration-scan-tab-i6 {
+  font-size: 13px;
+}
+.migration-scan-tab-i7 {
+  display: flex;
+  gap: 4px;
+  padding: 4px 4px 12px;
+  font-size: 12px;
+}
+.vessel-dms-app .migration-scan-tab-i7 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i8 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.migration-scan-tab-i9 {
+  font-size: 10px;
+}
+.migration-scan-tab-i10 {
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-weight: 600;
+}
+.migration-scan-tab-i11 {
+  padding: 8px 14px;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.vessel-dms-app .migration-scan-tab-i11 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i12 {
+  flex: 1;
+  overflow-y: auto;
+}
+.migration-scan-tab-i13 {
+  border-radius: 14px;
+}
+.migration-scan-tab-i14 {
+  padding: 12px 14px;
+}
+.migration-scan-tab-i15 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.migration-scan-tab-i16 {
+  font-size: 13px;
+  font-weight: 700;
+}
+.vessel-dms-app .migration-scan-tab-i16 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i17 {
+  margin-top: 4px;
+  font-size: 11px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.vessel-dms-app .migration-scan-tab-i17 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i18 {
+  cursor: pointer;
+}
+.migration-scan-tab-i19 {
+  display: flex;
+  gap: 4px;
+}
+.migration-scan-tab-i20 {
+  font-size: 9px;
+}
+.migration-scan-tab-i21 {
+  padding: 30px;
+  text-align: center;
+  font-size: 13px;
+}
+.vessel-dms-app .migration-scan-tab-i21 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i22 {
+  flex: 1;
+  font-size: 13px;
+  cursor: pointer;
+}
+.vessel-dms-app .migration-scan-tab-i22 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i23 {
+  font-size: 11px;
+  margin-top: 2px;
+}
+.vessel-dms-app .migration-scan-tab-i23 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i24 {
+  padding: 10px 14px;
+  font-size: 12px;
+}
+.vessel-dms-app .migration-scan-tab-i24 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i25 {
+  font-size: 13px;
+}
+.vessel-dms-app .migration-scan-tab-i25 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i26 {
+  flex: 1;
+  font-size: 13px;
+}
+.vessel-dms-app .migration-scan-tab-i26 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i27 {
+  font-size: 11px;
+}
+.vessel-dms-app .migration-scan-tab-i27 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i28 {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+}
+.migration-scan-tab-i29 {
+  color: var(--clay-accent);
+}
+.migration-scan-tab-i30 {
+  flex: 1;
+}
+.migration-scan-tab-i31 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .migration-scan-tab-i31 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i32 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 60px;
+  border-radius: 14px;
+}
+.migration-scan-tab-i33 {
+  font-size: 24px;
+  color: var(--clay-accent);
+}
+.migration-scan-tab-i34 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.migration-scan-tab-i35 {
+  border-radius: 14px;
+  padding: 14px;
+}
+.migration-scan-tab-i36 {
+  font-size: 11px;
+  margin-top: 4px;
+}
+.vessel-dms-app .migration-scan-tab-i36 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i37 {
+  border-radius: 14px;
+  overflow-x: auto;
+}
+.migration-scan-tab-i38 {
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.vessel-dms-app .migration-scan-tab-i38 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i39 {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.vessel-dms-app .migration-scan-tab-i39 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i40 {
+  padding: 8px 12px;
+}
+.migration-scan-tab-i41 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.migration-scan-tab-i42 {
+  font-size: 14px;
+}
+.migration-scan-tab-i43 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.migration-scan-tab-i44 {
+  font-size: 12px;
+  padding: 4px 6px;
+}
+.vessel-dms-app .migration-scan-tab-i44 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i45 {
+  padding: 8px 12px;
+  font-weight: 600;
+}
+.migration-scan-tab-i46 {
+  padding: 8px 12px;
+  text-align: right;
+}
+.migration-scan-tab-i47 {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.migration-scan-tab-i48 {
+  display: flex;
+  justify-content: space-between;
+}
+.migration-scan-tab-i49 {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.migration-scan-tab-i50 {
+  border-radius: 14px;
+  padding: 20px;
+}
+.migration-scan-tab-i51 {
+  font-size: 16px;
+  font-weight: 700;
+}
+.vessel-dms-app .migration-scan-tab-i51 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i52 {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.migration-scan-tab-i53 {
+  font-size: 12px;
+  margin-top: 4px;
+}
+.vessel-dms-app .migration-scan-tab-i53 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i54 {
+  padding: 10px 8px;
+  text-align: center;
+}
+.migration-scan-tab-i55 {
+  font-size: 18px;
+  font-weight: 700;
+}
+.vessel-dms-app .migration-scan-tab-i55 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i56 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+}
+.migration-scan-tab-i57 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.migration-scan-tab-i58 {
+  max-width: 560px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.migration-scan-tab-i59 {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+.migration-scan-tab-i60 {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+.migration-scan-tab-i61 {
+  padding: 20px;
+  text-align: center;
+}
+.migration-scan-tab-i62 {
+  padding: 16px;
+  font-size: 13px;
+}
+.vessel-dms-app .migration-scan-tab-i62 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i63 {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.migration-scan-tab-i64 {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .migration-scan-tab-i64 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i65 {
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+.migration-scan-tab-i66 {
+  max-width: 560px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.migration-scan-tab-i67 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+}
+.migration-scan-tab-i68 {
+  font-size: 13px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vessel-dms-app .migration-scan-tab-i68 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i69 {
+  padding: 10px 16px;
+  font-size: 12px;
+}
+.vessel-dms-app .migration-scan-tab-i69 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i70 {
+  font-weight: 600;
+}
+.migration-scan-tab-i71 {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.migration-scan-tab-i72 {
+  flex: 1;
+  overflow: auto;
+}
+.migration-scan-tab-i73 {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+.vessel-dms-app .migration-scan-tab-i73 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i74 {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+.migration-scan-tab-i75 {
+  font-size: 20px;
+}
+.migration-scan-tab-i76 {
+  height: 100%;
+  border: 0;
+}
+.migration-scan-tab-i77 {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.migration-scan-tab-i78 {
+  max-height: 100%;
+}
+.migration-scan-tab-i79 {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.migration-scan-tab-i80 {
+  font-size: 42px;
+}
+.migration-scan-tab-i81 {
+  font-size: 12px;
+}
+.vessel-dms-app .migration-scan-tab-i81 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.migration-scan-tab-i82 {
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.migration-scan-tab-i83 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.migration-scan-tab-i84 {
+  font-size: 12px;
+  margin-top: 6px;
+}
+.vessel-dms-app .migration-scan-tab-i84 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+
+
+// ── Responsive ─────────────────────────────────────────────────────────────────────────────
+
+// Large phone and below (<768): the header's text and "Recent scans" button stack, the four step
+// labels wrap onto two rows instead of running off the right edge, and the folder list gets its own
+// height (its flex: 1 left it about 140px tall once the page scrolls as a whole).
+@media (max-width: #{$phone}) {
+  .migration-scan-tab-i1 { height: auto; }
+  .migration-scan-tab-i2 { flex-wrap: wrap; gap: 8px; padding: 8px 2px; }
+  .migration-scan-tab-i3 { font-size: 14px; }
+  .migration-scan-tab-i7 { flex-wrap: wrap; row-gap: 6px; padding: 2px 2px 10px; font-size: 11px; }
+  .migration-scan-tab-i10 { padding: 3px 8px; white-space: nowrap; }
+  .migration-scan-tab-i12 { flex: 0 0 auto; max-height: 65vh; }
+}

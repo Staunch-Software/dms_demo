@@ -1,0 +1,71 @@
+// dms-select — styles
+
+// ── Converted inline styles (dms-select) ──────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.dms-select-i1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dms-select-i2 {
+  font-size: 11px;
+  color: var(--vdms-text-muted);
+  flex-shrink: 0;
+}
+.dms-select-i3 {
+  border: 1px solid var(--vdms-line);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+}
+.dms-select-i4 {
+  position: relative;
+}
+.dms-select-i5 {
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.dms-select-i6 {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dms-select-i7 {
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.dms-select-i8 {
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.dms-select-i9 {
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .dms-select-i9 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.dms-select-i10 {
+  border-top: 1px solid var(--vdms-line);
+  padding-top: 6px;
+}
+.dms-select-i11 {
+  border: none;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}

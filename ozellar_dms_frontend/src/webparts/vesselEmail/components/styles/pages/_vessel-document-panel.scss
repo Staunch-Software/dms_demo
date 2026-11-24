@@ -1,0 +1,129 @@
+// vessel-document-panel — styles
+
+// ── Converted inline styles (vessel-document-panel) ───────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.vessel-document-panel-i1 {
+  font-size: 12.5px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-document-panel-i1 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-document-panel-i2 {
+  font-size: 11px;
+  margin-right: 6px;
+}
+.vessel-document-panel-i3 {
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .vessel-document-panel-i3 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-document-panel-i4 {
+  font-size: 12px;
+  margin-right: 6px;
+}
+.vessel-document-panel-i5 {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.vessel-document-panel-i6 {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vessel-document-panel-i7 {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vessel-dms-app .vessel-document-panel-i7 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-document-panel-i8 {
+  font-size: 12.5px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .vessel-document-panel-i8 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-document-panel-i9 {
+  color: var(--vdms-text-muted);
+}
+.vessel-document-panel-i10 {
+  display: flex;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--vdms-surface-alt, #eef2f6);
+}
+.vessel-document-panel-i11 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 4px 16px;
+}
+.vessel-document-panel-i12 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.vessel-dms-app .vessel-document-panel-i12 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-document-panel-i13 {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.vessel-document-panel-i14 {
+  white-space: nowrap;
+}
+.vessel-document-panel-i15 {
+  margin-left: auto;
+  font-weight: 700;
+}
+.vessel-document-panel-i16 {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  cursor: default;
+  outline: none;
+}
+.vessel-document-panel-i17 {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  margin-top: -6px;
+  z-index: 20;
+  background: var(--vdms-surface, #ffffff);
+  border: 1px solid var(--vdms-line, rgba(16,84,138,0.18));
+  padding: 10px 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.vessel-dms-app .vessel-document-panel-i17 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-document-panel-i18 {
+  font-weight: 700;
+  color: var(--vdms-text);
+  margin-bottom: 6px;
+}
+.vessel-document-panel-i19 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+  color: var(--vdms-text-muted);
+}
+.vessel-document-panel-i20 {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.vessel-document-panel-i21 {
+  margin-left: auto;
+  padding-left: 16px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}

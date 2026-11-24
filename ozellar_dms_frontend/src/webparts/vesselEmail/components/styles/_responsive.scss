@@ -1,0 +1,106 @@
+// Responsive: global safety net + shared breakpoints (phone <= 767, tablet <= 1023)
+@use 'tokens' as *;
+@use 'breakpoints' as *;
+
+/* ── Responsive: TV / desktop / laptop / tablet / phone ───────────────
+   The page-level layouts switch on JS breakpoints (responsive.ts: phone ≤767,
+   tablet ≤1023); everything below is the global safety net + large-screen scaling. */
+.vessel-dms-app { --vdms-z: 1; }
+@media (min-width: 1920px) { .vessel-dms-app { --vdms-z: 1.15; } }
+@media (min-width: 2400px) { .vessel-dms-app { --vdms-z: 1.4; } }
+@media (min-width: 3000px) { .vessel-dms-app { --vdms-z: 1.8; } }
+@media (min-width: 3800px) { .vessel-dms-app { --vdms-z: 2.2; } }
+html .vessel-dms-app {
+  zoom: var(--vdms-z);
+  width: calc(100vw / var(--vdms-z)) !important;
+  height: calc(100vh / var(--vdms-z)) !important; min-height: 0 !important;
+}
+@supports (height: 100dvh) { html .vessel-dms-app { height: calc(100dvh / var(--vdms-z)) !important; } }
+html .vessel-dms-app .vessel-dms-sidebar { height: calc(100vh / var(--vdms-z)) !important; }
+@supports (height: 100dvh) { html .vessel-dms-app .vessel-dms-sidebar { height: calc(100dvh / var(--vdms-z)) !important; } }
+.vessel-dms-app img, .vessel-dms-app video, .vessel-dms-app canvas, .vessel-dms-app iframe { max-width: 100%; }
+.vessel-dms-app input:not([type="checkbox"]):not([type="radio"]), .vessel-dms-app select, .vessel-dms-app textarea { max-width: 100%; box-sizing: border-box; }
+/* Dialogs never exceed the screen; their content scrolls instead */
+.vessel-dms-app div[style*="position: fixed"][style*="inset: 0px"] > div:only-child {
+  max-width: calc(100vw / var(--vdms-z) - 16px); max-height: calc(100vh / var(--vdms-z) - 16px); overflow: auto; box-sizing: border-box;
+}
+@supports (height: 100dvh) { .vessel-dms-app div[style*="position: fixed"][style*="inset: 0px"] > div:only-child { max-height: calc(100dvh / var(--vdms-z) - 16px); } }
+/* Touch screens: comfortable tap targets */
+@media (pointer: coarse) {
+  .vessel-dms-app button, .vessel-dms-app select, .vessel-dms-app input:not([type="checkbox"]):not([type="radio"]) { min-height: 40px; }
+}
+@media (max-width: #{$tablet}) {
+  .vessel-dms-app table { -webkit-overflow-scrolling: touch; }
+  /* Header: title + controls on the first row, the folder route / breadcrumb on its own row beneath */
+  .vessel-dms-topbar { height: auto !important; min-height: 76px; flex-wrap: wrap; padding-top: 8px !important; padding-bottom: 8px !important; row-gap: 6px; }
+  .vessel-dms-topbar .vdms-topbar-left { flex-wrap: wrap; row-gap: 6px; }
+  .vessel-dms-topbar #vdms-header-route { flex: 1 1 100% !important; order: 5; margin-left: 0 !important; max-height: none !important; overflow: visible !important; }
+  .vessel-dms-topbar .dms-docs-nav { max-height: none !important; overflow: visible !important; }
+  /* Certificates: tabs row, then the filters wrap underneath instead of overlapping the tabs */
+  .vessel-dms-app .vdms-cert-toolbar { flex-wrap: wrap !important; row-gap: 8px; }
+  .vessel-dms-app .vdms-cert-toolbar-left { flex-wrap: wrap; flex-shrink: 1 !important; }
+  .vessel-dms-app .vdms-cert-toolbar-right { flex-wrap: wrap !important; justify-content: flex-start !important; flex: 1 1 100% !important; }
+  .vessel-dms-app .vdms-cert-toolbar-right > * { flex: 1 1 180px !important; width: auto !important; max-width: none !important; min-width: 150px !important; }
+  /* Certificates records table: keep readable column widths and scroll sideways; words wrap at spaces only */
+  .vessel-dms-app .vdms-cert-table { min-width: 1100px !important; }
+  .vessel-dms-app .vdms-cert-table td span { overflow-wrap: normal !important; word-break: normal !important; }
+  .vessel-dms-topbar { margin: 10px 10px 0; }
+}
+@media (max-width: #{$phone}) {
+  .vessel-dms-topbar { margin: 8px 8px 0; height: 60px !important; border-radius: 18px; }
+  .vessel-dms-app h1 { font-size: 20px !important; }
+  .vessel-dms-app h2 { font-size: 17px !important; }
+  .vessel-dms-app input[style*="min-width"], .vessel-dms-app select[style*="min-width"], .vessel-dms-app textarea[style*="min-width"] { min-width: 0 !important; }
+  .vessel-dms-app input[style*="width: 2"], .vessel-dms-app input[style*="width: 1"], .vessel-dms-app select[style*="width: 1"], .vessel-dms-app select[style*="width: 2"] { width: 100% !important; }
+  .vessel-dms-app div[style*="position: fixed"][style*="inset: 0px"] > div:only-child { border-radius: 16px; }
+}
+/* ── Responsive layer ─────────────────────────────────────────────────
+   Breakpoints match responsive.ts: phone <= 767, tablet <= 1023; the 480 / 600 / 900 steps handle
+   small phones, form pairs and the two-pane settings screen. Everything here sits inside a media
+   query, so the desktop layout is exactly what it was. */
+@media (max-width: #{$tablet}) {
+  /* Anything laid out as a fixed 4/5-column grid drops to a sensible count */
+  .vessel-dms-app [style*="grid-template-columns: repeat(5,"], .vessel-dms-app [style*="grid-template-columns: repeat(4,"] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 900px) {
+  /* Settings: nav on top (scrolls sideways), panel below — instead of a 230px column squeezing the content */
+  .vessel-dms-app .vdms-settings { height: auto !important; max-height: none !important; overflow: visible !important; }
+  .vessel-dms-app .vdms-settings-shell { grid-template-columns: minmax(0, 1fr) !important; height: auto !important; overflow: visible !important; }
+  .vessel-dms-app .vdms-settings-nav { flex-direction: row !important; flex-wrap: nowrap; overflow-x: auto !important; overflow-y: hidden !important; height: auto !important; border-right: 0 !important; border-bottom: 1px solid var(--vdms-line); padding: 10px 12px !important; gap: 6px !important; }
+  .vessel-dms-app .vdms-settings-nav > * { flex: 0 0 auto; white-space: nowrap; }
+  .vessel-dms-app .vdms-settings-body { height: auto !important; max-height: none !important; overflow: visible !important; }
+}
+@media (max-width: #{$phone}) {
+  /* Header: the title may shrink (ellipsis), the folder route drops to its own row, the name hides */
+  .vessel-dms-topbar { height: auto !important; min-height: 60px; }
+  .vessel-dms-topbar .vdms-topbar-title { flex: 0 1 auto !important; min-width: 0 !important; overflow: hidden; text-overflow: ellipsis; max-width: calc(100vw - 230px); }
+  .vessel-dms-topbar .vdms-topbar-user { display: none; }
+  /* Floating Copilot button must not sit on top of the last rows */
+  .vessel-dms-app .vdms-main-scroll { padding-bottom: 88px !important; }
+  /* Multi-column grids */
+  .vessel-dms-app [style*="grid-template-columns: repeat(5,"], .vessel-dms-app [style*="grid-template-columns: repeat(4,"], .vessel-dms-app [style*="grid-template-columns: repeat(3,"], .vessel-dms-app [style*="grid-template-columns: 1fr 1fr 1fr;"] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .vessel-dms-app [style*="grid-template-columns: 1fr 1.3fr"], .vessel-dms-app [style*="grid-template-columns: 1.3fr 1fr"] { grid-template-columns: minmax(0, 1fr) !important; }
+  /* Filter bars: each control may use the full row */
+  .vessel-dms-app .dms-filter-bar .dms-filter-row > div:not(.dms-filter-search):not(.dms-filter-loading) { flex: 1 1 calc(50% - 8px) !important; max-width: none !important; min-width: 140px; }
+  .vessel-dms-app .dms-filter-bar .dms-filter-row > .dms-filter-search { max-width: none !important; flex: 1 1 100% !important; }
+  .vessel-dms-app img { max-width: 100%; }
+}
+@media (max-width: 600px) {
+  /* Two-field form rows and label/value pairs stack (tab and radio switchers keep their two columns) */
+  .vessel-dms-app [style*="grid-template-columns: 1fr 1fr;"]:not([role="tablist"]):not([role="radiogroup"]),
+  .vessel-dms-app [style*="grid-template-columns: repeat(2, 1fr)"],
+  .vessel-dms-app [style*="grid-template-columns: 170px"] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+@media (max-width: 480px) {
+  .vessel-dms-topbar { margin: 6px 6px 0 !important; padding-left: 8px !important; padding-right: 8px !important; }
+  .vessel-dms-app .vdms-cert-toolbar-right > * { flex-basis: 100% !important; }
+  .vessel-dms-topbar .vdms-topbar-right { gap: 6px !important; }
+  .vessel-dms-topbar .vdms-topbar-left { gap: 8px !important; }
+  .vessel-dms-topbar .vdms-topbar-btn { width: 38px !important; min-width: 38px; height: 38px !important; min-height: 38px; }
+  .vessel-dms-topbar .vdms-topbar-title { font-size: 16px !important; max-width: calc(100vw - 210px); }
+  .vessel-dms-app .dms-filter-bar .dms-filter-row > div:not(.dms-filter-search):not(.dms-filter-loading) { flex-basis: 100% !important; }
+  .vessel-dms-app [style*="grid-template-columns: repeat(5,"], .vessel-dms-app [style*="grid-template-columns: repeat(4,"], .vessel-dms-app [style*="grid-template-columns: repeat(3,"] { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  .vessel-dms-topbar { height: auto !important; min-height: 52px; margin-top: 6px; }
+}

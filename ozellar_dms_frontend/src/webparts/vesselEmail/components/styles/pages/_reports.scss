@@ -1,0 +1,158 @@
+// reports-page — styles
+
+// ── Converted inline styles (reports-page) ────────────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.reports-page-i1 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.reports-page-i2 {
+  font-size: 13px;
+}
+.reports-page-i3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .reports-page-i3 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .reports-page-i4 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i5 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.reports-page-i6 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+}
+.vessel-dms-app .reports-page-i6 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i7 {
+  border: 1px solid var(--vdms-line-strong);
+  padding: 6px 12px;
+  font-size: 13px;
+  outline: none;
+  font-weight: 500;
+}
+.vessel-dms-app .reports-page-i7 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i8 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.reports-page-i9 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.vessel-dms-app .reports-page-i9 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i10 {
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+.vessel-dms-app .reports-page-i10 { font-size: 23.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i11 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.reports-page-i12 {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .reports-page-i12 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i13 {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--vdms-text-faint);
+  font-size: 13px;
+}
+.vessel-dms-app .reports-page-i13 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i14 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+}
+.vessel-dms-app .reports-page-i14 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i15 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.reports-page-i16 {
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+}
+.reports-page-i17 {
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.reports-page-i18 {
+  background: var(--vdms-surface-alt);
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden;
+}
+.reports-page-i19 {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+.reports-page-i20 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reports-page-i21 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.vessel-dms-app .reports-page-i21 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.reports-page-i22 {
+  color: var(--vdms-text-muted);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.reports-page-i23 {
+  font-size: 12px;
+}
+.reports-page-i24 {
+  flex: 1;
+  background: var(--vdms-surface-alt);
+  border-radius: 4px;
+  height: 16px;
+  overflow: hidden;
+}
+.reports-page-i25 {
+  font-weight: 700;
+  text-align: right;
+  color: var(--vdms-text);
+}
+.reports-page-i26 {
+  font-size: 10px;
+  color: var(--vdms-text-faint);
+  text-align: center;
+  margin-top: 8px;
+}
+.vessel-dms-app .reports-page-i26 { font-size: 10px !important; } // same size scaling the global stylesheet applied to inline font sizes

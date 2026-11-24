@@ -1,0 +1,402 @@
+// Certificate mapping panel (pages/CertificateMappingSection.tsx)
+// Moved out of the component's inline <style> elements; the rules are unchanged.
+
+.vdms-map-scroll { scrollbar-width: auto; scrollbar-color: #8c8c8c #f1f1f1; } .vdms-map-scroll::-webkit-scrollbar { width: 14px; } .vdms-map-scroll::-webkit-scrollbar-track { background: #f1f1f1; } .vdms-map-scroll::-webkit-scrollbar-thumb { background: #8c8c8c; border-radius: 8px; border: 3px solid #f1f1f1; } .vdms-map-scroll::-webkit-scrollbar-thumb:hover { background: #6e6e6e; }
+
+.vdms-dept-pill, .vdms-dept-pill:focus, .vdms-dept-pill:active { outline: none !important; box-shadow: none !important; } .vdms-dept-pill:focus-visible { box-shadow: inset 0 0 0 2px var(--vdms-line-strong) !important; }
+
+// ── Converted inline styles (certificate-mapping-section) ─────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.certificate-mapping-section-i1 {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--vdms-line-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.certificate-mapping-section-i2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.certificate-mapping-section-i3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .certificate-mapping-section-i3 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i4 {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--vdms-line-soft);
+}
+.vessel-dms-app .certificate-mapping-section-i4 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i5 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+  margin-top: 3px;
+}
+.vessel-dms-app .certificate-mapping-section-i5 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i6 {
+  flex-shrink: 0;
+}
+.certificate-mapping-section-i7 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+}
+.vessel-dms-app .certificate-mapping-section-i7 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i8 {
+  font-size: 12px;
+}
+.certificate-mapping-section-i9 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.certificate-mapping-section-i10 {
+  display: flex;
+  border: 1px solid var(--vdms-line);
+  padding: 3px;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.certificate-mapping-section-i11 {
+  padding: 6px 12px;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.vessel-dms-app .certificate-mapping-section-i11 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i12 {
+  padding: 6px 12px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.vessel-dms-app .certificate-mapping-section-i12 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i13 {
+  font-size: 11px;
+}
+.certificate-mapping-section-i14 {
+  padding: 6px 12px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.vessel-dms-app .certificate-mapping-section-i14 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i15 {
+  font-size: 10px;
+}
+.certificate-mapping-section-i16 {
+  font-size: 13px;
+}
+.certificate-mapping-section-i17 {
+  border-radius: 14px;
+  border: 1px solid var(--vdms-line);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 40;
+  flex-shrink: 0;
+}
+.certificate-mapping-section-i18 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.certificate-mapping-section-i19 {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.certificate-mapping-section-i20 {
+  font-size: 16px;
+}
+.certificate-mapping-section-i21 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .certificate-mapping-section-i21 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i22 {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+  margin-top: 4px;
+}
+.vessel-dms-app .certificate-mapping-section-i22 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i23 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid var(--vdms-line-soft);
+}
+.certificate-mapping-section-i24 {
+  display: flex;
+  background: var(--vdms-surface-alt);
+  padding: 3px;
+  border-radius: 9px;
+  border: 1px solid var(--vdms-line);
+  gap: 3px;
+  flex-shrink: 0;
+}
+.certificate-mapping-section-i25 {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.vessel-dms-app .certificate-mapping-section-i25 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i26 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  max-width: 380px;
+}
+.certificate-mapping-section-i27 {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--vdms-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.vessel-dms-app .certificate-mapping-section-i27 { font-size: 11.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i28 {
+  flex: 1;
+}
+.certificate-mapping-section-i29 {
+  padding: 0 16px;
+  height: 36px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.vessel-dms-app .certificate-mapping-section-i29 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i30 {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.vessel-dms-app .certificate-mapping-section-i30 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i31 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: sticky;
+  top: -24px;
+  z-index: 15;
+  padding: 12px 16px;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+.certificate-mapping-section-i32 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.certificate-mapping-section-i33 {
+  position: relative;
+  flex: 0 1 300px;
+}
+.certificate-mapping-section-i34 {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  pointer-events: none;
+  z-index: 2;
+}
+.certificate-mapping-section-i35 {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  cursor: pointer;
+  z-index: 2;
+}
+.certificate-mapping-section-i36 {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--vdms-text-muted);
+  font-size: 14px;
+}
+.vessel-dms-app .certificate-mapping-section-i36 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i37 {
+  border-radius: 14px;
+  border: 1px solid var(--vdms-line);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.certificate-mapping-section-i38 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: var(--vdms-surface-alt);
+  border-bottom: 1px solid var(--vdms-line);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .certificate-mapping-section-i38 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i39 {
+  flex: 1 1 0;
+}
+.certificate-mapping-section-i40 {
+  width: 470px;
+  flex-shrink: 0;
+}
+.certificate-mapping-section-i41 {
+  display: flex;
+  flex-direction: column;
+}
+.certificate-mapping-section-i42 {
+  padding: 24px 20px;
+  text-align: center;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .certificate-mapping-section-i42 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i43 {
+  flex-shrink: 0;
+  border-radius: 14px;
+  border: 1px solid var(--vdms-line);
+  overflow: hidden;
+}
+.certificate-mapping-section-i44 {
+  padding: 14px 20px;
+  background: var(--vdms-surface-alt);
+  border-bottom: 1px solid var(--vdms-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.certificate-mapping-section-i45 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .certificate-mapping-section-i45 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i46 {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+}
+.vessel-dms-app .certificate-mapping-section-i46 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i47 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.certificate-mapping-section-i48 {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .certificate-mapping-section-i48 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i49 {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 6px;
+}
+.certificate-mapping-section-i50 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .certificate-mapping-section-i50 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i51 {
+  color: var(--vdms-text);
+}
+.certificate-mapping-section-i52 {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 0;
+}
+.vessel-dms-app .certificate-mapping-section-i52 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-mapping-section-i53 {
+  position: sticky;
+  flex-shrink: 0;
+  z-index: 100;
+  padding: 14px 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.certificate-mapping-section-i54 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.certificate-mapping-section-i55 {
+  font-size: 18px;
+}
+.certificate-mapping-section-i56 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .certificate-mapping-section-i56 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes

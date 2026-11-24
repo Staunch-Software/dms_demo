@@ -1,0 +1,665 @@
+// Service Agreement modals (ServiceAgreementModal.tsx): add / edit / renew form, history, move to Expiry.
+// Also the shared .sa-btn buttons used by the Service Agreements page.
+@use '../breakpoints' as *;
+
+$sa-accent: var(--clay-accent, #0e7490);
+$sa-accent-soft: var(--clay-accent-soft, #dceef2);
+
+// ── Buttons (page + modals) ─────────────────────────────────────────────
+.sa-btn {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+
+  &--primary {
+    background: $sa-accent;
+    color: var(--vdms-toggle-active-text, #ffffff);
+    box-shadow: var(--clay-shadow-button, 0 1px 2px rgba(16, 27, 45, 0.08), 0 4px 10px rgba(14, 116, 144, 0.25));
+  }
+  &--secondary {
+    background: var(--vdms-surface);
+    color: var(--vdms-text);
+    border-color: var(--vdms-line-strong);
+  }
+  &--ghost {
+    background: transparent;
+    color: var(--vdms-text-secondary);
+    width: 36px;
+    padding: 0;
+    &:hover { background: var(--vdms-surface-alt); }
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    box-shadow: none;
+  }
+}
+
+// ── Overlay + dialog: always centred in the window ──────────────────────
+.sa-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100020;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  background: rgba(10, 22, 38, 0.55);
+  backdrop-filter: blur(4px);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.sa-modal__dialog {
+  width: 100%;
+  max-width: 900px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: var(--vdms-surface);
+  border: 1px solid var(--vdms-line);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(10, 22, 38, 0.28);
+  overflow: hidden;
+
+  &--narrow { max-width: 620px; }
+  &--small { max-width: 460px; }
+}
+
+.sa-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--vdms-surface-alt);
+  border-bottom: 1px solid var(--vdms-line);
+  flex-shrink: 0;
+}
+.sa-modal__heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.sa-modal__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: $sa-accent-soft;
+  color: $sa-accent;
+
+  &--warn {
+    background: var(--clay-pill-warn-bg, #fef3c7);
+    color: var(--clay-pill-warn-text, #b45309);
+  }
+}
+.sa-modal__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--vdms-text);
+}
+.sa-modal__subtitle {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--vdms-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sa-modal__header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.sa-modal__contract {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: $sa-accent-soft;
+  color: $sa-accent;
+}
+.sa-modal__close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vdms-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  &:hover { background: var(--vdms-surface); color: var(--vdms-text); }
+}
+
+// The body does not scroll on a normal screen, so the ship picker can open over the remarks.
+.sa-modal__body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: visible;
+
+  &--scroll { overflow-y: auto; }
+}
+
+.sa-modal__upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--vdms-line-strong);
+  border-radius: 10px;
+  background: var(--vdms-surface-alt);
+
+  &.is-filled {
+    border-color: $sa-accent;
+    background: $sa-accent-soft;
+  }
+}
+.sa-modal__upload-icon {
+  font-size: 22px;
+  color: $sa-accent;
+  flex-shrink: 0;
+}
+.sa-modal__upload-text {
+  flex: 1;
+  min-width: 0;
+}
+.sa-modal__upload-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sa-modal__upload-hint {
+  font-size: 11.5px;
+  color: var(--vdms-text-muted);
+}
+
+.sa-modal__note {
+  font-size: 12.5px;
+  padding: 8px 12px;
+  border-radius: 8px;
+
+  &--ok { background: var(--clay-pill-active-bg, #dcfce7); color: var(--clay-pill-active-text, #15803d); }
+  &--warn { background: var(--clay-pill-warn-bg, #fef3c7); color: var(--clay-pill-warn-text, #b45309); }
+  &--error { background: var(--clay-pill-danger-bg, #fee2e2); color: var(--clay-pill-danger-text, #b91c1c); }
+}
+
+.sa-modal__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+.sa-modal__field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.sa-modal__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--vdms-text-muted);
+}
+.sa-modal__req { color: var(--clay-pill-danger-text, #b91c1c); }
+.sa-modal__auto {
+  margin-left: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: $sa-accent-soft;
+  color: $sa-accent;
+}
+.sa-modal__input {
+  width: 100%;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 11px;
+  border-radius: 8px;
+  border: 1px solid var(--vdms-line);
+  background: var(--vdms-glass, var(--vdms-surface));
+  color: var(--vdms-text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+
+  &:focus { border-color: $sa-accent; box-shadow: 0 0 0 3px $sa-accent-soft; }
+  &:disabled { opacity: 0.7; cursor: not-allowed; }
+}
+.sa-modal__textarea {
+  height: auto;
+  min-height: 56px;
+  padding: 8px 11px;
+  resize: vertical;
+}
+
+// "All ships | One or more" switch
+.sa-modal__segment {
+  display: flex;
+  height: 36px;
+  padding: 3px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+
+  button {
+    flex: 1;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--vdms-text-secondary);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &.is-on {
+      background: var(--vdms-surface);
+      color: $sa-accent;
+      box-shadow: 0 1px 3px rgba(16, 27, 45, 0.12);
+    }
+  }
+}
+.sa-modal__all-ships {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px dashed var(--vdms-line);
+  font-size: 12.5px;
+  color: var(--vdms-text-muted);
+}
+
+.sa-modal__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--vdms-text-muted);
+}
+
+.sa-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--vdms-line);
+  flex-shrink: 0;
+
+  &--end { justify-content: flex-end; gap: 10px; }
+}
+.sa-modal__footer-info {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+.sa-modal__footer-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+// History list
+.sa-history__item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--vdms-line);
+
+  &--current { background: $sa-accent-soft; border-color: transparent; }
+}
+.sa-history__tag { font-size: 11px; font-weight: 700; color: $sa-accent; }
+.sa-history__dates { font-size: 13px; font-weight: 600; color: var(--vdms-text); }
+.sa-history__meta { font-size: 12px; color: var(--vdms-text-muted); }
+.sa-history__link { font-size: 12.5px; font-weight: 600; color: $sa-accent; }
+
+// ── Contract form v2: tabs, parties, documents ─────────────────────────
+.sa-modal__dialog--wide {
+  max-width: 980px;
+
+  .sa-modal__body {
+    min-height: 330px;
+    overflow-y: auto;
+  }
+}
+
+.sa-btn--danger {
+  background: var(--clay-pill-danger-bg, #fee2e2);
+  color: var(--clay-pill-danger-text, #b91c1c);
+}
+.sa-btn--link {
+  height: 30px;
+  padding: 0 4px;
+  background: transparent;
+  color: $sa-accent;
+  align-self: flex-start;
+}
+.sa-icon-btn {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid var(--vdms-line);
+  border-radius: 8px;
+  background: var(--vdms-surface);
+  color: var(--vdms-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  &:hover { color: var(--clay-pill-danger-text, #b91c1c); border-color: var(--clay-pill-danger-text, #b91c1c); }
+}
+
+.sa-modal__strip {
+  padding: 12px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sa-modal__tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 20px 0;
+  border-bottom: 1px solid var(--vdms-line);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.sa-modal__tab {
+  position: relative;
+  height: 36px;
+  padding: 0 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: -1px;
+
+  &:hover { color: var(--vdms-text); }
+  &.is-on {
+    color: $sa-accent;
+    border-bottom-color: $sa-accent;
+  }
+}
+.sa-modal__tab-err,
+.sa-modal__tab-count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sa-modal__tab-err { background: var(--clay-pill-danger-text, #b91c1c); color: #ffffff; }
+.sa-modal__tab-count { background: $sa-accent-soft; color: $sa-accent; }
+
+.sa-span-2 { grid-column: span 2; }
+.sa-span-3 { grid-column: 1 / -1; }
+
+.sa-modal__counter {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--vdms-text-faint);
+  &.is-over { color: var(--clay-pill-danger-text, #b91c1c); }
+}
+.sa-modal__check {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--vdms-text-secondary);
+  cursor: pointer;
+
+  input { margin: 0; cursor: pointer; }
+}
+.sa-modal__readonly {
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 11px;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px dashed var(--vdms-line);
+  background: var(--vdms-surface-alt);
+  font-size: 13px;
+  color: var(--vdms-text);
+}
+.sa-modal__inline {
+  display: flex;
+  gap: 8px;
+
+  .sa-modal__input:first-child { flex: 1 1 40%; }
+  .sa-modal__input:last-child { flex: 1 1 60%; }
+}
+.sa-modal__textarea--sm { min-height: 44px; }
+.sa-modal__error {
+  margin: 0 20px 10px;
+  flex-shrink: 0;
+}
+
+// Parties tab
+.sa-parties {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sa-parties__main {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.sa-party {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--vdms-line);
+  border-radius: 12px;
+  background: var(--vdms-surface-alt);
+}
+.sa-party__title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--vdms-text);
+
+  span {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--vdms-text-muted);
+  }
+}
+.sa-party__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.sa-parties__extra {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sa-parties__extra-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.3fr 1.6fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+// Documents tab + renew file list
+.sa-docs-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sa-docs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sa-docs__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 6px 12px;
+  border: 1px solid var(--vdms-line);
+  border-radius: 10px;
+  background: var(--vdms-surface);
+
+  &--saved { background: var(--vdms-surface-alt); padding: 8px 12px; }
+}
+.sa-docs__icon { color: $sa-accent; font-size: 16px; flex-shrink: 0; }
+.sa-docs__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vdms-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+a.sa-docs__name { color: $sa-accent; text-decoration: none; &:hover { text-decoration: underline; } }
+.sa-docs__type { flex: 0 0 200px; width: 200px; height: 32px; }
+.sa-docs__ver { flex: 0 0 70px; width: 70px; height: 32px; }
+.sa-docs__meta { font-size: 12px; color: var(--vdms-text-muted); white-space: nowrap; }
+.sa-docs__add {
+  height: 44px;
+  border: 1.5px dashed var(--vdms-line-strong);
+  border-radius: 10px;
+  background: transparent;
+  color: $sa-accent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  span { font-weight: 400; color: var(--vdms-text-muted); }
+  &:hover { background: $sa-accent-soft; }
+}
+.sa-docs__existing {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sa-folder {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+
+  &--active { background: var(--clay-pill-active-bg, #dcfce7); color: var(--clay-pill-active-text, #15803d); }
+  &--expiry { background: var(--vdms-surface-alt); color: var(--vdms-text-muted); border: 1px solid var(--vdms-line); }
+}
+
+// ── Responsive ──────────────────────────────────────────────────────────
+@media (max-width: $tablet) {
+  .sa-modal__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sa-modal__body { overflow-y: auto; }
+}
+
+// Short windows (small laptops): the body scrolls instead of the dialog running off screen.
+@media (max-height: $short-height) {
+  .sa-modal { padding: 12px; }
+  .sa-modal__dialog { max-height: calc(100vh - 24px); }
+  .sa-modal__body { overflow-y: auto; padding-top: 12px; padding-bottom: 12px; gap: 10px; }
+}
+
+@media (max-width: $phone) {
+  .sa-modal { padding: 0; align-items: flex-end; }
+  .sa-modal__dialog { max-width: 100%; max-height: 92vh; border-radius: 16px 16px 0 0; }
+  .sa-modal__header { padding: 12px 14px; }
+  .sa-modal__body { padding: 12px 14px; overflow-y: auto; }
+  .sa-modal__grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .sa-modal__contract { height: 26px; padding: 0 9px; font-size: 12px; }
+  .sa-modal__upload { flex-wrap: wrap; }
+  .sa-modal__footer { flex-direction: column; align-items: stretch; padding: 10px 14px; }
+  .sa-modal__footer-actions { justify-content: flex-end; }
+  .sa-modal__footer-info span { white-space: normal; }
+}
+
+@media (max-width: $tablet) {
+  .sa-span-2 { grid-column: 1 / -1; }
+  .sa-parties__extra-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sa-parties__extra-row .sa-icon-btn { justify-self: end; }
+}
+
+@media (max-width: $phone) {
+  .sa-modal__strip { padding: 10px 14px 0; }
+  .sa-modal__tabs { padding: 8px 10px 0; }
+  .sa-modal__tab { padding: 0 10px; font-size: 12.5px; }
+  .sa-modal__dialog--wide .sa-modal__body { min-height: 0; }
+  .sa-parties__main,
+  .sa-party__row,
+  .sa-parties__extra-row { grid-template-columns: minmax(0, 1fr); }
+  .sa-docs__row { flex-wrap: wrap; }
+  .sa-docs__name { flex-basis: calc(100% - 30px); }
+  .sa-docs__type { flex: 1 1 auto; width: auto; }
+  .sa-modal__error { margin: 0 14px 8px; }
+  .sa-modal__footer-actions { flex-wrap: wrap; }
+}

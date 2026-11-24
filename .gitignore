@@ -1,0 +1,40 @@
+# Python & Virtual Environments
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+.Python
+build/
+dist/
+wheels/
+*.egg-info/
+.dashboard_scan_cache*
+*.log
+
+# Node & Frontend Dependencies & Build Output
+node_modules/
+temp/
+lib/
+dist/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.sp-rest-proxy.json
+*.tsbuildinfo
+
+# Sensitive Environment files (use .env.example instead)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# OS & Editor
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

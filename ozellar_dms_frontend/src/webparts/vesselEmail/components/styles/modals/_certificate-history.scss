@@ -1,0 +1,163 @@
+// certificate-history-modal — styles
+
+// ── Converted inline styles (certificate-history-modal) ───────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.certificate-history-modal-i1 {
+  inset: 0;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.certificate-history-modal-i2 {
+  max-width: 680px;
+  border-radius: 16px;
+  border: 1px solid var(--vdms-line);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+.certificate-history-modal-i3 {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--vdms-line);
+  background: var(--vdms-surface-alt);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.certificate-history-modal-i4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .certificate-history-modal-i4 { font-size: 16px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i5 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+}
+.vessel-dms-app .certificate-history-modal-i5 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i6 {
+  border: none;
+  background: transparent;
+  color: var(--vdms-text-muted);
+  cursor: pointer;
+  font-size: 16px;
+}
+.vessel-dms-app .certificate-history-modal-i6 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i7 {
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--vdms-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.certificate-history-modal-i8 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.vessel-dms-app .certificate-history-modal-i8 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i9 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--vdms-text);
+  margin-top: 2px;
+}
+.vessel-dms-app .certificate-history-modal-i9 { font-size: 14.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i10 {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vdms-text-secondary);
+}
+.vessel-dms-app .certificate-history-modal-i10 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i11 {
+  font-size: 13px;
+}
+.certificate-history-modal-i12 {
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.certificate-history-modal-i13 {
+  text-align: center;
+  padding: 30px 0;
+  color: var(--vdms-text-muted);
+  font-size: 13px;
+}
+.vessel-dms-app .certificate-history-modal-i13 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i14 {
+  padding: 12px;
+  font-size: 13px;
+}
+.vessel-dms-app .certificate-history-modal-i14 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i15 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.certificate-history-modal-i16 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--vdms-text-muted);
+}
+.vessel-dms-app .certificate-history-modal-i16 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i17 {
+  background: var(--vdms-surface-alt);
+  border: 1px solid var(--vdms-line);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.certificate-history-modal-i18 {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.certificate-history-modal-i19 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--vdms-text);
+}
+.certificate-history-modal-i20 {
+  font-size: 12px;
+  color: var(--vdms-text-secondary);
+  margin-top: 2px;
+}
+.vessel-dms-app .certificate-history-modal-i20 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i21 {
+  font-size: 12px;
+}
+.certificate-history-modal-i22 {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+.vessel-dms-app .certificate-history-modal-i22 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i23 {
+  font-size: 11px;
+  color: var(--vdms-text-faint);
+}
+.vessel-dms-app .certificate-history-modal-i23 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.certificate-history-modal-i24 {
+  padding: 14px 24px;
+  border-top: 1px solid var(--vdms-line);
+  display: flex;
+  justify-content: flex-end;
+  background: var(--vdms-surface-alt);
+}

@@ -1,0 +1,24 @@
+// View/navigation & modal-mode types extracted from VesselEmail.tsx
+
+export type ModalMode = 'none' | 'create' | 'edit' | 'delete' | 'user' | 'template' | 'folder';
+
+export type AppView = 
+  | 'dashboard'
+  | 'list'
+  | 'sites'
+  | 'vessels'
+  | 'certificates'
+  | 'certificate_master'
+  | 'service_agreements'
+  | 'templates'
+  | 'approvals'
+  | 'reports'
+  | 'users'
+  | 'settings'
+  | 'profile'
+  | 'bento_email'
+  | 'email_notify'
+  | 'recycle'
+  | 'archive'
+  | 'alerts'
+  | 'migration';

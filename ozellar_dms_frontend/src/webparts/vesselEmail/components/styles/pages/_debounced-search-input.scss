@@ -1,0 +1,27 @@
+// debounced-search-input — styles
+
+// ── Converted inline styles (debounced-search-input) ──────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.debounced-search-input-i1 {
+  position: relative;
+  display: block;
+}
+.debounced-search-input-i2 {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--vdms-text-faint);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+}
+.vessel-dms-app .debounced-search-input-i2 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.debounced-search-input-i3 {
+  font-size: 13px;
+}

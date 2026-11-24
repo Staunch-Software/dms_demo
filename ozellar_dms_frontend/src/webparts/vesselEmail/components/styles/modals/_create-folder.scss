@@ -1,0 +1,164 @@
+// create-folder-modal — styles
+
+// ── Converted inline styles (create-folder-modal) ─────────────────────────────────────────
+// Generated from the component's style={{…}} objects. Values that depend on runtime state, or that global
+// rules match by text, stay inline in the component.
+
+.create-folder-modal-i1 {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.create-folder-modal-i2 {
+  border-radius: 16px;
+  max-width: 95vw;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+}
+.create-folder-modal-i3 {
+  text-align: center;
+  padding: 20px 0 4px;
+}
+.create-folder-modal-i4 {
+  font-size: 44px;
+  margin-bottom: 10px;
+}
+.create-folder-modal-i5 {
+  font-size: 44px;
+}
+.create-folder-modal-i6 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #059669;
+  margin-bottom: 6px;
+}
+.vessel-dms-app .create-folder-modal-i6 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i7 {
+  font-size: 13px;
+  color: var(--vdms-text-muted);
+  margin: 0;
+}
+.vessel-dms-app .create-folder-modal-i7 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i8 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.create-folder-modal-i9 {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.vessel-dms-app .create-folder-modal-i9 { font-size: 18px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i10 {
+  font-size: 20px;
+}
+.create-folder-modal-i11 {
+  flex: 1;
+}
+.create-folder-modal-i12 {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .create-folder-modal-i12 { font-size: 15.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i13 {
+  font-size: 12px;
+  color: var(--vdms-text-muted);
+  margin-top: 2px;
+}
+.vessel-dms-app .create-folder-modal-i13 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i14 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--vdms-text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.vessel-dms-app .create-folder-modal-i14 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i15 {
+  box-sizing: border-box;
+  border: 1px solid var(--vdms-border);
+  padding: 9px 12px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text);
+}
+.vessel-dms-app .create-folder-modal-i15 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i16 {
+  box-sizing: border-box;
+  border: 1px solid var(--vdms-border);
+  padding: 9px 12px;
+  font-size: 12.5px;
+  margin-bottom: 6px;
+  background: var(--vdms-surface-alt);
+  color: var(--vdms-text);
+}
+.vessel-dms-app .create-folder-modal-i16 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i17 {
+  font-size: 11px;
+  color: var(--vdms-text-faint);
+  margin-bottom: 14px;
+}
+.vessel-dms-app .create-folder-modal-i17 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i18 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+.create-folder-modal-i19 {
+  height: 15px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+.create-folder-modal-i20 {
+  font-size: 12.5px;
+  color: var(--vdms-text);
+}
+.vessel-dms-app .create-folder-modal-i20 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i21 {
+  font-size: 12.5px;
+}
+.create-folder-modal-i22 {
+  border: 1px solid #fca5a5;
+  padding: 8px 12px;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+.vessel-dms-app .create-folder-modal-i22 { font-size: 12.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i23 {
+  font-size: 12px;
+}
+.create-folder-modal-i24 {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.create-folder-modal-i25 {
+  min-height: 44px;
+  padding: 8px 20px;
+  border: 1px solid var(--vdms-border);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.vessel-dms-app .create-folder-modal-i25 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.create-folder-modal-i26 {
+  min-height: 44px;
+  padding: 8px 20px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+.vessel-dms-app .create-folder-modal-i26 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
