@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { Icon } from '@fluentui/react/lib/Icon';
 import type VesselEmail from '../VesselEmail';
 import { VesselMultiSelect } from '../VesselMultiSelect';
+import { CustomDropdown, type CustomDropdownOption } from '../CustomDropdown';
 
 // Styles: styles/modals/_service-agreement.scss
 
@@ -59,8 +60,11 @@ export interface ServiceAgreement {
   applies_to_detail: string | null;
   vessels: Array<{ id: number; name: string }>;
   remarks: string | null;
-  /** active / expiring (reminder date reached) / expired / terminated */
-  status: 'active' | 'expiring' | 'expired' | 'terminated';
+  /** draft / pending_approval (saved by the user), active / expiring (reminder date reached) / expired, terminated */
+  status: 'draft' | 'pending_approval' | 'active' | 'expiring' | 'expired' | 'terminated';
+  /** Set while status is pending_approval: which decision is awaiting the owner's emailed Approve/Reject. */
+  approval_kind?: 'activation' | 'renewal' | null;
+  approval_requested_at?: string | null;
   closed: boolean;
   sharepoint_file_url: string | null;
   filename: string | null;
@@ -98,7 +102,10 @@ type Tab = 'contract' | 'parties' | 'dates' | 'documents';
 interface PartyForm { name: string; address: string; pic: string; phone: string; email: string; }
 interface NewFile { key: number; file: File; type: string; version: string; }
 
+type SaveStatus = 'draft' | 'pending_approval' | 'active';
+
 interface FormState {
+  status: SaveStatus;
   agreement_name: string;
   description: string;
   category: string;
@@ -135,6 +142,9 @@ const toParty = (p: ContractParty | null | undefined): PartyForm => ({
 const initialForm = (a: ServiceAgreement | null, mode: ServiceAgreementModalMode): FormState => {
   const parties = a?.parties || [];
   return {
+    // Active is only ever reached via the owner's emailed approval — a save can only ask
+    // for Draft or Pending Approval (which the backend treats as "please send for approval").
+    status: a && (a.status === 'draft' || a.status === 'pending_approval') ? a.status : 'pending_approval',
     agreement_name: a?.agreement_name || '',
     description: a?.description || '',
     category: a?.category || '',
@@ -175,6 +185,15 @@ const minusDays = (iso: string, days: number): string => {
   const d = new Date(`${iso}T00:00:00`);
   if (isNaN(d.getTime())) return '';
   d.setDate(d.getDate() - days);
+  const p = (n: number): string => (n < 10 ? `0${n}` : String(n));
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+};
+
+// Sub Category is not in the client's contract field list: hidden until they ask for it (data is kept).
+const SHOW_SUB_CATEGORY = false;
+
+const todayIso = (): string => {
+  const d = new Date();
   const p = (n: number): string => (n < 10 ? `0${n}` : String(n));
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 };
@@ -277,39 +296,52 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
       const str = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
       setForm(prev => {
         const next: FormState = { ...prev, first: { ...prev.first }, second: { ...prev.second } };
-        const take = (key: 'agreement_name' | 'description' | 'vendor_reference' | 'category' | 'sub_category' | 'contract_date' | 'issue_date', value: unknown): void => {
+        const take = (key: 'agreement_name' | 'description' | 'vendor_reference' | 'category' | 'sub_category' | 'business_unit' | 'contract_date' | 'issue_date', value: unknown): void => {
           const v = str(value);
           if (!v) return;
-          if (mode === 'renew' && (key === 'agreement_name' || key === 'description' || key === 'category' || key === 'sub_category')) return;
+          if (mode === 'renew' && (key === 'agreement_name' || key === 'description' || key === 'category' || key === 'sub_category' || key === 'business_unit')) return;
           next[key] = v;
           filled[key] = true;
         };
         take('agreement_name', x.agreement_name);
         take('description', x.description);
-        take('vendor_reference', x.vendor_reference);
         take('category', x.category);
-        take('sub_category', x.sub_category);
+        if (SHOW_SUB_CATEGORY) take('sub_category', x.sub_category);
+        take('business_unit', x.business_unit);
         take('contract_date', x.contract_date);
         take('issue_date', x.issue_date);
-        const exp = str(x.expiry_date);
-        if (exp) {
-          if (mode === 'renew') { next.expiry_date = exp; filled.expiry_date = true; }
-          else { next.initial_expiry_date = exp; next.no_expiry = false; filled.initial_expiry_date = true; }
+        if (x.no_expiry) {
+          next.no_expiry = true;
+          next.initial_expiry_date = '';
+          filled.no_expiry = true;
+        } else {
+          const exp = str(x.expiry_date);
+          if (exp) {
+            if (mode === 'renew') { next.expiry_date = exp; filled.expiry_date = true; }
+            else { next.initial_expiry_date = exp; next.no_expiry = false; filled.initial_expiry_date = true; }
+          }
         }
         if (mode !== 'renew') {
-          if (str(x.first_party_name) && !next.first.name) { next.first.name = str(x.first_party_name); filled['first.name'] = true; }
-          if (str(x.second_party_name)) { next.second.name = str(x.second_party_name); filled['second.name'] = true; }
-          if (str(x.second_party_email)) { next.second.email = str(x.second_party_email); filled['second.email'] = true; }
-          if (str(x.second_party_phone)) { next.second.phone = str(x.second_party_phone); filled['second.phone'] = true; }
-          if (x.auto_renewal) { next.auto_renewal = true; filled.auto_renewal = true; }
+          (['first', 'second'] as Array<'first' | 'second'>).forEach(w => {
+            (['name', 'address', 'pic', 'phone', 'email'] as Array<keyof PartyForm>).forEach(k => {
+              const v = str(x[`${w}_party_${k}`]);
+              if (v && !(w === 'first' && k === 'name' && next.first.name)) { next[w][k] = v; filled[`${w}.${k}`] = true; }
+            });
+          });
+          if (typeof x.auto_renewal === 'boolean') {
+            next.auto_renewal = x.auto_renewal;
+            filled.auto_renewal = true;
+          }
           if (x.renewal_period_value) {
             next.renewal_period_value = String(x.renewal_period_value);
             next.renewal_period_unit = str(x.renewal_period_unit) || 'years';
             filled.renewal_period_value = true;
           }
           if (x.notice_period_days) { next.notice_period_days = String(x.notice_period_days); next.notice_na = false; filled.notice_period_days = true; }
-          if (x.applies_to === 'all_ships') { next.applies_to = 'all_ships'; filled.applies_to = true; }
-          else if (Array.isArray(x.vessel_ids) && x.vessel_ids.length) {
+          if (x.applies_to_all_ships || x.applies_to === 'all_ships') {
+            next.applies_to = 'all_ships';
+            filled.applies_to = true;
+          } else if (Array.isArray(x.vessel_ids) && x.vessel_ids.length) {
             next.applies_to = 'vessels';
             next.vessel_ids = x.vessel_ids.map((v: number) => String(v));
             filled.applies_to = true;
@@ -354,21 +386,27 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
       if (form.applies_to === 'vessels' && !form.vessel_ids.length) p.contract.push('Vessels');
       if (form.applies_to === 'newbuilding' && !form.applies_to_detail.trim()) p.contract.push('Hull number');
       if (form.applies_to === 'project' && !form.applies_to_detail.trim()) p.contract.push('Project name');
-      if (!form.first.name.trim()) p.parties.push('First Party name');
-      if (!form.second.name.trim()) p.parties.push('Second Party name');
+      const partyFields: Array<[keyof PartyForm, string]> = [['name', 'Name'], ['address', 'Address'], ['pic', 'PIC'], ['phone', 'Phone'], ['email', 'Email id']];
+      const mainParties: Array<['first' | 'second', string]> = [['first', 'First Party'], ['second', 'Second Party']];
+      mainParties.forEach(([w, t]) => {
+        partyFields.forEach(([k, l]) => { if (!form[w][k].trim()) p.parties.push(`${t} ${l}`); });
+      });
       [form.first, form.second].concat(form.additional).forEach(x => {
         if (x.email.trim() && !EMAIL_OK.test(x.email.trim())) p.parties.push(`Email of ${x.name || 'a party'}`);
       });
       if (form.auto_renewal && !form.renewal_period_value) p.dates.push('Renewal Period');
-      if (!form.notice_na && form.notice_period_days === '' && mode === 'add') p.dates.push('Notice Period (or tick Not applicable)');
+      if (!form.notice_na && form.notice_period_days === '') p.dates.push('Notice Period (or tick N/A)');
+      if (form.status === 'pending_approval' && !form.contract_date) p.dates.push('Contract Date (signed)');
     }
     if (!form.issue_date) p.dates.push('Effective Date');
     const exp = mode === 'renew' ? form.expiry_date : (renewedBefore ? form.expiry_date : form.initial_expiry_date);
     if (!form.no_expiry && !exp) p.dates.push(mode === 'renew' ? 'New Expiry Date' : 'Initial Expiry Date');
     if (!form.no_expiry && exp && form.issue_date && exp <= form.issue_date) p.dates.push('Expiry must be after the effective date');
-    if (mode !== 'edit' && !newFiles.length) p.documents.push('At least one file');
+    const savedFiles = (agreement?.documents || []).length;
+    const needFile = mode === 'renew' || form.status === 'pending_approval';
+    if (needFile && !newFiles.length && !(mode === 'edit' && savedFiles)) p.documents.push('At least one file (needed for Active)');
     return p;
-  }, [form, newFiles, mode, renewedBefore]);
+  }, [form, newFiles, mode, renewedBefore, agreement]);
 
   const allProblems = (Object.keys(problems) as Tab[]).reduce((n, t) => n + problems[t].length, 0);
 
@@ -398,7 +436,7 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
     setSaving(true);
     setError(null);
     try {
-      let res: Response;
+      let res: Response | undefined;
       const shipIds = form.applies_to === 'vessels' ? form.vessel_ids.map(v => Number(v)) : [];
       const notice = form.notice_na ? '' : form.notice_period_days;
       if (mode === 'edit' && agreement) {
@@ -413,16 +451,21 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
           renewal_period_unit: form.renewal_period_value ? form.renewal_period_unit : null,
           notice_period_days: notice === '' ? null : Number(notice),
           applies_to: form.applies_to, applies_to_detail: form.applies_to_detail, vessel_ids: shipIds,
-          parties: partiesPayload(), remarks: form.remarks,
+          parties: partiesPayload(), remarks: form.remarks, status: form.status,
         };
         if (renewedBefore) body.expiry_date = form.no_expiry ? null : (form.expiry_date || null);
-        res = await fetch(`${host._base()}/api/service-agreements/${agreement.id}`, {
-          method: 'PUT', headers: { ...host._headers(), 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-        });
-        if (res.ok && newFiles.length) {
+        // New files first: making a contract Active needs at least one saved file.
+        let filesOk = true;
+        if (newFiles.length) {
           const fd = new FormData();
           appendFiles(fd);
           res = await fetch(`${host._base()}/api/service-agreements/${agreement.id}/documents`, { method: 'POST', headers: formHeaders(), body: fd });
+          filesOk = res.ok;
+        }
+        if (filesOk) {
+          res = await fetch(`${host._base()}/api/service-agreements/${agreement.id}`, {
+            method: 'PUT', headers: { ...host._headers(), 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+          });
         }
       } else if (mode === 'renew' && agreement) {
         const fd = new FormData();
@@ -448,10 +491,12 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
           renewal_period_value: form.renewal_period_value, renewal_period_unit: form.renewal_period_value ? form.renewal_period_unit : '',
           notice_period_days: notice, applies_to: form.applies_to, applies_to_detail: form.applies_to_detail,
           vessel_ids: JSON.stringify(shipIds), parties: JSON.stringify(partiesPayload()), remarks: form.remarks,
+          status: form.status,
         };
         Object.keys(fields).forEach(k => fd.append(k, fields[k]));
         res = await fetch(`${host._base()}/api/service-agreements`, { method: 'POST', headers: formHeaders(), body: fd });
       }
+      if (!res) return;
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         const detail = data && data.detail;
@@ -491,20 +536,34 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
   const selectField = (
     key: 'category' | 'business_unit' | 'owner_email' | 'applies_to',
     text: string,
-    items: Array<{ value: string; label: string }>,
+    items: Array<{ value: string; label: string; subtext?: string }>,
     required?: boolean,
-  ): React.ReactElement => (
-    <div className="sa-modal__field">
-      {label(text, key, required, `sa-${key}`)}
-      <select id={`sa-${key}`} className="sa-modal__input" value={form[key]} onChange={e => set(key, e.target.value)}>
-        {key !== 'applies_to' && <option value="">Select…</option>}
-        {items.map(i => <option key={i.value} value={i.value}>{i.label}</option>)}
-      </select>
-    </div>
-  );
+  ): React.ReactElement => {
+    const dropdownOptions: CustomDropdownOption[] = items.map(i => ({
+      key: i.value,
+      text: i.label,
+      subtext: i.subtext,
+    }));
+    const shouldSearch = key === 'owner_email' || (key === 'category' && items.length > 6);
+    return (
+      <div className="sa-modal__field">
+        {label(text, key, required)}
+        <CustomDropdown
+          options={dropdownOptions}
+          selectedKey={form[key] || undefined}
+          onChange={(k) => set(key, String(k))}
+          placeholder="Select…"
+          searchPlaceholder={`Search ${text.toLowerCase()}…`}
+          enableSearch={shouldSearch}
+          visibleRows={4}
+          height={36}
+        />
+      </div>
+    );
+  };
 
-  const segment = (key: 'confidentiality', items: string[], text: string): React.ReactElement => (
-    <div className="sa-modal__field">
+  const segment = (key: 'confidentiality', items: string[], text: string, className?: string): React.ReactElement => (
+    <div className={`sa-modal__field ${className || ''}`}>
       <span className="sa-modal__label">{text}<span className="sa-modal__req">*</span></span>
       <div className="sa-modal__segment" role="radiogroup" aria-label={text}>
         {items.map(i => (
@@ -519,7 +578,7 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
     const p = form[which];
     const input = (key: keyof PartyForm, text: string, placeholder?: string, type?: string): React.ReactElement => (
       <div className="sa-modal__field">
-        {label(text, `${which}.${key}`, key === 'name', `sa-${which}-${key}`)}
+        {label(text, `${which}.${key}`, true, `sa-${which}-${key}`)}
         <input id={`sa-${which}-${key}`} className="sa-modal__input" type={type || 'text'} value={p[key]}
           list={key === 'name' ? 'sa-party-names' : undefined} placeholder={placeholder}
           onChange={e => setParty(which, key, e.target.value)} />
@@ -533,9 +592,9 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
           {input('pic', 'PIC')}
           {input('phone', 'Phone', undefined, 'tel')}
         </div>
-        {input('email', 'Email', undefined, 'email')}
+        {input('email', 'Email id', undefined, 'email')}
         <div className="sa-modal__field">
-          {label('Address', `${which}.address`, false, `sa-${which}-address`)}
+          {label('Address', `${which}.address`, true, `sa-${which}-address`)}
           <textarea id={`sa-${which}-address`} className="sa-modal__input sa-modal__textarea sa-modal__textarea--sm" rows={2}
             value={p.address} onChange={e => setParty(which, 'address', e.target.value)} />
         </div>
@@ -554,11 +613,59 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
   const noticeDays = form.notice_na || form.notice_period_days === '' ? reminderDefault : Number(form.notice_period_days) || 0;
   const reminder = !form.no_expiry && currentExpiry ? minusDays(currentExpiry, noticeDays) : '';
 
+  // All 7 statuses from the client's list. Draft and Pending Approval are chosen by the user;
+  // Active only ever follows the Contract Owner's emailed approval, so it's shown greyed out
+  // here too, alongside the other system-controlled states.
+  const ALL_STATUSES: Array<{ id: string; label: string; auto?: string }> = [
+    { id: 'draft', label: 'Draft' },
+    { id: 'pending_approval', label: 'Pending Approval' },
+    { id: 'active', label: 'Active', auto: 'automatic after the owner approves the emailed request' },
+    { id: 'expiring', label: 'Expiring', auto: 'automatic from the Reminder Date' },
+    { id: 'expired', label: 'Expired', auto: 'automatic after the Current Expiry Date' },
+    { id: 'terminated', label: 'Terminated', auto: 'use Terminate in the list' },
+    { id: 'superseded', label: 'Superseded', auto: 'automatic for old versions after Renew' },
+  ];
+  const lockedStatus = !!agreement && !(agreement.status === 'draft' || agreement.status === 'pending_approval');
+  const statusValue = lockedStatus && agreement ? agreement.status : form.status;
+  const statusHint = 'Draft and Pending Approval are chosen here. Active follows the owner’s approval, '
+    + 'Expiring and Expired follow the dates, Terminated comes from Terminate, and Superseded marks '
+    + 'earlier versions after a renewal.';
+  const statusOptions: CustomDropdownOption[] = React.useMemo(() => {
+    return ALL_STATUSES.map(x => ({
+      key: x.id,
+      text: x.label,
+      subtext: x.auto ? `(${x.auto})` : undefined,
+      disabled: !!x.auto || lockedStatus,
+    }));
+  }, [lockedStatus]);
+
+  const statusField = (
+    <div className="sa-modal__field">
+      <label className="sa-modal__label" title={statusHint}>Status<span className="sa-modal__req">*</span></label>
+      <CustomDropdown
+        options={statusOptions}
+        selectedKey={statusValue}
+        disabled={lockedStatus}
+        onChange={k => set('status', k as SaveStatus)}
+        placeholder="Select status…"
+        enableSearch={false}
+        visibleRows={4}
+        height={36}
+      />
+    </div>
+  );
+
   // ---------------------------------------------------------------- tabs
   const contractTab = (
     <div className="sa-modal__grid">
-      {textField('agreement_name', 'Contract Title', { required: true, placeholder: 'e.g. AMC - Main Engine', className: 'sa-span-2' })}
-      {textField('vendor_reference', 'External Contract No', { placeholder: "Counterparty's number" })}
+      <div className="sa-modal__field">
+        <span className="sa-modal__label">Contract Number</span>
+        <div className="sa-modal__readonly" title={agreement ? 'Generated automatically' : `Generated automatically when you save${nextNo ? ` (next: ${nextNo})` : ''}`}>
+          {agreement ? agreement.contract_no : 'Auto-generated on save'}
+        </div>
+      </div>
+      {textField('vendor_reference', 'External Contract Number', { placeholder: 'Free text (optional)' })}
+      {textField('agreement_name', 'Contract Title', { required: true, placeholder: 'e.g. AMC - Main Engine' })}
       <div className="sa-modal__field sa-span-3">
         <label className="sa-modal__label" htmlFor="sa-description">
           Brief Description<span className="sa-modal__req">*</span>{autoTag('description')}
@@ -568,11 +675,12 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
           onChange={e => set('description', e.target.value)} placeholder="What the contract covers" />
       </div>
       {selectField('category', 'Contract Category', (options?.categories || []).map(c => ({ value: c, label: c })), true)}
-      {textField('sub_category', 'Sub Category', { list: 'sa-sub-categories' })}
+      {SHOW_SUB_CATEGORY && textField('sub_category', 'Sub Category', { list: 'sa-sub-categories' })}
       {selectField('business_unit', 'Business Unit', (options?.business_units || []).map(c => ({ value: c, label: c })), true)}
-      {selectField('owner_email', 'Contract Owner / PIC', (options?.users || []).map(u => ({ value: u.email, label: u.department ? `${u.name} (${u.department})` : u.name })), true)}
-      {segment('confidentiality', options?.confidentiality || ['General', 'Internal', 'Confidential'], 'Confidentiality')}
+      {selectField('owner_email', 'Contract Owner / PIC', (options?.users || []).map(u => ({ value: u.email, label: u.name, subtext: u.department || undefined })), true)}
       {selectField('applies_to', 'Applicable Vessel / Project', appliesItems)}
+      {statusField}
+      {segment('confidentiality', options?.confidentiality || ['General', 'Internal', 'Confidential'], 'Confidentiality')}
       {form.applies_to === 'vessels' && (
         <div className="sa-modal__field sa-span-3">
           <span className="sa-modal__label">Vessels<span className="sa-modal__req">*</span>{autoTag('applies_to')}</span>
@@ -633,24 +741,24 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
   );
 
   const datesTab = (
-    <div className="sa-modal__grid">
-      {textField('contract_date', 'Contract Date (signed)', { type: 'date' })}
+    <div className="sa-modal__grid sa-modal__grid--roomy">
+      {textField('contract_date', 'Contract Date (after signing)', { type: 'date', required: form.status === 'pending_approval' })}
       {textField('issue_date', 'Effective / Commencement Date', { type: 'date', required: true })}
       {renewedBefore ? readOnly('Initial Expiry Date', fmtDate(form.initial_expiry_date)) : expiryField('initial_expiry_date', 'Initial Expiry Date')}
       {renewedBefore
         ? expiryField('expiry_date', 'Current Expiry Date')
-        : readOnly('Current Expiry Date', form.no_expiry ? 'No expiry' : (currentExpiry ? fmtDate(currentExpiry) : 'Same as Initial Expiry'), 'Copied from the Initial Expiry Date; changes only on renewal')}
+        : readOnly('Current Expiry Date (system controlled)', form.no_expiry ? 'No expiry' : (currentExpiry ? fmtDate(currentExpiry) : 'Same as Initial Expiry'), 'Copied from the Initial Expiry Date; changes only on renewal')}
       <div className="sa-modal__field">
         <label className="sa-modal__label" htmlFor="sa-notice">
-          Notice Period (days){autoTag('notice_period_days')}
+          Termination / Non-Renewal Notice Period (days)<span className="sa-modal__req">*</span>{autoTag('notice_period_days')}
           <span className="sa-modal__check">
-            <input type="checkbox" checked={form.notice_na} onChange={e => set('notice_na', e.target.checked)} /> Not applicable
+            <input type="checkbox" checked={form.notice_na} onChange={e => set('notice_na', e.target.checked)} /> N/A
           </span>
         </label>
         <input id="sa-notice" className="sa-modal__input" type="number" min={0} max={3650} disabled={form.notice_na}
           value={form.notice_na ? '' : form.notice_period_days} onChange={e => set('notice_period_days', e.target.value)} placeholder="e.g. 30" />
       </div>
-      {readOnly('Reminder Date', form.no_expiry ? 'No reminder' : (reminder ? fmtDate(reminder) : '-'),
+      {readOnly('Reminder Date (system generated)', form.no_expiry ? 'No reminder (no expiry)' : (reminder ? fmtDate(reminder) : 'Set after Current Expiry is entered'),
         `Current Expiry minus Notice Period${form.notice_na || form.notice_period_days === '' ? ` (default ${reminderDefault} days)` : ''}`)}
       <div className="sa-modal__field">
         <span className="sa-modal__label">Auto-Renewal<span className="sa-modal__req">*</span>{autoTag('auto_renewal')}</span>
@@ -659,17 +767,22 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
           <button type="button" role="radio" aria-checked={!form.auto_renewal} className={!form.auto_renewal ? 'is-on' : ''} onClick={() => set('auto_renewal', false)}>No</button>
         </div>
       </div>
-      <div className="sa-modal__field">
+      <div className="sa-modal__field sa-span-2">
         <label className="sa-modal__label" htmlFor="sa-renewal">Renewal Period{form.auto_renewal && <span className="sa-modal__req">*</span>}{autoTag('renewal_period_value')}</label>
         <div className="sa-modal__inline">
           <input id="sa-renewal" className="sa-modal__input" type="number" min={1} max={999} value={form.renewal_period_value}
             onChange={e => set('renewal_period_value', e.target.value)} placeholder="e.g. 1" />
-          <select className="sa-modal__input" aria-label="Renewal period unit" value={form.renewal_period_unit} onChange={e => set('renewal_period_unit', e.target.value)}>
-            {(options?.renewal_units || ['days', 'months', 'years']).map(u => <option key={u} value={u}>{u[0].toUpperCase() + u.slice(1)}</option>)}
-          </select>
+          <CustomDropdown
+            style={{ flex: '1 1 60%' }}
+            options={(options?.renewal_units || ['days', 'months', 'years']).map(u => ({ key: u, text: u[0].toUpperCase() + u.slice(1) }))}
+            selectedKey={form.renewal_period_unit}
+            onChange={k => set('renewal_period_unit', String(k))}
+            enableSearch={false}
+            visibleRows={4}
+            height={36}
+          />
         </div>
       </div>
-      <div className="sa-modal__field" />
       <div className="sa-modal__field sa-span-3">
         <label className="sa-modal__label" htmlFor="sa-remarks">Remarks</label>
         <textarea id="sa-remarks" className="sa-modal__input sa-modal__textarea" rows={2} maxLength={4000}
@@ -685,12 +798,18 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
         <div key={f.key} className="sa-docs__row">
           <Icon iconName="PDF" className="sa-docs__icon" />
           <span className="sa-docs__name" title={f.file.name}>{f.file.name}</span>
-          <select className="sa-modal__input sa-docs__type" aria-label="Document type" value={f.type}
-            onChange={e => setNewFiles(list => list.map(x => (x.key === f.key ? { ...x, type: e.target.value } : x)))}>
-            {docTypes.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
+          <CustomDropdown
+            style={{ width: 170, flexShrink: 0 }}
+            options={docTypes.map(t => ({ key: t, text: t }))}
+            selectedKey={f.type}
+            onChange={k => setNewFiles(list => list.map(x => (x.key === f.key ? { ...x, type: String(k) } : x)))}
+            enableSearch={false}
+            visibleRows={4}
+            height={36}
+          />
           <input className="sa-modal__input sa-docs__ver" aria-label="Version" value={f.version} placeholder="Ver."
             onChange={e => setNewFiles(list => list.map(x => (x.key === f.key ? { ...x, version: e.target.value } : x)))} />
+          <span className="sa-docs__meta" title="Upload date">{fmtDate(todayIso())}</span>
           <button type="button" className="sa-icon-btn" aria-label="Remove file" onClick={() => setNewFiles(list => list.filter(x => x.key !== f.key))}>
             <Icon iconName="Cancel" />
           </button>
@@ -718,7 +837,7 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
                 ? <a className="sa-docs__name" href={d.sharepoint_file_url} target="_blank" rel="noopener noreferrer" title={d.filename || ''}>{d.filename || 'File'}</a>
                 : <span className="sa-docs__name">{d.filename || 'File'}</span>}
               <span className="sa-docs__meta">{d.document_type}{d.version ? ` • v${d.version}` : ''} • {fmtDate((d.uploaded_at || '').slice(0, 10))}</span>
-              <span className={`sa-folder sa-folder--${d.folder}`}>{d.folder === 'active' ? 'Active' : 'Expiry'}</span>
+              <span className={`sa-folder sa-folder--${d.folder}`} title={`${d.folder === 'active' ? 'Active' : 'Expiry'} folder`}>{d.folder === 'active' ? 'Current' : (agreement && agreement.status === 'terminated' ? 'Terminated' : 'Superseded')}</span>
             </div>
           ))}
         </div>
@@ -732,7 +851,7 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
         {textField('issue_date', 'New Effective Date', { type: 'date', required: true })}
         {expiryField('expiry_date', 'New Expiry Date')}
         {textField('contract_date', 'Contract Date (signed)', { type: 'date' })}
-        {textField('vendor_reference', 'External Contract No')}
+        {textField('vendor_reference', 'External Contract Number', { placeholder: 'Free text (optional)' })}
         {textField('notes', 'Renewal Note', { placeholder: 'e.g. Yearly renewal, new rates', className: 'sa-span-2' })}
       </div>
       <div className="sa-modal__field">
@@ -768,7 +887,7 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
           </div>
         </div>
         <div className="sa-modal__header-right">
-          <span className="sa-modal__contract" title="Contract number"><Icon iconName="NumberSymbol" /> {contractNo}</span>
+          {agreement && <span className="sa-modal__contract" title="Contract Number"><Icon iconName="NumberSymbol" /> {contractNo}</span>}
           <button type="button" className="sa-modal__close" onClick={onClose} disabled={saving} aria-label="Close"><Icon iconName="Cancel" /></button>
         </div>
       </div>
@@ -831,8 +950,9 @@ export function ServiceAgreementModal({ host, mode, agreement, options, onClose,
         <div className="sa-modal__footer-info">
           <Icon iconName="FabricFolder" />
           {mode === 'renew'
-            ? <span>New files go to <strong>Active</strong>; the current ones move to <strong>Expiry</strong>. Contract no stays the same.</span>
-            : <span>Files saved in <strong>{activeFolder}</strong></span>}
+            ? <span>New files go to <strong>Active</strong>; the current ones move to <strong>Expiry</strong>. Contract no stays the same.
+                The renewal waits for the Contract Owner's approval before it's final.</span>
+            : <span>Files saved in <strong>{activeFolder}</strong>{form.status === 'pending_approval' ? <> &middot; sent to the Contract Owner for approval</> : null}</span>}
         </div>
         <div className="sa-modal__footer-actions">
           {mode !== 'renew' && tab !== 'documents' && (
@@ -886,7 +1006,7 @@ export function ServiceAgreementHistoryModal({ host, agreement, onClose }: { hos
                   ? <a className="sa-docs__name" href={d.sharepoint_file_url} target="_blank" rel="noopener noreferrer">{d.filename || 'File'}</a>
                   : <span className="sa-docs__name">{d.filename || 'File'}</span>}
                 <span className="sa-docs__meta">{d.document_type}{d.version ? ` • v${d.version}` : ''} • {fmtDate((d.uploaded_at || '').slice(0, 10))}</span>
-                <span className={`sa-folder sa-folder--${d.folder}`}>{d.folder === 'active' ? 'Active' : 'Expiry'}</span>
+                <span className={`sa-folder sa-folder--${d.folder}`} title={`${d.folder === 'active' ? 'Active' : 'Expiry'} folder`}>{d.folder === 'active' ? 'Current' : (agreement && agreement.status === 'terminated' ? 'Terminated' : 'Superseded')}</span>
               </div>
             ))}
             <div className="sa-party__title">Renewals<span>{data.history.length}</span></div>

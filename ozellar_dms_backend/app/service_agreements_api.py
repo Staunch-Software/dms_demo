@@ -3,16 +3,21 @@
 Mounted in app/main.py via include_router. Works like the certificate module:
 
   - upload the contract -> details are read from it (local extraction, no external AI) -> user checks -> save
-  - on save the system generates the contract no (NKS-CON-YYYY-NNNN). Files are stored once in SharePoint:
+  - on save the system generates the contract no (OZD-CON-YYYY-NNNN). Files are stored once in SharePoint:
         Technical and Crewing  New/Service Agreement/Active/<contract no> - <title> - <type> v<version> (...).pdf
   - renew: new effective / expiry dates and new file(s); the current files move to .../Service Agreement/Expiry
     and the previous version is kept in service_agreement_history. The contract no stays the same.
   - terminate: the contract ended without renewal; its files move to Expiry. Renewing makes it active again.
   - status: active / expiring (from the Reminder Date) / expired / terminated. The Reminder Date is
     Current Expiry Date minus the Notice Period (DEFAULT_REMINDER_DAYS when there is no notice period).
+  - approval gate: a create/edit/renew that would make the contract Active instead lands on
+    "pending_approval" and emails the Contract Owner / PIC a one-click Approve/Reject link
+    (GET .../{id}/decision, no login required). See app/services/service_agreement_approvals.py.
+    Rejecting a new/edited contract reverts it to Draft. Rejecting a renewal rolls the agreement
+    back to the pre-renewal snapshot taken at submit time (dates + which documents moved).
 
-Not built yet (waiting for the client): Draft / Pending Approval, confidentiality access rules,
-automatic extension for auto-renewal, reminder emails, amendments.
+Not built yet (waiting for the client): confidentiality access rules, automatic extension for
+auto-renewal, amendments as a distinct action (document_type="Amendment" is just a file tag today).
 
   GET  /api/service-agreements                       list (filters: status, vessel_id, category, business_unit, owner_email, q)
   GET  /api/service-agreements/options               dropdown lists, users, ships, settings
@@ -25,9 +30,11 @@ automatic extension for auto-renewal, reminder emails, amendments.
   POST /api/service-agreements/{id}/renew            renew (multipart; at least one file)
   POST /api/service-agreements/{id}/terminate        terminate (files move to Expiry)   [/close = old name]
   GET  /api/service-agreements/{id}/history          earlier versions + every document
+  GET  /api/service-agreements/{id}/decision          approve/reject link target, no auth (email button)
 """
 from __future__ import annotations
 
+import hmac
 import json
 import logging
 import re
@@ -35,6 +42,7 @@ from datetime import date, datetime, timedelta
 from typing import Any, Callable
 
 from fastapi import APIRouter, Body, Depends, File, Form, Header, HTTPException, Query, UploadFile
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from sqlalchemy import func, or_
 from sqlalchemy.exc import IntegrityError
@@ -44,6 +52,12 @@ from .db import models
 from .db.base import SessionLocal
 from .graph import drive as gd
 from .services import vessel_roots
+from .services.service_agreement_approvals import (
+    hash_token,
+    new_approval_token,
+    render_decision_page,
+    send_approval_request,
+)
 from .services.service_agreement_extractor import extract_service_agreement_metadata
 
 log = logging.getLogger(__name__)
@@ -55,6 +69,11 @@ DEFAULT_REMINDER_DAYS = 60  # used when a contract has no notice period
 CATEGORIES = ["Service", "Supply", "Newbuilding", "Insurance", "Management", "Flag - Statutory", "Class", "Charter", "Other"]
 BUSINESS_UNITS = ["Technical", "Crewing", "Marine", "Finance", "Corporate"]
 CONFIDENTIALITY = ["General", "Internal", "Confidential"]
+# Statuses a user can save; Expiring / Expired come from the dates, Terminated from Terminate,
+# Superseded marks the files of earlier versions (Expiry folder) after a renewal.
+SAVE_STATUSES = ["draft", "pending_approval", "active"]
+STATUS_LABELS = {"draft": "Draft", "pending_approval": "Pending Approval", "active": "Active", "expiring": "Expiring",
+                 "expired": "Expired", "terminated": "Terminated", "superseded": "Superseded"}
 RENEWAL_UNITS = ["days", "months", "years"]
 APPLIES_TO = {
     "all_ships": "All vessels",
@@ -153,8 +172,8 @@ def reminder_date(a: "models.ServiceAgreement") -> date | None:
 
 
 def _status(a: "models.ServiceAgreement", today: date) -> str:
-    if a.status == "terminated":
-        return "terminated"
+    if a.status in ("terminated", "draft", "pending_approval"):
+        return a.status
     if a.no_expiry or a.expiry_date is None:
         return "active"
     if a.expiry_date < today:
@@ -209,6 +228,12 @@ def _parse_parties(raw: Any, required: bool = True) -> list[dict[str, Any]]:
                 continue  # an empty additional row from the form
             label = {"first": "First Party", "second": "Second Party", "additional": "Additional Party"}[role]
             raise HTTPException(400, f"{label} name is required.")
+        if role in ("first", "second"):
+            label = "First Party / Company" if role == "first" else "Second Party / Counterparty"
+            missing = [t for k, t in (("address", "Address"), ("pic", "PIC"), ("phone", "Phone"), ("email", "Email id"))
+                       if not _clean_text(p.get(k), 10)]
+            if missing:
+                raise HTTPException(400, f"{label}: {', '.join(missing)} required.")
         if email and not _EMAIL_OK.match(email):
             raise HTTPException(400, f"Invalid email for {name}: {email}")
         out.append({
@@ -288,6 +313,40 @@ def _check_dates(effective: date | None, expiry: date | None, no_expiry: bool, l
         raise HTTPException(400, f"{label} must be after the effective date.")
 
 
+# ---------------------------------------------------------------- approval gate
+
+def _request_approval(db, a: "models.ServiceAgreement", kind: str) -> str | None:
+    """Generates a fresh approval token, stores its hash on `a`, and emails the owner the
+    Approve/Reject links. Returns a warning string if the email could not be sent (the save
+    itself still succeeds — the contract just waits in pending_approval until re-requested)."""
+    token, token_hash, expires = new_approval_token()
+    a.approval_kind = kind
+    a.approval_token_hash = token_hash
+    a.approval_token_expires_at = expires
+    a.approval_requested_at = datetime.utcnow()
+    a.approval_decided_at = None
+    a.approval_decided_by = None
+    a.approval_rejection_reason = None
+    db.flush()
+    try:
+        sent = send_approval_request(a, kind, token)
+    except Exception as exc:  # noqa: BLE001
+        log.error("[service_agreements] approval email to %s for %s failed: %s", a.owner_email, a.contract_no, exc)
+        return "Saved, but the approval email could not be sent. Please notify the Contract Owner directly."
+    if not sent:
+        return "Saved, but there is no owner email on file to send the approval request to."
+    return None
+
+
+def _approval_routing(a: "models.ServiceAgreement", state: str) -> dict[str, Any]:
+    return {
+        "email_automation_enabled": True,
+        "owner_name": a.owner_name,
+        "owner_email": a.owner_email,
+        "dispatched": state == "pending_approval" and bool(a.approval_requested_at),
+    }
+
+
 # ---------------------------------------------------------------- serialisation
 
 def _serialize(a: "models.ServiceAgreement", ships: list[dict[str, Any]], today: date, full: bool = True) -> dict[str, Any]:
@@ -330,6 +389,8 @@ def _serialize(a: "models.ServiceAgreement", ships: list[dict[str, Any]], today:
         "vessels": ships if a.applies_to == "vessels" else [],
         "remarks": a.remarks,
         "status": _status(a, today),
+        "approval_kind": a.approval_kind,
+        "approval_requested_at": a.approval_requested_at.isoformat() if a.approval_requested_at else None,
         "closed": a.status == "terminated",
         "terminated_at": a.closed_at.isoformat() if a.closed_at else None,
         "sharepoint_file_url": a.sharepoint_file_url,
@@ -503,6 +564,33 @@ async def _move_to_expiry(docs: list["models.ServiceAgreementDocument"]) -> list
     return warnings
 
 
+async def _restore_from_expiry(docs: list["models.ServiceAgreementDocument"]) -> list[str]:
+    """Reverses _move_to_expiry: used when a renewal is rejected, to put the pre-renewal
+    files back in Service Agreement/Active. Returns warnings."""
+    warnings: list[str] = []
+    if not docs:
+        return warnings
+    drive_id = _drive_id()
+    if not (drive_id and settings.graph_configured):
+        return ["SharePoint is not configured, so the previous files were not moved back to Active."]
+    try:
+        folder = await _agreement_folder(drive_id, ACTIVE_FOLDER)
+    except Exception as exc:
+        return [f"The Active folder could not be opened ({str(exc)[:160] or type(exc).__name__})."]
+    for d in docs:
+        if not d.sharepoint_item_id:
+            d.folder = "active"
+            continue
+        try:
+            moved = await gd.move_item(d.sharepoint_drive_id or drive_id, d.sharepoint_item_id, folder["id"])
+            d.sharepoint_file_url = moved.get("webUrl") or d.sharepoint_file_url
+            d.folder = "active"
+        except Exception as exc:
+            log.warning("Could not move contract file %s back to Active: %s", d.sharepoint_item_id, exc)
+            warnings.append(f"{d.filename or 'A file'} could not be moved back to the Active folder.")
+    return warnings
+
+
 def _point_main_file(a: "models.ServiceAgreement", docs: list["models.ServiceAgreementDocument"]) -> None:
     """The agreement's own file columns show its main current document."""
     main = next((d for d in docs if d.document_type == "Main Contract"), docs[0] if docs else None)
@@ -538,6 +626,7 @@ class UpdateServiceAgreementIn(BaseModel):
     vessel_ids: list[int] | None = None
     parties: list[dict] | None = None
     remarks: str | None = None
+    status: str | None = None  # draft / pending_approval / active (Terminate has its own action)
 
 
 class TerminateIn(BaseModel):
@@ -551,8 +640,8 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
 
     @router.get("")
     async def list_agreements(
-        status: str = Query(default="all", description="all | active | expiring | expired | terminated"),
-        vessel_id: int | None = Query(default=None),
+        status: str = Query(default="all", description="all | draft | pending_approval | active | expiring | expired | terminated"),
+        vessel_id: str | None = Query(default=None),
         category: str | None = Query(default=None),
         business_unit: str | None = Query(default=None),
         owner_email: str | None = Query(default=None),
@@ -563,17 +652,35 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
         with SessionLocal() as db:
             query = db.query(models.ServiceAgreement)
             if category:
-                query = query.filter(func.lower(models.ServiceAgreement.category) == category.strip().lower())
+                cats = [c.strip().lower() for c in category.split(",") if c.strip()]
+                if len(cats) == 1:
+                    query = query.filter(func.lower(models.ServiceAgreement.category) == cats[0])
+                elif len(cats) > 1:
+                    query = query.filter(func.lower(models.ServiceAgreement.category).in_(cats))
             if business_unit:
-                query = query.filter(func.lower(models.ServiceAgreement.business_unit) == business_unit.strip().lower())
+                units = [u.strip().lower() for u in business_unit.split(",") if u.strip()]
+                if len(units) == 1:
+                    query = query.filter(func.lower(models.ServiceAgreement.business_unit) == units[0])
+                elif len(units) > 1:
+                    query = query.filter(func.lower(models.ServiceAgreement.business_unit).in_(units))
             if owner_email:
                 query = query.filter(func.lower(models.ServiceAgreement.owner_email) == owner_email.strip().lower())
-            if vessel_id is not None:
-                linked = db.query(models.ServiceAgreementVessel.agreement_id).filter_by(vessel_id=vessel_id)
-                query = query.filter(or_(
-                    models.ServiceAgreement.applies_to == "all_ships",
-                    models.ServiceAgreement.id.in_(linked),
-                ))
+            if vessel_id is not None and str(vessel_id).strip():
+                v_ids = [int(v.strip()) for v in str(vessel_id).split(",") if v.strip().isdigit()]
+                if len(v_ids) == 1:
+                    linked = db.query(models.ServiceAgreementVessel.agreement_id).filter_by(vessel_id=v_ids[0])
+                    query = query.filter(or_(
+                        models.ServiceAgreement.applies_to == "all_ships",
+                        models.ServiceAgreement.id.in_(linked),
+                    ))
+                elif len(v_ids) > 1:
+                    linked = db.query(models.ServiceAgreementVessel.agreement_id).filter(
+                        models.ServiceAgreementVessel.vessel_id.in_(v_ids)
+                    )
+                    query = query.filter(or_(
+                        models.ServiceAgreement.applies_to == "all_ships",
+                        models.ServiceAgreement.id.in_(linked),
+                    ))
             if q and q.strip():
                 like = f"%{q.strip().lower()}%"
                 party_hit = db.query(models.ServiceAgreementParty.agreement_id).filter(
@@ -592,7 +699,7 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             ships = _ships_by_agreement(db, [a.id for a in rows])
             items = [_serialize(a, ships.get(a.id, []), today, full=False) for a in rows]
 
-            counts = {"active": 0, "expiring": 0, "expired": 0, "terminated": 0}
+            counts = {"draft": 0, "pending_approval": 0, "active": 0, "expiring": 0, "expired": 0, "terminated": 0}
             for a in db.query(models.ServiceAgreement).all():
                 counts[_status(a, today)] += 1
 
@@ -663,6 +770,7 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
         business_unit: str = Form(...),
         owner_email: str = Form(...),
         confidentiality: str = Form(default="General"),
+        status: str = Form(default="active", description="draft | pending_approval | active"),
         sub_category: str | None = Form(default=None),
         vendor_reference: str | None = Form(default=None),
         contract_date: str | None = Form(default=None),
@@ -680,10 +788,13 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
         remarks: str | None = Form(default=None),
         document_types: str | None = Form(default=None, description="JSON list, one per file"),
         document_versions: str | None = Form(default=None, description="JSON list, one per file"),
-        files: list[UploadFile] = File(...),
+        files: list[UploadFile] | None = File(default=None),
         x_user_email: str | None = Header(default=None),
         _session: object = Depends(require_session),
     ) -> dict[str, Any]:
+        state = _pick(status or "active", SAVE_STATUSES, "Status")
+        if state == "active":
+            state = "pending_approval"  # Active is only reached via the owner's emailed approval.
         title = _clean_text(agreement_name, 300)
         desc = _clean_text(description, 500)
         if not title:
@@ -700,10 +811,14 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
         perpetual = _bool(no_expiry)
         _check_dates(effective, initial, perpetual, "Initial expiry date")
         signed = _parse_date(contract_date, "contract date")
+        if state == "pending_approval" and not signed:
+            raise HTTPException(400, "Contract Date is required once the contract is signed (Active).")
         auto, period_n, period_u = _renewal(auto_renewal, renewal_period_value, renewal_period_unit)
         notice = _int_or_none(notice_period_days, "Notice period (days)")
         party_rows = _parse_parties(parties)
-        pending = await _read_files(files, document_types, document_versions, required=True)
+        pending = await _read_files(files, document_types, document_versions, required=(state == "pending_approval"))
+        if state == "pending_approval" and not pending:
+            raise HTTPException(400, "Attach at least one file to make the contract Active.")
 
         with SessionLocal() as db:
             owner, owner_name = _resolve_owner(db, owner_email)
@@ -723,7 +838,7 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
                     renewal_period_value=period_n, renewal_period_unit=period_u,
                     notice_period_days=notice,
                     applies_to=kind, applies_to_detail=detail, applies_to_all_ships=(kind == "all_ships"),
-                    remarks=_clean_text(remarks, 4000), status="active",
+                    remarks=_clean_text(remarks, 4000), status=state,
                     created_by=x_user_email, updated_by=x_user_email,
                 )
                 db.add(agreement)
@@ -740,7 +855,7 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
                 raise HTTPException(409, "Could not generate a contract number, please try again.")
 
             try:
-                docs = await _upload_files(agreement, pending, "active", x_user_email)
+                docs = await _upload_files(agreement, pending, "active", x_user_email) if pending else []
             except HTTPException:
                 db.delete(agreement)
                 db.commit()
@@ -748,9 +863,16 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             for d in docs:
                 db.add(d)
             _point_main_file(agreement, docs)
+            warning = None
+            if state == "pending_approval":
+                warning = _request_approval(db, agreement, "activation")
             db.commit()
             log.info("Contract %s created by %s", agreement.contract_no, x_user_email)
-            return _one(db, agreement.id)
+            out = _one(db, agreement.id)
+            out["approval_routing"] = _approval_routing(agreement, state)
+            if warning:
+                out["warning"] = warning
+            return out
 
     @router.get("/{agreement_id}")
     async def get_agreement(
@@ -824,9 +946,39 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
                 _set_ships(db, a, ids)
             if "parties" in f and f["parties"] is not None:
                 _set_parties(db, a, _parse_parties(f["parties"]))
+            requesting_approval = False
+            if f.get("status"):
+                requested_raw = _pick(f["status"], SAVE_STATUSES, "Status")
+                if a.status not in SAVE_STATUSES:
+                    raise HTTPException(400, "A terminated contract's status cannot be changed.")
+                if a.status == "active":
+                    if requested_raw != "active":
+                        raise HTTPException(400, "An Active contract cannot go back to Draft or Pending Approval — use Terminate instead.")
+                    # Already active, re-saving "active" (e.g. the locked status field) is a no-op.
+                else:
+                    target = "pending_approval" if requested_raw == "active" else requested_raw
+                    if target == "pending_approval" and a.status != "pending_approval":
+                        requesting_approval = True  # first request, or re-request after a Draft -> Pending edit
+                    elif target != "pending_approval" and a.status == "pending_approval":
+                        # Withdrawn before the owner acted: invalidate the outstanding email link.
+                        a.approval_kind = None
+                        a.approval_token_hash = None
+                        a.approval_token_expires_at = None
+                    a.status = target
+            if a.status == "pending_approval":
+                if not a.contract_date:
+                    raise HTTPException(400, "Contract Date is required once the contract is signed (Active).")
+                if not db.query(models.ServiceAgreementDocument).filter_by(agreement_id=a.id).count():
+                    raise HTTPException(400, "Attach at least one file to make the contract Active.")
             a.updated_by = x_user_email or a.updated_by
+            warning = _request_approval(db, a, "activation") if requesting_approval else None
             db.commit()
-            return _one(db, a.id)
+            out = _one(db, a.id)
+            if requesting_approval:
+                out["approval_routing"] = _approval_routing(a, a.status)
+            if warning:
+                out["warning"] = warning
+            return out
 
     @router.post("/{agreement_id}/documents")
     async def add_documents(
@@ -876,6 +1028,10 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             a = db.get(models.ServiceAgreement, agreement_id)
             if not a:
                 raise HTTPException(404, f"Service agreement {agreement_id} not found")
+            if a.status != "active":
+                raise HTTPException(400, "Only an Active contract can be renewed.")
+            if a.approval_kind:
+                raise HTTPException(400, "A decision is already pending for this contract.")
             if a.issue_date and effective < a.issue_date:
                 raise HTTPException(400, f"The new effective date ({effective}) is earlier than the current one ({a.issue_date}).")
 
@@ -885,15 +1041,24 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             current = [d for d in a.documents if d.folder == "active"]
             warnings = await _move_to_expiry(current)
             main_before = next((d for d in current if d.document_type == "Main Contract"), current[0] if current else None)
-            # 3. Keep the previous version.
-            db.add(models.ServiceAgreementHistory(
+            # 3. Keep the previous version — this is what a Reject rolls back to.
+            history = models.ServiceAgreementHistory(
                 agreement_id=a.id, vendor=a.vendor, vendor_reference=a.vendor_reference,
-                issue_date=a.issue_date, expiry_date=a.expiry_date,
+                issue_date=a.issue_date, expiry_date=a.expiry_date, no_expiry=a.no_expiry,
+                contract_date=a.contract_date, remarks=a.remarks,
                 sharepoint_file_url=main_before.sharepoint_file_url if main_before else a.sharepoint_file_url,
                 sharepoint_item_id=main_before.sharepoint_item_id if main_before else a.sharepoint_item_id,
                 filename=main_before.filename if main_before else a.filename,
                 renewed_by_email=x_user_email, notes=_clean_text(notes, 4000),
-            ))
+            )
+            db.add(history)
+            db.flush()
+            # Tag every document this renewal touched (moved out, or newly added) so a Reject
+            # can precisely reverse just these rows without guessing.
+            for d in current:
+                d.renewal_history_id = history.id
+            for d in new_docs:
+                d.renewal_history_id = history.id
             # 4. Current version = the renewed one (the Initial Expiry Date never changes).
             a.issue_date = effective
             a.no_expiry = perpetual
@@ -907,13 +1072,18 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             for d in new_docs:
                 db.add(d)
             _point_main_file(a, new_docs)
-            a.status = "active"
+            a.pending_renewal_history_id = history.id
+            a.status = "pending_approval"
             a.closed_at = None
             a.updated_by = x_user_email or a.updated_by
+            email_warning = _request_approval(db, a, "renewal")
             db.commit()
             out = _one(db, a.id)
             out["renewed"] = True
-            out["warning"] = " ".join(warnings) or None
+            out["pending_renewal"] = True
+            out["approval_routing"] = _approval_routing(a, a.status)
+            warning_parts = [w for w in (" ".join(warnings) or None, email_warning) if w]
+            out["warning"] = " ".join(warning_parts) or None
             return out
 
     async def _terminate(agreement_id: int, payload: TerminateIn, x_user_email: str | None) -> dict[str, Any]:
@@ -929,6 +1099,10 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
                 a.sharepoint_file_url = main.sharepoint_file_url
             a.status = "terminated"
             a.closed_at = datetime.utcnow()
+            # Any outstanding approval link for this contract is now moot.
+            a.approval_kind = None
+            a.approval_token_hash = None
+            a.approval_token_expires_at = None
             if payload.notes and payload.notes.strip():
                 note = f"[Terminated {datetime.utcnow().strftime('%Y-%m-%d')}] {payload.notes.strip()}"
                 a.remarks = f"{a.remarks}\n{note}" if a.remarks else note
@@ -956,6 +1130,130 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
     ) -> dict[str, Any]:
         """Old name of /terminate (first version of the page)."""
         return await _terminate(agreement_id, payload, x_user_email)
+
+    # ------------------------------------------------------------- approval decision (email link, no auth)
+
+    @router.get("/{agreement_id}/decision", response_class=HTMLResponse)
+    async def agreement_decision(
+        agreement_id: int,
+        action: str = Query(...),
+        token: str = Query(...),
+        reason: str | None = Query(default=None),
+    ) -> HTMLResponse:
+        """Target of the Approve/Reject buttons in the approval-request email. Deliberately has
+        no `Depends(require_session)` — the owner clicks this straight from their inbox."""
+        clean_action = (action or "").strip().lower()
+        if clean_action not in ("approve", "reject"):
+            return HTMLResponse(
+                render_decision_page("Invalid Action", "Action must be either 'approve' or 'reject'.", "error"),
+                status_code=400,
+            )
+        with SessionLocal() as db:
+            a = db.get(models.ServiceAgreement, agreement_id)
+            if not a:
+                return HTMLResponse(
+                    render_decision_page("Not Found", f"No contract found with ID #{agreement_id}.", "error"),
+                    status_code=404,
+                )
+            if not a.approval_kind or not a.approval_token_hash:
+                return HTMLResponse(
+                    render_decision_page(
+                        "Already Decided",
+                        f"{a.contract_no} has no approval request waiting right now — it may already "
+                        "have been decided, or withdrawn.",
+                        "info",
+                    ),
+                    status_code=200,
+                )
+            if a.approval_token_expires_at and a.approval_token_expires_at < datetime.utcnow():
+                return HTMLResponse(
+                    render_decision_page(
+                        "Link Expired",
+                        "This approval link has expired. Please ask for the contract to be resubmitted.",
+                        "error",
+                    ),
+                    status_code=410,
+                )
+            if a.status != "pending_approval":
+                # Moved on by another action (e.g. Terminate) while this was awaiting a decision.
+                a.approval_kind = None
+                a.approval_token_hash = None
+                a.approval_token_expires_at = None
+                db.commit()
+                return HTMLResponse(
+                    render_decision_page(
+                        "No Longer Pending",
+                        f"{a.contract_no} is no longer waiting for approval "
+                        f"(current status: {STATUS_LABELS.get(a.status, a.status)}).",
+                        "info",
+                    ),
+                    status_code=200,
+                )
+            if not hmac.compare_digest(a.approval_token_hash, hash_token(token)):
+                return HTMLResponse(
+                    render_decision_page("Invalid Link", "This approval link is invalid or has already been used.", "error"),
+                    status_code=403,
+                )
+
+            kind = a.approval_kind
+            now = datetime.utcnow()
+            a.approval_decided_at = now
+            a.approval_decided_by = a.owner_email
+
+            if kind == "activation":
+                if clean_action == "approve":
+                    a.status = "active"
+                    a.approval_rejection_reason = None
+                    title, message, tone = "Contract Approved", f"{a.contract_no} - {a.agreement_name} is now Active.", "success"
+                else:
+                    a.status = "draft"
+                    a.approval_rejection_reason = _clean_text(reason, 500) or "Rejected via email decision"
+                    title = "Contract Rejected"
+                    message = f"{a.contract_no} - {a.agreement_name} was sent back to Draft."
+                    tone = "danger"
+            else:  # "renewal"
+                history = db.get(models.ServiceAgreementHistory, a.pending_renewal_history_id) if a.pending_renewal_history_id else None
+                if clean_action == "approve":
+                    a.status = "active"
+                    a.approval_rejection_reason = None
+                    title = "Renewal Approved"
+                    message = f"{a.contract_no} - {a.agreement_name} has been renewed and is now Active."
+                    tone = "success"
+                else:
+                    if history:
+                        touched = db.query(models.ServiceAgreementDocument).filter_by(
+                            agreement_id=a.id, renewal_history_id=history.id
+                        ).all()
+                        to_restore = [d for d in touched if d.folder == "expiry"]
+                        to_delete = [d for d in touched if d.folder == "active"]
+                        await _restore_from_expiry(to_restore)
+                        await _remove_uploaded(to_delete)
+                        for d in to_delete:
+                            db.delete(d)
+                        for d in to_restore:
+                            d.renewal_history_id = None
+                        a.issue_date = history.issue_date
+                        a.expiry_date = history.expiry_date
+                        a.no_expiry = history.no_expiry
+                        a.contract_date = history.contract_date
+                        a.vendor_reference = history.vendor_reference
+                        a.remarks = history.remarks
+                        db.flush()
+                        _point_main_file(a, [d for d in a.documents if d.folder == "active"])
+                        db.delete(history)
+                    a.status = "active"
+                    a.pending_renewal_history_id = None
+                    a.approval_rejection_reason = _clean_text(reason, 500) or "Renewal rejected via email decision"
+                    title = "Renewal Rejected"
+                    message = f"{a.contract_no} - {a.agreement_name} keeps its previous expiry date; the renewal was discarded."
+                    tone = "danger"
+
+            a.approval_kind = None
+            a.approval_token_hash = None
+            a.approval_token_expires_at = None
+            db.commit()
+            log.info("[service_agreements] %s %s decision=%s by %s", a.contract_no, kind, clean_action, a.owner_email)
+            return HTMLResponse(render_decision_page(title, message, tone), status_code=200)
 
     @router.post("/send-reminders")
     async def send_reminders_now(

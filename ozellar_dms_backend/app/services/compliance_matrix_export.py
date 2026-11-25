@@ -618,7 +618,7 @@ def build_matrix_pdf(data: dict[str, Any]) -> bytes:
 
         # Top Header Banner
         page.draw_rect(fitz.Rect(LEFT_MARGIN, 30, PAGE_WIDTH - RIGHT_MARGIN, 74), color=None, fill=(0.043, 0.165, 0.290))
-        page.insert_text(fitz.Point(LEFT_MARGIN + 14, 52), "OZELLAR MARINE / NKS FLEET MANAGEMENT", fontsize=13, fontname="helv", color=(1, 1, 1))
+        page.insert_text(fitz.Point(LEFT_MARGIN + 14, 52), "OZELLAR MARINE", fontsize=13, fontname="helv", color=(1, 1, 1))
         page.insert_text(fitz.Point(LEFT_MARGIN + 14, 66), "FLEET COMPLIANCE MATRIX — PORT STATE CONTROL (PSC) & VETTING AUDIT", fontsize=8.5, fontname="helv", color=(0.8, 0.9, 1))
 
         gen_date = f"Audit Date: {data.get('generated_at', '')}  |  Page {page_idx + 1} of {total_pages}"

@@ -68,6 +68,14 @@ def env(monkeypatch):
     monkeypatch.setattr(sa_api, "_drive_id", lambda: "drv")
     monkeypatch.setattr(sa_api, "settings", SimpleNamespace(graph_configured=True, drive_id="drv"))
 
+    sent_approvals: list[tuple[int, str, str]] = []  # (agreement_id, kind, raw token)
+
+    def fake_send_approval_request(a, kind, token, send=None):
+        sent_approvals.append((a.id, kind, token))
+        return True
+
+    monkeypatch.setattr(sa_api, "send_approval_request", fake_send_approval_request)
+
     app = FastAPI()
     app.include_router(sa_api.build_service_agreements_router(lambda: object()))
     client = TestClient(app)
@@ -86,7 +94,7 @@ def env(monkeypatch):
         vessel_ids = [v.id for v in vessels]
         before = {a.id for a in db.query(models.ServiceAgreement.id).all()}
 
-    yield SimpleNamespace(client=client, drive=drive, vessel_ids=vessel_ids)
+    yield SimpleNamespace(client=client, drive=drive, vessel_ids=vessel_ids, sent_approvals=sent_approvals)
 
     with SessionLocal() as db:
         for a in db.query(models.ServiceAgreement).all():
@@ -106,7 +114,7 @@ def env(monkeypatch):
 
 PARTIES = [
     {"role": "first", "name": "Ozellar Marine", "address": "Tokyo", "pic": "Ops", "phone": "+81 3 0000", "email": "ops@ozellar.example"},
-    {"role": "second", "name": "Oceanic Engineering Pte Ltd", "pic": "Mr Tan", "email": "tan@oceanic.example"},
+    {"role": "second", "name": "Oceanic Engineering Pte Ltd", "address": "Singapore", "pic": "Mr Tan", "phone": "+65 6000 0000", "email": "tan@oceanic.example"},
     {"role": "additional", "name": ""},  # empty row from the form is ignored
 ]
 
@@ -142,6 +150,23 @@ def _files(n=2):
 
 def _create(client, n_files=2, **over):
     return client.post("/api/service-agreements", data=_form(**over), files=_files(n_files))
+
+
+def _decide(env, agreement_id, action="approve", reason=None):
+    """Finds the most recent approval token sent for this contract and clicks the email link."""
+    token = next(t for aid, _, t in reversed(env.sent_approvals) if aid == agreement_id)
+    params: dict[str, str] = {"action": action, "token": token}
+    if reason:
+        params["reason"] = reason
+    return env.client.get(f"/api/service-agreements/{agreement_id}/decision", params=params)
+
+
+def _create_and_approve(env, n_files=2, **over):
+    """Create a contract requesting Active, and approve it via the emailed decision link.
+    Returns the final (active) agreement as the backend returns it."""
+    created = _create(env.client, n_files=n_files, **over).json()
+    assert _decide(env, created["id"]).status_code == 200
+    return env.client.get(f"/api/service-agreements/{created['id']}").json()
 
 
 def test_create_full_contract(env):
@@ -190,9 +215,12 @@ def test_create_validation(env, over, message):
 
 
 def test_perpetual_contract_and_reminder_default(env):
-    a = _create(env.client, n_files=1, initial_expiry_date="", no_expiry="true", auto_renewal="false",
-                renewal_period_value="", renewal_period_unit="", notice_period_days="",
-                applies_to="newbuilding", applies_to_detail="S-1234").json()
+    created = _create(env.client, n_files=1, initial_expiry_date="", no_expiry="true", auto_renewal="false",
+                      renewal_period_value="", renewal_period_unit="", notice_period_days="",
+                      applies_to="newbuilding", applies_to_detail="S-1234").json()
+    assert created["status"] == "pending_approval" and created["approval_kind"] == "activation"
+    assert _decide(env, created["id"]).status_code == 200
+    a = env.client.get(f"/api/service-agreements/{created['id']}").json()
     assert a["no_expiry"] is True and a["expiry_date"] is None and a["reminder_date"] is None
     assert a["status"] == "active" and a["applies_to_detail"] == "S-1234"
 
@@ -200,8 +228,8 @@ def test_perpetual_contract_and_reminder_default(env):
 def test_status_from_reminder_date(env):
     soon = (date.today() + timedelta(days=20)).isoformat()
     later = (date.today() + timedelta(days=200)).isoformat()
-    exp = _create(env.client, n_files=1, issue_date="2025-01-01", initial_expiry_date=soon, notice_period_days="30").json()
-    ok = _create(env.client, n_files=1, issue_date="2025-01-01", initial_expiry_date=later, notice_period_days="").json()
+    exp = _create_and_approve(env, n_files=1, issue_date="2025-01-01", initial_expiry_date=soon, notice_period_days="30")
+    ok = _create_and_approve(env, n_files=1, issue_date="2025-01-01", initial_expiry_date=later, notice_period_days="")
     assert exp["status"] == "expiring"                     # inside its own 30-day notice window
     assert ok["status"] == "active"                        # default 60-day window not reached
     ids = {i["id"] for i in env.client.get("/api/service-agreements", params={"status": "expiring"}).json()["items"]}
@@ -209,11 +237,11 @@ def test_status_from_reminder_date(env):
 
 
 def test_edit_renew_terminate(env):
-    a = _create(env.client).json()
+    a = _create_and_approve(env)
 
     r = env.client.put(f"/api/service-agreements/{a['id']}", json={
         "initial_expiry_date": "2027-03-31", "business_unit": "marine",
-        "parties": [PARTIES[0], {"role": "second", "name": "New Vendor Ltd"}, {"role": "additional", "name": "Broker LLC"}],
+        "parties": [PARTIES[0], {**PARTIES[1], "name": "New Vendor Ltd"}, {"role": "additional", "name": "Broker LLC"}],
         "applies_to": "vessels", "vessel_ids": env.vessel_ids[:1],
     })
     assert r.status_code == 200, r.text
@@ -284,7 +312,7 @@ def test_options_lists(env):
     assert o["business_units"] == ["Technical", "Crewing", "Marine", "Finance", "Corporate"]
     assert o["confidentiality"] == ["General", "Internal", "Confidential"]
     assert any(u["email"] == OWNER for u in o["users"])
-    assert o["contract_no_format"] == "NKS-CON-YYYY-NNNN"
+    assert o["contract_no_format"] == "OZD-CON-YYYY-NNNN"
 
 
 def test_extractor_reads_contract_fields():
@@ -314,7 +342,7 @@ def test_extractor_reads_contract_fields():
     assert f["first_party_name"].startswith("Ozellar Marine")
     assert f["second_party_email"] == "tan@oceanic.example"
     assert f["second_party_phone"] == "+65 6123 4567"
-    assert f["vendor_reference"] == "OE/AMC/2026-114"
+    assert "vendor_reference" not in f                          # office-assigned only, never read from the file
     assert f["contract_date"] == "2026-02-15"
     assert f["issue_date"] == "2026-03-01"
     assert f["expiry_date"] == "2027-02-28"
@@ -329,14 +357,14 @@ def test_reminder_emails_sent_once_per_expiry(env):
     from app.services.service_agreement_reminders import send_due_reminders
 
     today = date.today()
-    due = _create(env.client, n_files=1, issue_date="2025-01-01",
-                  initial_expiry_date=(today + timedelta(days=20)).isoformat(), notice_period_days="30").json()
-    later = _create(env.client, n_files=1, issue_date="2025-01-01",
-                    initial_expiry_date=(today + timedelta(days=200)).isoformat()).json()
-    gone = _create(env.client, n_files=1, issue_date="2025-01-01",
-                   initial_expiry_date=(today + timedelta(days=5)).isoformat()).json()
-    ended = _create(env.client, n_files=1, issue_date="2025-01-01",
-                    initial_expiry_date=(today + timedelta(days=5)).isoformat()).json()
+    due = _create_and_approve(env, n_files=1, issue_date="2025-01-01",
+                              initial_expiry_date=(today + timedelta(days=20)).isoformat(), notice_period_days="30")
+    later = _create_and_approve(env, n_files=1, issue_date="2025-01-01",
+                                initial_expiry_date=(today + timedelta(days=200)).isoformat())
+    gone = _create_and_approve(env, n_files=1, issue_date="2025-01-01",
+                               initial_expiry_date=(today + timedelta(days=5)).isoformat())
+    ended = _create_and_approve(env, n_files=1, issue_date="2025-01-01",
+                                initial_expiry_date=(today + timedelta(days=5)).isoformat())
     env.client.post(f"/api/service-agreements/{ended['id']}/terminate", json={})
     ids = {due["id"], later["id"], gone["id"], ended["id"]}
 
@@ -363,3 +391,138 @@ def test_reminder_emails_sent_once_per_expiry(env):
     assert r["failed"] == 1
     r = send_due_reminders(today=today + timedelta(days=175), send=send, only_ids={later["id"]})
     assert r["reminders"] == 1                                       # a failed mail is retried next run
+
+
+@pytest.mark.parametrize("over, message", [
+    ({"contract_date": ""}, "Contract Date"),
+    ({"parties": json.dumps([PARTIES[0], {"role": "second", "name": "X Ltd"}])}, "Address, PIC, Phone, Email id"),
+    ({"status": "superseded"}, "Status"),
+])
+def test_active_rules(env, over, message):
+    r = _create(env.client, **over)
+    assert r.status_code == 400 and message.lower() in r.json()["detail"].lower(), r.text
+
+
+def test_draft_then_pending_then_active(env):
+    d = env.client.post("/api/service-agreements", data=_form(status="draft", contract_date="")).json()  # no file, no contract date
+    assert d["status"] == "draft" and d["documents"] == []
+    ids = {i["id"] for i in env.client.get("/api/service-agreements", params={"status": "draft"}).json()["items"]}
+    assert d["id"] in ids
+    assert env.client.post(f"/api/service-agreements/{d['id']}/renew", data={"issue_date": "2026-02-01", "expiry_date": "2027-01-31"},
+                           files=_files(1)).status_code == 400                       # only Active can be renewed
+
+    # Requesting Active is remapped to Pending Approval, and needs contract_date + a file first.
+    r = env.client.put(f"/api/service-agreements/{d['id']}", json={"status": "active"})
+    assert r.status_code == 400 and "contract date" in r.json()["detail"].lower()
+    r = env.client.put(f"/api/service-agreements/{d['id']}", json={"status": "active", "contract_date": "2025-12-20"})
+    assert r.status_code == 400 and "attach" in r.json()["detail"].lower()
+    env.client.post(f"/api/service-agreements/{d['id']}/documents", files=_files(1))
+    r = env.client.put(f"/api/service-agreements/{d['id']}", json={"status": "active", "contract_date": "2025-12-20"})
+    assert r.status_code == 200
+    pending = r.json()
+    assert pending["status"] == "pending_approval" and pending["approval_kind"] == "activation"
+    assert pending["approval_routing"]["dispatched"] is True
+
+    # Withdrawn before the owner acted: back to Draft, and the old email link stops working.
+    stale_token = next(t for aid, _, t in reversed(env.sent_approvals) if aid == d["id"])
+    r = env.client.put(f"/api/service-agreements/{d['id']}", json={"status": "draft"})
+    assert r.status_code == 200 and r.json()["status"] == "draft"
+    dr = env.client.get(f"/api/service-agreements/{d['id']}/decision", params={"action": "approve", "token": stale_token})
+    assert dr.status_code == 200 and "Already Decided" in dr.text  # no pending request anymore
+
+    # Re-request and let the owner approve via the (new) emailed link.
+    r = env.client.put(f"/api/service-agreements/{d['id']}", json={"status": "pending_approval"})
+    assert r.status_code == 200 and r.json()["status"] == "pending_approval"
+    assert _decide(env, d["id"], action="approve").status_code == 200
+    a = env.client.get(f"/api/service-agreements/{d['id']}").json()
+    assert a["status"] in ("active", "expiring") and a["approval_kind"] is None
+
+    r = env.client.put(f"/api/service-agreements/{d['id']}", json={"status": "draft"})
+    assert r.status_code == 400                                                      # no going back from Active
+
+
+def test_activation_reject_reverts_to_draft(env):
+    created = _create(env.client).json()
+    assert created["status"] == "pending_approval"
+    r = _decide(env, created["id"], action="reject", reason="Needs legal review")
+    assert r.status_code == 200 and "Rejected" in r.text
+    a = env.client.get(f"/api/service-agreements/{created['id']}").json()
+    assert a["status"] == "draft" and a["approval_kind"] is None
+
+    # The used token is dead; a second click (same or bogus token) is a no-op, not a re-apply.
+    dr = _decide(env, created["id"], action="approve")
+    assert dr.status_code == 200 and "Already Decided" in dr.text
+    assert env.client.get(f"/api/service-agreements/{created['id']}").json()["status"] == "draft"
+
+
+def test_decision_rejects_bad_action_and_unknown_contract(env):
+    created = _create(env.client).json()
+    token = next(t for aid, _, t in reversed(env.sent_approvals) if aid == created["id"])
+    bad = env.client.get(f"/api/service-agreements/{created['id']}/decision", params={"action": "approvish", "token": token})
+    assert bad.status_code == 400
+    missing = env.client.get("/api/service-agreements/999999999/decision", params={"action": "approve", "token": token})
+    assert missing.status_code == 404
+    wrong_token = env.client.get(f"/api/service-agreements/{created['id']}/decision", params={"action": "approve", "token": "not-it"})
+    assert wrong_token.status_code == 403
+
+
+def test_renewal_reject_restores_previous_state(env):
+    a = _create_and_approve(env)
+    old_expiry = a["expiry_date"]
+    old_contract_date = a["contract_date"]
+    old_doc_ids = {d["id"] for d in a["documents"]}
+
+    r = env.client.post(f"/api/service-agreements/{a['id']}/renew",
+                        data={"issue_date": "2027-04-01", "expiry_date": "2028-03-31", "notes": "Yearly"},
+                        files=_files(1))
+    assert r.status_code == 200, r.text
+    rn = r.json()
+    assert rn["status"] == "pending_approval" and rn["approval_kind"] == "renewal"
+    assert rn["expiry_date"] == "2028-03-31"            # applied immediately; only the status waits
+
+    dr = _decide(env, a["id"], action="reject", reason="Pricing not agreed")
+    assert dr.status_code == 200 and "Rejected" in dr.text
+    restored = env.client.get(f"/api/service-agreements/{a['id']}").json()
+    assert restored["status"] == "active" and restored["approval_kind"] is None
+    assert restored["expiry_date"] == old_expiry
+    assert restored["contract_date"] == old_contract_date
+    assert {d["id"] for d in restored["documents"]} == old_doc_ids
+    assert all(d["folder"] == "active" for d in restored["documents"])
+    h = env.client.get(f"/api/service-agreements/{a['id']}/history").json()
+    assert h["history"] == []                            # the rejected renewal's snapshot was removed
+
+    # A second renewal now works cleanly (no stale pending state left behind).
+    r = env.client.post(f"/api/service-agreements/{a['id']}/renew",
+                        data={"issue_date": "2027-04-01", "expiry_date": "2028-06-30"},
+                        files=_files(1))
+    assert r.status_code == 200, r.text
+    assert _decide(env, a["id"], action="approve").status_code == 200
+    final = env.client.get(f"/api/service-agreements/{a['id']}").json()
+    assert final["status"] == "active" and final["expiry_date"] == "2028-06-30"
+
+
+def test_renewal_cannot_stack_while_pending(env):
+    # Once a renewal is submitted the contract is Pending Approval (not Active), so a second
+    # renew attempt is already blocked by the "only Active can be renewed" precondition.
+    a = _create_and_approve(env)
+    r = env.client.post(f"/api/service-agreements/{a['id']}/renew",
+                        data={"issue_date": "2027-04-01", "expiry_date": "2028-03-31"}, files=_files(1))
+    assert r.status_code == 200, r.text
+    assert r.json()["status"] == "pending_approval"
+    r2 = env.client.post(f"/api/service-agreements/{a['id']}/renew",
+                         data={"issue_date": "2027-05-01", "expiry_date": "2028-04-30"}, files=_files(1))
+    assert r2.status_code == 400 and "only an active contract" in r2.json()["detail"].lower()
+
+
+def test_approval_token_expiry(env):
+    from datetime import datetime
+
+    created = _create(env.client).json()
+    with SessionLocal() as db:
+        agreement = db.get(models.ServiceAgreement, created["id"])
+        agreement.approval_token_expires_at = datetime.utcnow() - timedelta(minutes=1)
+        db.commit()
+    dr = _decide(env, created["id"], action="approve")
+    assert dr.status_code == 410 and "expired" in dr.text.lower()
+    assert env.client.get(f"/api/service-agreements/{created['id']}").json()["status"] == "pending_approval"
+

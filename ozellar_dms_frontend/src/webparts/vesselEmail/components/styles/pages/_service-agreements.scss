@@ -31,13 +31,13 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
   cursor: pointer;
 }
 
-// ── Tabs + filters on one row (wraps on small screens) ─────────────────
+// ── Tabs (full-width row) + filters (full-width row below) ─────────────
 .sa-toolbar {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
 }
 .sa-tabs {
   display: flex;
@@ -47,8 +47,11 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
   background: var(--vdms-surface-alt);
   border: 1px solid var(--vdms-line);
   overflow-x: auto;
+  scrollbar-width: thin;
 }
 .sa-tab {
+  flex: 1 0 auto;               // 7 tabs share the row; they scroll sideways when the screen is narrow
+  justify-content: center;
   height: 30px;
   padding: 0 12px;
   border: none;
@@ -89,6 +92,25 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  width: 100%;
+
+  > .sa-control,
+  > .sa-filter-dropdown { flex: 1 1 170px; min-width: 150px; max-width: none; }
+  > .sa-btn { flex: 0 0 auto; }
+}
+
+.sa-filter-dropdown {
+  .custom-dropdown-i2 {
+    height: 34px;
+    font-size: 12.5px;
+    background: var(--vdms-glass, var(--vdms-surface));
+    border: 1px solid var(--vdms-line);
+    border-radius: 8px;
+
+    &:hover {
+      border-color: var(--vdms-line-strong, #94a3b8);
+    }
+  }
 }
 .sa-control {
   height: 34px;
@@ -109,7 +131,10 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
 .sa-search {
   position: relative;
 
-  .sa-control { padding-left: 30px; width: 250px; max-width: none; }
+  flex: 2 1 260px;
+  min-width: 0;
+
+  .sa-control { padding-left: 30px; width: 100%; max-width: none; }
 }
 .sa-search__icon {
   position: absolute;
@@ -185,6 +210,7 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
   font-size: 11.5px;
   color: var(--vdms-text-muted);
 }
+.sa-table__no .sa-table__sub { font-weight: 500; }
 .sa-table__date { white-space: nowrap; }
 .sa-table__ships {
   max-width: 200px;
@@ -316,6 +342,8 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
   &--internal { background: $sa-accent-soft; color: $sa-accent; }
   &--confidential { background: var(--clay-pill-danger-bg, #fee2e2); color: var(--clay-pill-danger-text, #b91c1c); }
 }
+.sa-status--draft { background: var(--vdms-surface-alt); color: var(--vdms-text); border: 1px dashed var(--vdms-line); }
+.sa-status--pending_approval { background: #fef3c7; color: #92400e; }
 .sa-status--terminated { background: var(--vdms-surface-alt); color: var(--vdms-text-muted); border: 1px solid var(--vdms-line); }
 .sa-days--terminated { color: var(--vdms-text-muted); }
 .sa-tab__count {
@@ -323,16 +351,177 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
 }
 .sa-row-btn:disabled { opacity: 0.55; cursor: wait; }
 
+// ── Compact list: fits the screen, full text on hover, ▼ opens every detail ──
+@media (min-width: $phone + 1) {
+  .sa-table { table-layout: fixed; }
+  .sa-col--toggle { width: 40px; }
+  .sa-col--no { width: 11%; }
+  .sa-col--title { width: 13%; }
+  .sa-col--desc { width: 14%; }
+  .sa-col--cat { width: 9%; }
+  .sa-col--owner { width: 8%; }
+  .sa-col--party { width: 9%; }
+  .sa-col--expiry { width: 10%; }
+  .sa-col--status { width: 8%; }
+  .sa-col--actions { width: 136px; }
+  .sa-table th, .sa-table td { padding-left: 8px; padding-right: 8px; overflow: hidden; }
+  // Smaller headers that wrap only between words (never "CATEGOR / Y")
+  .sa-table th { font-size: 10px; letter-spacing: 0.02em; white-space: normal; line-height: 1.3; vertical-align: bottom; overflow-wrap: normal; word-break: keep-all; text-overflow: ellipsis; }
+  .sa-table__name, .sa-table__desc, .sa-table__party { min-width: 0; max-width: none; }
+  .sa-table__name-line { display: flex; max-width: 100%; }
+}
+.sa-cell {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sa-table__name-line .sa-cell { flex: 0 1 auto; }
+.sa-table__toggle { text-align: center; padding-left: 6px !important; padding-right: 0 !important; }
+.sa-expand {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid var(--vdms-line);
+  background: var(--vdms-surface);
+  color: var(--vdms-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+
+  i { transition: transform 0.15s ease; }
+  &[aria-expanded='true'] { background: $sa-accent-soft; color: $sa-accent; border-color: transparent; }
+  &[aria-expanded='true'] i { transform: rotate(180deg); }
+}
+.sa-table tr.is-open td { background: var(--vdms-surface-alt); border-bottom-color: transparent; }
+.sa-table__actions { overflow: visible !important; }
+.sa-table__actions > * + * { margin-left: 4px; }
+
+.sa-detail-row > td { padding: 0 !important; background: var(--vdms-surface-alt); white-space: normal; }
+.sa-detail-row:hover > td { background: var(--vdms-surface-alt) !important; }
+.sa-detail__msg { padding: 14px 18px; font-size: 12.5px; color: var(--vdms-text-muted); }
+.sa-detail {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 4px 14px 16px 48px;
+}
+.sa-detail__section {
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--vdms-surface);
+  border: 1px solid var(--vdms-line);
+
+  h4 {
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--vdms-text-muted);
+  }
+  &--full { grid-column: 1 / -1; }
+}
+.sa-detail__count {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--vdms-surface-alt);
+  font-size: 10.5px;
+}
+.sa-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 14px;
+}
+.sa-detail__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  &--wide { grid-column: 1 / -1; }
+}
+.sa-detail__label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--vdms-text-faint);
+}
+.sa-detail__value {
+  font-size: 12.5px;
+  color: var(--vdms-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.sa-detail__parties {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+.sa-detail__party {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--vdms-line);
+  font-size: 12.5px;
+  color: var(--vdms-text);
+  overflow-wrap: anywhere;
+
+  i { color: var(--vdms-text-faint); font-size: 11px; margin-right: 4px; }
+  a { color: $sa-accent; text-decoration: none; }
+}
+.sa-detail__party-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--vdms-text-faint);
+}
+.sa-detail__party-name { font-weight: 700; }
+.sa-detail__docs { display: flex; flex-direction: column; gap: 6px; }
+.sa-detail__doc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 12.5px;
+
+  a { color: $sa-accent; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  i { color: #b91c1c; }
+}
+.sa-detail__doc-meta { color: var(--vdms-text-muted); white-space: nowrap; margin-left: auto; }
+
 // ── Responsive ──────────────────────────────────────────────────────────
 @media (max-width: $tablet) {
-  .sa-toolbar { flex-direction: column; align-items: stretch; }
-  .sa-filters { width: 100%; }
-  .sa-search { flex: 1 1 220px; .sa-control { width: 100%; } }
-  .sa-control { flex: 1 1 150px; max-width: none; }
+  .sa-detail { grid-template-columns: minmax(0, 1fr); padding-left: 14px; }
+  .sa-detail__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sa-tab { padding: 0 10px; }
+  .sa-search { flex: 1 1 100%; }
+  .sa-filters > .sa-control { flex: 1 1 140px; min-width: 0; }
 }
 
 // Phones: each agreement becomes a card instead of a wide table row.
 @media (max-width: $phone) {
+  .sa-detail { padding: 8px 0 0; }
+  .sa-detail__grid { grid-template-columns: minmax(0, 1fr); }
+  .sa-detail-row > td { display: block; text-align: left; }
+  .sa-detail-row > td::before { display: none; }
+  .sa-detail__doc { flex-wrap: wrap; }
+  .sa-detail__doc-meta { margin-left: 0; }
+  .sa-table__toggle { text-align: left; }
+  .sa-filters > .sa-control { flex: 1 1 calc(50% - 8px); }
+  .sa-tabs { flex-wrap: wrap; overflow: visible; }  // all 7 statuses stay visible on a phone
+  .sa-tab { font-size: 12px; flex: 1 1 auto; }
   .sa-table-card { background: transparent; border: none; box-shadow: none; overflow: visible; }
   .sa-table {
     thead { display: none; }

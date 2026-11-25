@@ -1123,6 +1123,26 @@ class ServiceAgreement(Base):
     # Reminder emails: the Current Expiry Date each mail was sent for (a renewal changes the expiry, so it sends again)
     reminder_sent_for: Mapped[date | None] = mapped_column(Date, nullable=True)
     expired_notice_sent_for: Mapped[date | None] = mapped_column(Date, nullable=True)
+    # Approval gate: a save that would go Active instead waits here for the owner's emailed decision.
+    # approval_kind: "activation" (new/edit going active) or "renewal" (see pending_renewal_history_id).
+    approval_kind: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    approval_token_hash: Mapped[str | None] = mapped_column(String(128), nullable=True, index=True)
+    approval_token_expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    approval_requested_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    approval_decided_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    approval_decided_by: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    approval_rejection_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # While a renewal is pending approval, points at the history snapshot to restore on reject.
+    # use_alter: service_agreement_history.agreement_id already points back at this table, so this
+    # FK must be created via ALTER TABLE (after both tables exist) to avoid a circular dependency
+    # in CREATE TABLE ordering.
+    pending_renewal_history_id: Mapped[int | None] = mapped_column(
+        ForeignKey(
+            "service_agreement_history.id", ondelete="SET NULL",
+            use_alter=True, name="fk_service_agreements_pending_renewal_history_id",
+        ),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -1136,7 +1156,8 @@ class ServiceAgreement(Base):
         back_populates="agreement", cascade="all, delete-orphan", order_by="desc(ServiceAgreementDocument.uploaded_at)"
     )
     history: Mapped[list["ServiceAgreementHistory"]] = relationship(
-        back_populates="agreement", cascade="all, delete-orphan", order_by="desc(ServiceAgreementHistory.renewed_at)"
+        back_populates="agreement", cascade="all, delete-orphan", order_by="desc(ServiceAgreementHistory.renewed_at)",
+        foreign_keys="ServiceAgreementHistory.agreement_id",
     )
 
 
@@ -1192,6 +1213,11 @@ class ServiceAgreementDocument(Base):
     folder: Mapped[str] = mapped_column(String(10), default="active", server_default="active")  # active / expiry
     uploaded_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     uploaded_by: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    # Tags a document touched by an in-flight renewal (moved to expiry, or newly added as active) so a
+    # rejected renewal can precisely reverse just these rows. Null once the renewal is approved/rejected.
+    renewal_history_id: Mapped[int | None] = mapped_column(
+        ForeignKey("service_agreement_history.id", ondelete="SET NULL"), nullable=True, index=True
+    )
 
     agreement: Mapped["ServiceAgreement"] = relationship(back_populates="documents")
 
@@ -1208,6 +1234,9 @@ class ServiceAgreementHistory(Base):
     vendor_reference: Mapped[str | None] = mapped_column(String(150), nullable=True)
     issue_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     expiry_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    no_expiry: Mapped[bool] = mapped_column(Boolean, default=False, server_default="false")
+    contract_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    remarks: Mapped[str | None] = mapped_column(Text, nullable=True)
     sharepoint_file_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
     sharepoint_item_id: Mapped[str | None] = mapped_column(String(256), nullable=True)
     filename: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -1215,4 +1244,6 @@ class ServiceAgreementHistory(Base):
     renewed_by_email: Mapped[str | None] = mapped_column(String(320), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    agreement: Mapped["ServiceAgreement"] = relationship(back_populates="history")
+    agreement: Mapped["ServiceAgreement"] = relationship(
+        back_populates="history", foreign_keys="ServiceAgreementHistory.agreement_id"
+    )
