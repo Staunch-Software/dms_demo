@@ -30,3 +30,6 @@ openpyxl==3.1.5
 
 # --- User access: salted password hashing ---
 argon2-cffi==25.1.0
+
+# paddle imports setuptools; Python 3.12 venvs no longer include it
+setuptools<80

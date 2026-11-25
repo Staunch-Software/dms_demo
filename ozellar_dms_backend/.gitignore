@@ -17,4 +17,4 @@ migration_assistant.db
 !.env.example
 
 # Local AI model weights (Florence-2, ~890 MB): too big for GitHub, download separately
-models/
+/models/
