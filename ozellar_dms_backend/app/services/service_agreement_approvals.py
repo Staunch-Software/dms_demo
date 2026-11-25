@@ -33,6 +33,11 @@ log = logging.getLogger(__name__)
 
 APPROVAL_TOKEN_TTL_DAYS = 14
 
+# Placeholder "sender" values that show up in .env / app/config.py's own fallbacks when no
+# real mailbox has been configured — none of these exist in any tenant, so treat them the
+# same as "not configured" rather than attempting (and failing) a Graph send with one.
+_UNCONFIGURED_SENDER_PLACEHOLDERS = {"spe.admin@ozellarmarine.com", "dummy@ozellarmarine.com", "dummmy@ozellarmarine.com"}
+
 
 def new_approval_token() -> tuple[str, str, datetime]:
     """Returns (raw token for the email link, its sha256 hash to store, expiry)."""
@@ -119,6 +124,16 @@ def send_approval_request(
     to = (a.owner_email or "").strip()
     if not to:
         log.warning("[sa_approvals] %s has no owner email; approval request not sent", a.contract_no)
+        return False
+    sender = (
+        (getattr(settings, "cert_automation_sender_email", "") or "").strip()
+        or (getattr(settings, "graph_sender_mailbox", "") or "").strip()
+    ).lower()
+    if not sender or sender in _UNCONFIGURED_SENDER_PLACEHOLDERS:
+        log.warning(
+            "[sa_approvals] no real sender mailbox configured (GRAPH_SENDER_MAILBOX / "
+            "CERT_AUTOMATION_SENDER_EMAIL); approval email for %s not sent", a.contract_no,
+        )
         return False
     approve_url, reject_url = _decision_links(a.id, token)
     subject = (

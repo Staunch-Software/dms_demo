@@ -317,7 +317,11 @@ _TABLE_LABELS: list[tuple[str, list[str]]] = [
     ("description", [r"brief\s*description", r"description", r"scope\s*of\s*(?:work|services?)"]),
     ("category", [r"contract\s*category", r"category"]),
     ("business_unit", [r"business\s*unit", r"department", r"division"]),
-    ("owner", [r"contract\s*owner(?:\s*/\s*pic)?", r"person\s*in\s*charge", r"\bpic\b"]),
+    # Deliberately excludes a bare "PIC" pattern: that also matches the per-party
+    # "PIC:" sub-field nested inside First/Second Party blocks, which would wrongly
+    # truncate the party's text span before PIC/Phone/Email (this key isn't read
+    # downstream anyway — party PIC is parsed out by _parse_party_details instead).
+    ("owner", [r"contract\s*owner(?:\s*/\s*pic)?", r"person\s*in\s*charge"]),
     ("status", [r"status"]),
     ("confidentiality", [r"confidentiality"]),
     ("first_party", [r"first\s*party(?:\s*/\s*company)?", r"party\s*a", r"company\s*name"]),
@@ -333,11 +337,63 @@ _TABLE_LABELS: list[tuple[str, list[str]]] = [
 ]
 
 
+_PARTY_SUBLABEL_RE = re.compile(
+    r"\b(name|address|pic|phone|tel(?:ephone)?|mobile|mob|e[\s-]?mail)\s*[:\-–]\s*",
+    re.IGNORECASE,
+)
+_ADDRESS_HINT_RE = re.compile(
+    r"\b(avenue|street|road|tower|building|floor|block|unit|drive|lane|boulevard)\b|#\s*\d|\b\d{4,6}\b",
+    re.IGNORECASE,
+)
+
+
+def _looks_like_name(value: str | None) -> bool:
+    """Rejects a "name" that is actually a leftover label (Address:/PIC:/...) or an address string."""
+    if not value:
+        return False
+    if len(value) > 150 or "\n" in value:
+        return False
+    if re.search(r"\b(address|pic|phone|tel|mobile|e[\s-]?mail)\s*[:\-–]", value, re.I):
+        return False
+    return not _ADDRESS_HINT_RE.search(value)
+
+
 def _parse_party_details(raw: str) -> dict[str, str | None]:
     if not raw:
         return {}
+
+    # Each sub-field on its own labeled line ("Name: X\nAddress: Y\nPIC: Z\n..."),
+    # not a single pipe-delimited row.
+    sub_matches = list(_PARTY_SUBLABEL_RE.finditer(raw))
+    if len(sub_matches) >= 2:
+        key_map = {
+            "name": "name", "address": "address", "pic": "pic",
+            "phone": "phone", "tel": "phone", "telephone": "phone", "mobile": "phone", "mob": "phone",
+            "email": "email",
+        }
+        sub_fields: dict[str, str] = {}
+        for i, m in enumerate(sub_matches):
+            norm_label = re.sub(r"[\s-]+", "", m.group(1).lower())
+            label = key_map.get(norm_label)
+            start = m.end()
+            end = sub_matches[i + 1].start() if i + 1 < len(sub_matches) else len(raw)
+            val = _clean(raw[start:end], 300)
+            if label and val and label not in sub_fields:
+                sub_fields[label] = val
+        if sub_fields.get("name"):
+            return {
+                "name": sub_fields.get("name"),
+                "pic": sub_fields.get("pic"),
+                "email": sub_fields.get("email"),
+                "phone": sub_fields.get("phone"),
+                "address": sub_fields.get("address"),
+            }
+
+    # Fallback: single pipe-delimited row — "Name | Address | PIC: x | phone"
     parts = [p.strip() for p in raw.split("|") if p.strip()]
     name = parts[0] if parts else raw
+    if not _looks_like_name(name):
+        name = None
     pic = None
     email = None
     phone = None
@@ -358,6 +414,9 @@ def _parse_party_details(raw: str) -> dict[str, str | None]:
     if len(parts) > 1:
         if not re.search(r"\bPIC\b|\b[A-Za-z0-9._%+-]+@|\+\d", parts[1], re.I):
             address = parts[1]
+    elif name is None and _ADDRESS_HINT_RE.search(raw):
+        # The whole blob reads like an address rather than a company name.
+        address = _clean(raw, 300)
 
     return {"name": name, "pic": pic, "email": email, "phone": phone, "address": address}
 
