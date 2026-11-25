@@ -6,7 +6,7 @@
     "default": {
       "pageUrl": "https://staunchtechnologiespvtl.sharepoint.com/sites/DemoDMS/_layouts/15/workbench.aspx",
       "customActions": {
-        "0638a07a-ab3a-4c4e-b456-9c4cf73be8d0": {
+        "babee684-b0fa-47a9-b9d4-2551d9b3e7fa": {
           "location": "ClientSideExtension.ListViewCommandSet.CommandBar",
           "properties": {
             "sampleTextOne": "One item is selected in the list",
@@ -18,7 +18,7 @@
     "uploadAndTag": {
       "pageUrl": "https://staunchtechnologiespvtl.sharepoint.com/sites/DemoDMS/_layouts/15/workbench.aspx",
       "customActions": {
-        "0638a07a-ab3a-4c4e-b456-9c4cf73be8d0": {
+        "babee684-b0fa-47a9-b9d4-2551d9b3e7fa": {
           "location": "ClientSideExtension.ListViewCommandSet.CommandBar",
           "properties": {
             "sampleTextOne": "One item is selected in the list",

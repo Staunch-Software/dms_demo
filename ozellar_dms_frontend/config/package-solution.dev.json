@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "vessel-email-spfx-v-2-client-side-solution-DEV",
-    "id": "9396e02b-d757-4cac-bb8b-192a5143f0b9",
+    "name": "ozellar-dms-client-side-solution-DEV",
+    "id": "aab59dd1-1d9e-4a72-bf71-2aebc450a365",
     "version": "1.0.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
@@ -26,10 +26,10 @@
     },
     "metadata": {
       "shortDescription": {
-        "default": "vessel-email-spfx-v2 description (DEV)"
+        "default": "Ozellar Marine Vessel DMS (DEV)"
       },
       "longDescription": {
-        "default": "vessel-email-spfx-v2 description (DEV)"
+        "default": "Ozellar Marine Vessel DMS (DEV)"
       },
       "screenshotPaths": [],
       "videoUrl": "",
@@ -39,7 +39,7 @@
       {
         "title": "Application Extension - Deployment of custom action",
         "description": "Deploys a custom action with ClientSideComponentId association",
-        "id": "9cd48429-3f36-4d05-820e-43591ffdc7a7",
+        "id": "6df5ba43-539b-41c7-bc10-6070dabae27c",
         "version": "1.0.0.0",
         "assets": {
           "elementManifests": [
@@ -51,6 +51,6 @@
     ]
   },
   "paths": {
-    "zippedPackage": "solution/vessel-email-spfx-v-2-dev.sppkg"
+    "zippedPackage": "solution/ozellar-dms-dev.sppkg"
   }
 }

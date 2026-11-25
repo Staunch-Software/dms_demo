@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
-  "id": "3a5cf4f8-912b-4cfe-bff0-bdc6e5ecc11b",
+  "id": "4999ac71-4392-44ae-a0b3-a5fbe049069c",
   "alias": "OzellarDmsWebPart",
   "componentType": "WebPart",
 
