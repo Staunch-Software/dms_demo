@@ -63,6 +63,7 @@ from .db import models
 from .graph.client import graph
 
 from .graph import drive as gd
+from . import ozellar_layout
 
 from .services.imo_validator import validate_imo, normalize_imo
 
@@ -1142,7 +1143,7 @@ def _resolve_vessel(db, vessel_id: str | None, vessel_name: str | None):
 
 async def _upload_certificate_file(vessel_name: str, category: str | None, file: UploadFile):
 
-    """Upload to Technical and Crewing  New/<vessel>/Certificates/<category>/.
+    """Upload to Ozellar Docs/SHIP/<vessel>/Certificate/<category>/ (see ozellar_layout).
 
     Returns (web_url, item_id, filename, error); error is None on success.
 
@@ -1176,25 +1177,9 @@ async def _upload_certificate_file(vessel_name: str, category: str | None, file:
 
     try:
 
-        root_item = await gd.find_child(drive_id, "root", "Technical and Crewing  New")
+        ship_item = await ozellar_layout.ship_folder(drive_id, vessel_name, _safe_folder_name(vessel_name, "Unknown"))
 
-        if not root_item:
-
-            root_item = await gd.find_child(drive_id, "root", "Technical & Crewing")
-
-        parent_id = root_item["id"] if root_item else "root"
-
-        existing_vessel = await gd.find_child(drive_id, parent_id, vessel_name)
-
-        if existing_vessel and "folder" in existing_vessel:
-
-            ship_item = existing_vessel
-
-        else:
-
-            ship_item = await gd.ensure_folder(drive_id, parent_id, _safe_folder_name(vessel_name, "Unknown"))
-
-        certs_folder = await gd.ensure_folder(drive_id, ship_item["id"], "Certificates")
+        certs_folder = await ozellar_layout.certificate_folder(drive_id, ship_item)
 
         cat_folder = await gd.ensure_folder(drive_id, certs_folder["id"], _safe_folder_name(category))
 
@@ -1618,17 +1603,7 @@ async def sync_certificates_from_sharepoint(
 
 
 
-    root_item = await gd.find_child(drive_id, "root", "Technical and Crewing  New")
-
-    if not root_item:
-
-        root_item = await gd.find_child(drive_id, "root", "Technical & Crewing")
-
-    parent_id = root_item["id"] if root_item else "root"
-
-
-
-    vessel_folders = await gd.list_children(drive_id, parent_id)
+    vessel_folders = await ozellar_layout.ship_folders(drive_id)
 
     vessel_map = {v.name.strip().lower(): v for v in vessels}
 
@@ -1652,7 +1627,7 @@ async def sync_certificates_from_sharepoint(
 
             kids = await gd.list_children(drive_id, vf["id"])
 
-            certs_folder = next((k for k in kids if k.get("name", "").lower() == "certificates"), None)
+            certs_folder = next((k for k in kids if ozellar_layout.is_certificate_folder(k.get("name"))), None)
 
             if not certs_folder:
 
@@ -2762,9 +2737,11 @@ def build_certificates_router(
 
 
 
-                    is_mandatory_req = (app_rule.is_required if app_rule else m.is_mandatory)
+                    # Applicability follows the Certificate Master rules (all ships / ship type / vessel), the
+                    # same as the KPIs: a catalog-mandatory certificate whose rule is for another ship type is N/A.
+                    is_mandatory_req = bool(app_rule and app_rule.is_required)
 
-                    applies = (app_rule is not None) or m.is_mandatory
+                    applies = app_rule is not None
 
 
 
@@ -4288,15 +4265,11 @@ def build_certificates_router(
 
                     try:
 
-                        root_item = await gd.find_child(drive_id, "root", "Technical and Crewing  New")
-
-                        parent_id = root_item["id"] if root_item else "root"
-
                         vessel_name = vessel.name if vessel else "Unknown"
 
-                        ship_item = await gd.ensure_folder(drive_id, parent_id, _safe_folder_name(vessel_name, "Unknown"))
+                        ship_item = await ozellar_layout.ship_folder(drive_id, vessel_name, _safe_folder_name(vessel_name, "Unknown"))
 
-                        certs_folder = await gd.ensure_folder(drive_id, ship_item["id"], "Certificates")
+                        certs_folder = await ozellar_layout.certificate_folder(drive_id, ship_item)
 
                         cat_folder = await gd.ensure_folder(drive_id, certs_folder["id"], _safe_folder_name(clean_category))
 

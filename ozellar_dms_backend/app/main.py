@@ -11671,6 +11671,10 @@ app.include_router(_build_service_agreements_router(require_session))
 from .ship_register_api import build_ship_register_router as _build_ship_register_router
 app.include_router(_build_ship_register_router(require_session, _require_admin))
 
+# ── Fleet dashboard (Home: certificate and service agreement expiry for registered ships) ──
+from .fleet_dashboard_api import build_router as _build_fleet_dashboard_router
+app.include_router(_build_fleet_dashboard_router(require_session))
+
 from .graph.guard import ProtectedTargetError as _ProtectedTargetError
 
 

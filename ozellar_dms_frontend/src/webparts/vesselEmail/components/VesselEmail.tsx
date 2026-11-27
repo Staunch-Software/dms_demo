@@ -60,6 +60,7 @@ import { ArchivePage } from './pages/ArchivePage';
 import { CertificatesPage } from './pages/CertificatesPage';
 import { ServiceAgreementsPage } from './pages/ServiceAgreementsPage';
 import { ShipRegisterPage } from './pages/ShipRegisterPage';
+import { FleetDashboardPage } from './pages/FleetDashboardPage';
 import { CertificateMasterPage } from './pages/CertificateMasterPage';
 import { renderAlertsPage } from './pages/AlertsPage';
 import { renderApprovalsPage } from './pages/ApprovalsPage';
@@ -13035,7 +13036,7 @@ export default class VesselEmail extends React.Component<IVesselEmailProps, Stat
     const effectiveView: AppView = this.state.hiddenModules.indexOf(view) !== -1 ? 'dashboard' : view;
     switch (effectiveView) {
       case 'dashboard':
-        content = this._renderDashboard();
+        content = <FleetDashboardPage host={this} />;
         break;
       case 'list':
         content = this._renderDocumentsPage();

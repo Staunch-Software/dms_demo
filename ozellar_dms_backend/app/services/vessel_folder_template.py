@@ -38,22 +38,23 @@ def _n(name: str, *children: Any, aliases: list[str] | None = None) -> dict:
     return node
 
 
+# Ozellar layout: Ozellar Docs/SHIP/<vessel>/{Drawings, Manuals, Certificate} (see app/ozellar_layout.py).
+# Nissen's template nested Drawings and Manuals under one "Drawings and Manuals" folder.
 DEFAULT_FOLDERS: list[dict] = [
+    _n("Drawings", "Basic", "Hull", "Electrical", "Machinery", "Safety", "Other Drawings", "Archive"),
     _n(
-        "Drawings and Manuals",
-        _n("Drawings", "Basic", "Hull", "Electrical", "Machinery", "Safety", "Other Drawings", "Archive"),
-        _n(
-            "Manuals",
-            "Automation",
-            # Existing vessel folders use the "Auxilliary" spelling — match
-            # them instead of creating a near-duplicate next to them.
-            _n("Auxiliary Engine", aliases=["Auxilliary Engine"]),
-            "Boiler", "Cargo", "Deck Machinery", "Electrical", "Main Engine",
-            "Other Manuals", "Pollution", "Propulsion", "Refrigeration", "Safety", "Shafting", "Steering Gear",
-            "Thrusters",
-        ),
-        "To Be Classified",
+        "Manuals",
+        "Automation",
+        # Existing vessel folders use the "Auxilliary" spelling — match
+        # them instead of creating a near-duplicate next to them.
+        _n("Auxiliary Engine", aliases=["Auxilliary Engine"]),
+        "Boiler", "Cargo", "Deck Machinery", "Electrical", "Main Engine",
+        "Other Manuals", "Pollution", "Propulsion", "Refrigeration", "Safety", "Shafting", "Steering Gear",
+        "Thrusters",
     ),
+    # Certificate uploads go to Certificate/<category> (certificates_api via ozellar_layout); the
+    # alias reuses an older "Certificates" folder instead of adding a second one.
+    _n("Certificate", aliases=["Certificates"]),
 ]
 
 

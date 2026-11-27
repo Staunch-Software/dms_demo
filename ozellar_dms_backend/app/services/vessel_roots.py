@@ -26,7 +26,7 @@ SETTING_KEY = "vessel_roots"
 
 # Folders that only group vessel folders ("<main>/Ships/<vessel>/..."). Never a vessel themselves;
 # their sub-folders are the vessel folders.
-GROUPING_FOLDER_NAMES = {"ships"}
+GROUPING_FOLDER_NAMES = {"ships", "ship"}
 
 
 def is_grouping_folder(name: str | None) -> bool:

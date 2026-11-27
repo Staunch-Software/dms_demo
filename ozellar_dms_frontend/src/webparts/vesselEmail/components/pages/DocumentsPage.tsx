@@ -1852,7 +1852,7 @@ export function renderDocumentsPage(host: VesselEmail): React.ReactElement {
       }).filter(Boolean)
     )).sort();
     if (allGroups.length === 0) {
-      allGroups.push('Commercial & Chartering', 'Insurance', 'Kaizen - Knowledge Bank', 'Technical & Crewing');
+      allGroups.push('Ozellar Docs');  // Ozellar: one main folder (Ozellar Docs/SHIP/<vessel>, see ozellar_layout.py)
     }
     const filteredCategoryRows = scopeVesselRows.filter(r => {
       if (docGroupFilter === 'all') return true;
@@ -4805,7 +4805,8 @@ export function renderDocumentsPage(host: VesselEmail): React.ReactElement {
       // folder has been opened): nothing is scanned yet, but every group must
       // still be selectable — picking one searches the whole library.
       const atLibraryWide = vesselFilter === 'all' && docCategoryFilter === 'all';
-      if (atLibraryWide) { hasDrawings = true; hasManuals = true; hasToBeClassified = true; }
+      // "To Be Classified" is only offered when such a folder exists (Ozellar's vessel folders have none).
+      if (atLibraryWide) { hasDrawings = true; hasManuals = true; }
       // Vessel / main folder selected: every group that exists inside it.
       if (scopedTaxonomyKey) {
         libTaxonomy.groups.forEach(gl => {
@@ -6862,7 +6863,7 @@ export function renderDocumentsPage(host: VesselEmail): React.ReactElement {
                   stops. See DebouncedSearchInput.tsx's doc comment. */}
               <DebouncedSearchInput
                 value={textFilter}
-                placeholder="Search vessel, file, folder, category…"
+                placeholder="Search ship, file, section, category…"
                 title="Matches any format/file type. You can combine terms — e.g. a vessel name plus a partial file name — separated by spaces; each word can match a different field."
                 style={{ width: '100%', height: 34, padding: '0 26px 0 34px', borderRadius: 8, border: '1px solid var(--vdms-border)', fontSize: 13, outline: 'none', boxSizing: 'border-box', background: 'var(--vdms-surface)', color: 'var(--vdms-text)' }}
                 onChange={nextValue => {
@@ -6876,7 +6877,8 @@ export function renderDocumentsPage(host: VesselEmail): React.ReactElement {
                 }}
               />
             </div>
-            {docScopeType !== 'kaizen' && MAIN_FOLDERS.length > 0 && (
+            {/* Ozellar has a single main folder ("Ozellar Docs"), so the picker only shows when there is a choice. */}
+            {docScopeType !== 'kaizen' && MAIN_FOLDERS.length > 0 && allGroups.length > 1 && (
               <FilterSelect
                 aria-label="Group filter"
                 value={docGroupFilter}
@@ -7118,7 +7120,7 @@ export function renderDocumentsPage(host: VesselEmail): React.ReactElement {
               aria-label="Document type filter"
               value={groupOptions.length === 0 ? 'all' : docGroupLevelFilter}
               disabled={groupOptions.length === 0 && !(scopedTaxonomyKey && libTaxonomyState !== 'ready')}
-              title={groupOptions.length === 0 ? 'No classified groups found in these folders' : undefined}
+              title={groupOptions.length === 0 ? 'No Drawings or Manuals sections found in these folders' : undefined}
               onChange={val => {
                 // Mirror into the Sub-folder tree: "To Be Classified" jumps
                 // to that folder node when it exists; leaving it clears a
@@ -7189,7 +7191,7 @@ export function renderDocumentsPage(host: VesselEmail): React.ReactElement {
                 }
               }}
             >
-              <option value="all">{groupOptions.length === 0 ? (scopedTaxonomyKey && libTaxonomyState !== 'ready' ? 'Loading groups…' : 'No groups found') : 'All groups'}</option>
+              <option value="all">{groupOptions.length === 0 ? (scopedTaxonomyKey && libTaxonomyState !== 'ready' ? 'Loading sections…' : 'No sections found') : 'All sections'}</option>
               {groupOptions.map(g => <option key={g} value={g}>{g}</option>)}
             </FilterSelect>
             {(categoryOptions.length > 0 || categoryOptionGroups.length > 0 || libraryWideScope || (!!scopedTaxonomyKey && libTaxonomyState !== 'ready')) ? (

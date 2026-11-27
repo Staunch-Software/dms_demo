@@ -110,7 +110,12 @@ class StubBackend:
         return {"status": "pending", "approval_id": approval["id"], "message": pending_message}
 
     # ----------------------------------------------------------------- vessels
-    async def list_vessels(self):
+    async def list_vessels(self, site_key=None):
+        # Ship Register is the vessel master: ships registered there (DB rows with ship particulars) are the
+        # vessels every module sees, with their real DB ids, so Certificates / Documents line up by IMO and id.
+        registered = self._registered_vessels()
+        if registered:
+            return registered
         return [
             {
                 "id": v["id"],
@@ -123,6 +128,35 @@ class StubBackend:
             }
             for v in reversed(store.vessels)
         ]
+
+    def _registered_vessels(self):
+        if not settings.db_configured:
+            return []
+        try:
+            with SessionLocal() as db:
+                ids = [r[0] for r in db.query(models.ShipParticulars.vessel_id).all()]
+                if not ids:
+                    return []
+                rows = db.query(models.Vessel).filter(models.Vessel.id.in_(ids)).order_by(func.lower(models.Vessel.name)).all()
+                out = [{
+                    "id": str(v.id), "name": v.name, "imo": v.imo, "shipyard": v.shipyard,
+                    "hull_number": v.hull_number, "vessel_type": v.vessel_type, "is_provisioned": True,
+                    "provisioned_site_ids": list(v.provisioned_site_ids or []),
+                    "provisioned_site_key": v.provisioned_site_key,
+                    "vessel_folder_path": v.vessel_folder_path,
+                } for v in rows]
+        except Exception:
+            return []
+        # Give each ship its demo folder tree in the in-memory store (lost on restart), so the stub
+        # Documents view shows them too.
+        known = {normalize_vessel_name(v["name"]) for v in store.vessels}
+        for v in out:
+            if normalize_vessel_name(v["name"]) not in known:
+                try:
+                    store.add_vessel(v["name"], v["imo"], vessel_type=v["vessel_type"])
+                except Exception:
+                    pass
+        return out
 
     def _validate_create_vessel(self, name, imo, exclude_vessel_id=None):
         name = (name or "").strip()

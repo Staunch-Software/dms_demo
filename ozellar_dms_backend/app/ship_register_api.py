@@ -164,6 +164,68 @@ def _summary(vessel: models.Vessel, p: models.ShipParticulars | None, counts: di
     }
 
 
+def _certificate_counts(db, vessels: list[models.Vessel]) -> dict[int, dict[str, int]]:
+    """Per vessel: mandatory certificates uploaded / required ("18 of 40") and optional ones uploaded.
+
+    Required = Certificate Master entries with a required rule that applies to the ship (all ships, its
+    ship type, or the vessel itself), the same rule the Certificates page KPIs use. Uploaded = a current (not superseded / deleted) certificate exists for
+    that master, whether or not it has expired.
+    """
+    from .certificates_api import _ship_type_matches
+
+    masters = db.query(models.CertificateMaster).all()
+    rules = db.query(models.CertificateApplicability).all()
+    ids = [v.id for v in vessels]
+    held: set[tuple[int, int]] = set()
+    if ids:
+        for c in (db.query(models.Certificate)
+                  .filter(models.Certificate.vessel_id.in_(ids),
+                          models.Certificate.status.notin_(("superseded", "deleted"))).all()):
+            held.add((c.vessel_id, c.certificate_master_id))
+    out: dict[int, dict[str, int]] = {}
+    for v in vessels:
+        v_type = (v.vessel_type or "").strip().lower()
+        m_total = m_held = opt_held = 0
+        for m in masters:
+            # Same rule as the Certificates KPIs: a certificate is required for this ship when one of its
+            # Certificate Master rules (all ships / this ship type / this vessel) applies and is required.
+            applying = [r for r in rules if r.certificate_master_id == m.id and (
+                r.scope == "all_ships"
+                or (r.scope == "ship_type" and _ship_type_matches(r.ship_type, v_type))
+                or (r.scope == "vessel" and r.vessel_id == v.id))]
+            has = (v.id, m.id) in held
+            if any(r.is_required for r in applying):
+                m_total += 1
+                m_held += 1 if has else 0
+            elif has:
+                opt_held += 1
+        out[v.id] = {"cert_held": m_held, "cert_total": m_total, "cert_optional": opt_held}
+    return out
+
+
+async def _document_counts() -> dict[str, int] | None:
+    """Documents per vessel folder, from the dashboard's cached SharePoint scan (real mode only)."""
+    import asyncio
+
+    from .config import settings
+    from .services import get_backend
+
+    if not (settings.graph_configured and settings.db_configured):
+        return None
+    try:
+        backend = get_backend()
+        scan = await asyncio.wait_for(backend._dashboard_site_scan(), timeout=20)
+    except Exception:  # noqa: BLE001 - counts are informational; the list still loads without them
+        log.warning("Ship Register: document counts unavailable", exc_info=True)
+        return None
+    counts: dict[str, int] = {}
+    for d in scan.get("docs") or []:
+        name = str(d.get("vessel") or "").strip().lower()
+        if name:
+            counts[name] = counts.get(name, 0) + 1
+    return counts
+
+
 def _validate(payload: RegisterIn) -> list[str]:
     errors: list[str] = []
     imo = _clean(payload.imo)
@@ -261,15 +323,18 @@ async def _create_vessel(name: str, imo: str, payload: RegisterCreateIn, admin_e
     from .config import settings
     from .services import get_backend
 
+    from . import ozellar_layout
+
     vessel_type = _clean(payload.vessel_type)
     if settings.graph_configured and settings.db_configured:
-        site_key = _clean(payload.site_key)
+        # The ship's folder goes to <site>/Documents/Ozellar Docs/Ships/<ship> (parents created if missing).
+        site_key = _clean(payload.site_key) or ozellar_layout.SITE_KEY
         try:
             result = await get_backend().create_vessel(
                 name, imo, vessel_type=vessel_type,
                 requesting_email=admin_email, requesting_name=admin_email.split("@")[0],
-                provisioned_site_ids=[site_key] if site_key else None,
-                site_key=site_key, parent_folder_path="" if site_key else None, subfolders=[],
+                provisioned_site_ids=[site_key], site_key=site_key,
+                parent_folder_path=ozellar_layout.SHIPS_PATH, subfolders=[],
             )
         except Exception as exc:  # noqa: BLE001 - surface the backend's own message (conflict, Graph error...)
             log.exception("Ship Register: vessel creation failed for %r", name)
@@ -289,7 +354,9 @@ async def _create_vessel(name: str, imo: str, payload: RegisterCreateIn, admin_e
 
     # Stub mode: vessels live in memory there, but the register needs a real DB row.
     with SessionLocal() as db:
-        vessel = models.Vessel(name=name, imo=imo, vessel_type=vessel_type)
+        vessel = models.Vessel(name=name, imo=imo, vessel_type=vessel_type, is_provisioned=True,
+                               provisioned_site_ids=[ozellar_layout.SITE_KEY],
+                               provisioned_site_key=ozellar_layout.SITE_KEY)
         db.add(vessel)
         db.commit()
         vessel_id = vessel.id
@@ -394,15 +461,21 @@ def build_ship_register_router(require_session: Callable, require_admin: Callabl
         q: str | None = Query(default=None),
         _session: object = Depends(require_session),
     ) -> dict[str, Any]:
+        # Only ships registered here (they have a ship_particulars row), not every vessel in the DMS.
         with SessionLocal() as db:
-            vessels = db.query(models.Vessel).order_by(func.lower(models.Vessel.name)).all()
             particulars = {p.vessel_id: p for p in db.query(models.ShipParticulars).all()}
+            vessels = (db.query(models.Vessel).filter(models.Vessel.id.in_(list(particulars) or [0]))
+                       .order_by(func.lower(models.Vessel.name)).all())
+            certs = _certificate_counts(db, vessels)
             counts: dict[int, dict[str, int]] = {}
             for vessel_id, category, n in (db.query(models.ShipEquipment.vessel_id, models.ShipEquipment.category,
                                                     func.count(models.ShipEquipment.id))
                                            .group_by(models.ShipEquipment.vessel_id, models.ShipEquipment.category).all()):
                 counts.setdefault(vessel_id, {})[category] = int(n)
-            items = [_summary(v, particulars.get(v.id), counts.get(v.id, {})) for v in vessels]
+            items = [{**_summary(v, particulars.get(v.id), counts.get(v.id, {})), **certs.get(v.id, {})} for v in vessels]
+        docs = await _document_counts()
+        for i in items:
+            i["documents"] = docs.get(i["name"].strip().lower(), 0) if docs is not None else None
         needle = (q or "").strip().lower()
         if needle:
             items = [i for i in items if any(needle in str(i.get(k) or "").lower()

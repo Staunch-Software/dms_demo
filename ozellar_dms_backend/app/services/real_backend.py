@@ -59,7 +59,7 @@ _DASHBOARD_CACHE_GENERATION = 0
 _DASHBOARD_LIVE_PROGRESS: dict[str, dict] = {}
 
 # Folder names that only group vessel folders and are never a vessel themselves.
-_GROUPING_FOLDER_NAMES = {"ships"}
+_GROUPING_FOLDER_NAMES = {"ships", "ship"}
 # time.time() of the last completed scan in which any site was throttled
 # (429/503). The scheduler's background refresh backs off for a few minutes
 # after this instead of re-scanning into a still-exhausted Graph quota.

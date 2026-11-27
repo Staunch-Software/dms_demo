@@ -52,6 +52,7 @@ from .config import Settings, settings
 from .db import models
 from .db.base import SessionLocal
 from .graph import drive as gd
+from . import ozellar_layout
 from .services import vessel_roots
 from .services.service_agreement_approvals import (
     hash_token,
@@ -89,7 +90,7 @@ DOCUMENT_TYPES = ["Main Contract", "Amendment", "Annexure / Schedule", "Quotatio
 PARTY_ROLES = ("first", "second", "additional")
 
 SITE_KEY = "ozellardms"
-MAIN_FOLDER_NAMES = ("Technical and Crewing  New", "Technical & Crewing", "Technical and Crewing")
+MAIN_FOLDER_NAMES = ozellar_layout.MAIN_FOLDER_NAMES  # "Ozellar Docs" first; older Nissen names still recognised
 AGREEMENT_FOLDER = "Service Agreement"
 ACTIVE_FOLDER = "Active"
 EXPIRY_FOLDER = "Expiry"
@@ -467,12 +468,7 @@ def _drive_id() -> str | None:
 
 async def _agreement_folder(drive_id: str, sub: str) -> dict:
     """<main folder>/Service Agreement/<Active|Expiry>, created when missing."""
-    main = None
-    for name in MAIN_FOLDER_NAMES:
-        main = await gd.find_child(drive_id, "root", name)
-        if main and "folder" in main:
-            break
-        main = None
+    main = await ozellar_layout.main_folder(drive_id)  # created as "Ozellar Docs" when missing
     parent_id = main["id"] if main else "root"
     agreements = await gd.ensure_folder(drive_id, parent_id, AGREEMENT_FOLDER)
     return await gd.ensure_folder(drive_id, agreements["id"], sub)

@@ -79,6 +79,15 @@ def _payload(**over):
     return body
 
 
+def test_list_shows_only_registered_ships(client, vessel):
+    listing = client.get("/api/ship-register").json()["items"]
+    assert vessel not in [i["vessel_id"] for i in listing]  # plain DMS vessel, never registered here
+    client.put(f"/api/ship-register/{vessel}", json=_payload(), headers=H)
+    row = [i for i in client.get("/api/ship-register").json()["items"] if i["vessel_id"] == vessel][0]
+    assert {"cert_held", "cert_total", "cert_optional", "documents"} <= set(row)
+    assert 0 <= row["cert_held"] <= row["cert_total"]
+
+
 def test_save_and_read_register(client, vessel):
     body = _payload()
     r = client.put(f"/api/ship-register/{vessel}", json=body, headers=H)

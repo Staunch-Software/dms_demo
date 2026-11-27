@@ -54,10 +54,10 @@ def run(coro):
 class ValidateTests(unittest.TestCase):
     def test_default_template_is_the_requested_structure(self):
         paths = vft.flatten(vft.validate(vft.DEFAULT_FOLDERS))
-        self.assertIn("Drawings and Manuals/Drawings/Other Drawings", paths)
-        self.assertIn("Drawings and Manuals/Manuals/Steering Gear", paths)
-        self.assertIn("Drawings and Manuals/To Be Classified", paths)
-        self.assertEqual(vft.count_folders(vft.DEFAULT_FOLDERS), 1 + 1 + 7 + 1 + 15 + 1)
+        self.assertIn("Drawings/Other Drawings", paths)
+        self.assertIn("Manuals/Steering Gear", paths)
+        self.assertIn("Certificate", paths)
+        self.assertEqual(vft.count_folders(vft.DEFAULT_FOLDERS), 1 + 7 + 1 + 15 + 1)
 
     def test_cleans_names_and_accepts_strings(self):
         out = vft.validate([{"name": "  Deck   Logs ", "children": ["Bridge"]}])
@@ -93,19 +93,21 @@ class EnsureTreeTests(unittest.TestCase):
         r = run(vft.ensure_tree(self.client, "d", self.vessel, self.folders))
         self.assertEqual(len(r["created"]), vft.count_folders(self.folders))
         self.assertEqual(r["failed"], [])
-        self.assertIn("MV Aurora/Drawings and Manuals/Manuals/Thrusters", self.client.tree())
+        self.assertIn("MV Aurora/Manuals/Thrusters", self.client.tree())
         # Only the vessel folder itself is listed; new folders are known empty.
         self.assertEqual(self.client.lists, 1)
 
     def test_reuses_existing_folders_and_only_adds_missing(self):
-        dm = self.client.add(self.vessel, "Drawings  and manuals")  # different case + double space
-        self.client.add(dm, "Drawings")
+        dr = self.client.add(self.vessel, "drawings")  # different case
+        self.client.add(dr, "Hull")
+        self.client.add(self.vessel, "Certificates")  # older name, reused through the alias
         r = run(vft.ensure_tree(self.client, "d", self.vessel, self.folders))
-        self.assertEqual(r["existing"], 2)
-        self.assertEqual(len(r["created"]), vft.count_folders(self.folders) - 2)
+        self.assertEqual(r["existing"], 3)
+        self.assertEqual(len(r["created"]), vft.count_folders(self.folders) - 3)
         tree = self.client.tree()
-        self.assertNotIn("MV Aurora/Drawings and Manuals", tree)  # the existing one was reused, not duplicated
-        self.assertIn("MV Aurora/Drawings  and manuals/Drawings/Hull", tree)
+        self.assertNotIn("MV Aurora/Drawings", tree)  # the existing one was reused, not duplicated
+        self.assertNotIn("MV Aurora/Certificate", tree)
+        self.assertIn("MV Aurora/drawings/Basic", tree)
         # A second run creates nothing.
         again = run(vft.ensure_tree(self.client, "d", self.vessel, self.folders))
         self.assertEqual(again["created"], [])
@@ -117,21 +119,20 @@ class EnsureTreeTests(unittest.TestCase):
         self.assertEqual(self.client.tree(), ["MV Aurora"])
 
     def test_also_matches_names_prevent_near_duplicates(self):
-        dm = self.client.add(self.vessel, "Drawings and Manuals")
-        manuals = self.client.add(dm, "Manuals")
+        manuals = self.client.add(self.vessel, "Manuals")
         self.client.add(manuals, "Auxilliary Engine")  # existing misspelling
         r = run(vft.ensure_tree(self.client, "d", self.vessel, self.folders))
-        self.assertNotIn("Drawings and Manuals/Manuals/Auxiliary Engine", r["created"])
-        self.assertNotIn("MV Aurora/Drawings and Manuals/Manuals/Auxiliary Engine", self.client.tree())
+        self.assertNotIn("Manuals/Auxiliary Engine", r["created"])
+        self.assertNotIn("MV Aurora/Manuals/Auxiliary Engine", self.client.tree())
         with self.assertRaisesRegex(ValueError, "appears twice"):
             vft.validate([{"name": "Hull", "aliases": ["Hulls"]}, {"name": "hulls"}])
 
     def test_a_failed_folder_is_reported_and_others_continue(self):
         self.client.fail_names = {"Manuals"}
         r = run(vft.ensure_tree(self.client, "d", self.vessel, self.folders))
-        self.assertEqual([f["path"] for f in r["failed"]], ["Drawings and Manuals/Manuals"])
-        self.assertIn("MV Aurora/Drawings and Manuals/Drawings/Archive", self.client.tree())
-        self.assertNotIn("MV Aurora/Drawings and Manuals/Manuals/Boiler", self.client.tree())
+        self.assertEqual([f["path"] for f in r["failed"]], ["Manuals"])
+        self.assertIn("MV Aurora/Drawings/Archive", self.client.tree())
+        self.assertNotIn("MV Aurora/Manuals/Boiler", self.client.tree())
 
 
 if __name__ == "__main__":

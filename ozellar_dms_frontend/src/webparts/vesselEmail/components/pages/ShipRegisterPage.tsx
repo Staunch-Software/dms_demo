@@ -41,6 +41,8 @@ interface Summary {
   class_society: string | null; deadweight: string | null; tech_manager: string | null; crew_manager: string | null;
   equipment_counts: Partial<Record<Category, number>>; equipment_total: number;
   filled: number; total_fields: number; updated_at: string | null;
+  cert_held: number; cert_total: number; cert_optional: number;
+  documents: number | null;   // null when document counts are unavailable (stub mode / SharePoint scan failed)
 }
 
 interface Options {
@@ -49,8 +51,6 @@ interface Options {
   categories: Array<{ id: Category; label: string; power_unit: string | null }>;
   power_units: string[];
 }
-
-interface MasterItem { id: number; name: string; active: boolean; used_count: number }
 
 const ENGINE_SECTIONS: Array<{ id: Category; title: string; icon: string; unit: string; hint: string }> = [
   { id: 'main_engine', title: 'Main Engine', icon: 'Settings', unit: 'kW', hint: 'Propulsion engine(s)' },
@@ -109,150 +109,56 @@ const fmtDateTime = (iso: string | null): string => {
   return isNaN(d.getTime()) ? iso : d.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 
+
 // ─────────────────────────────────────────────────────────────────────────────
+type InputMode = 'numeric' | 'decimal' | 'email' | 'tel';
+
 function Field(props: {
-  label: string; value: string; onChange?: (v: string) => void; readOnly?: boolean;
-  placeholder?: string; type?: string; wide?: boolean; hint?: string; inputMode?: 'numeric' | 'decimal' | 'email' | 'tel';
+  label: string; icon: string; value: string; onChange?: (v: string) => void; readOnly?: boolean;
+  placeholder?: string; type?: string; wide?: boolean; hint?: string; inputMode?: InputMode; required?: boolean;
 }): React.ReactElement {
+  const readOnly = props.readOnly || !props.onChange;
   return (
     <label className={`sr-field${props.wide ? ' sr-field--wide' : ''}`}>
-      <span className="sr-field__label">{props.label}</span>
-      <input
-        className="sr-input"
-        type={props.type || 'text'}
-        value={props.value}
-        readOnly={props.readOnly || !props.onChange}
-        placeholder={props.readOnly ? '' : props.placeholder}
-        inputMode={props.inputMode}
-        onChange={e => props.onChange && props.onChange(e.target.value)}
-      />
+      <span className="sr-field__label">{props.label}{props.required && <span className="sr-req">*</span>}</span>
+      <span className={`sr-inputbox${readOnly ? ' sr-inputbox--ro' : ''}`}>
+        <Icon iconName={props.icon} className="sr-inputbox__icon" />
+        <input
+          type={props.type || 'text'}
+          value={props.value}
+          readOnly={readOnly}
+          placeholder={readOnly ? '' : props.placeholder}
+          inputMode={props.inputMode}
+          onChange={e => props.onChange && props.onChange(e.target.value)}
+        />
+      </span>
       {props.hint && <span className="sr-field__hint">{props.hint}</span>}
     </label>
   );
 }
 
-function Section(props: { title: string; icon: string; subtitle?: string; actions?: React.ReactNode; children: React.ReactNode }): React.ReactElement {
-  return (
-    <section className="sr-card">
-      <header className="sr-card__head">
-        <span className="sr-card__icon"><Icon iconName={props.icon} /></span>
-        <div className="sr-card__titles">
-          <h3 className="sr-card__title">{props.title}</h3>
-          {props.subtitle && <p className="sr-card__subtitle">{props.subtitle}</p>}
-        </div>
-        {props.actions && <div className="sr-card__actions">{props.actions}</div>}
-      </header>
-      <div className="sr-card__body">{props.children}</div>
-    </section>
-  );
-}
+type TabId = 'particulars' | 'managers' | 'machinery' | 'equipment';
+const TABS: Array<{ id: TabId; label: string; icon: string; hint: string }> = [
+  { id: 'particulars', label: 'Ship Particulars', icon: 'Ferry', hint: 'Registry, tonnage, class & insurance' },
+  { id: 'managers', label: 'Managers', icon: 'People', hint: 'Technical & crew contacts' },
+  { id: 'machinery', label: 'Machinery', icon: 'Settings', hint: 'Main, aux & emergency engines' },
+  { id: 'equipment', label: 'Equipment', icon: 'Repair', hint: 'Other equipment on board' },
+];
 
-// ── Equipment Master (admin) ────────────────────────────────────────────────
-function EquipmentMasterModal(props: { host: VesselEmail; onClose: (changed: boolean) => void }): React.ReactElement {
-  const { host } = props;
-  const [items, setItems] = React.useState<MasterItem[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [name, setName] = React.useState('');
-  const [editing, setEditing] = React.useState<{ id: number; name: string } | null>(null);
-  const [error, setError] = React.useState('');
-  const [changed, setChanged] = React.useState(false);
-  const [filter, setFilter] = React.useState('');
+const ENGINE_ICONS: Record<string, string> = { main_engine: 'Settings', aux_engine: 'LightningBolt', emergency_generator: 'Warning' };
 
-  const load = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${host._base()}/api/ship-register/equipment-master?include_inactive=true`, { headers: host._headers(), cache: 'no-store' });
-      if (!res.ok) throw new Error((await readError(res)).message);
-      setItems((await res.json()).items || []);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  }, [host]);
-  React.useEffect(() => { void load(); }, [load]);
-
-  const send = async (url: string, method: string, body: object): Promise<boolean> => {
-    setError('');
-    const res = await fetch(`${host._base()}${url}`, { method, headers: host._headers(), body: JSON.stringify(body) });
-    if (!res.ok) { setError((await readError(res)).message); return false; }
-    setChanged(true);
-    await load();
-    return true;
-  };
-
-  const add = async (): Promise<void> => {
-    if (!name.trim()) return;
-    if (await send('/api/ship-register/equipment-master', 'POST', { name })) setName('');
-  };
-
-  const shown = items.filter(i => !filter.trim() || i.name.toLowerCase().includes(filter.trim().toLowerCase()));
-
-  return (
-    <div className="sr-modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) props.onClose(changed); }}>
-      <div className="sr-modal" role="dialog" aria-label="Equipment Master">
-        <header className="sr-modal__head">
-          <div>
-            <h3 className="sr-modal__title">Equipment Master</h3>
-            <p className="sr-modal__subtitle">Names offered under "Add New Equipment" on every vessel.</p>
-          </div>
-          <button type="button" className="sr-icon-btn" onClick={() => props.onClose(changed)} aria-label="Close"><Icon iconName="Cancel" /></button>
-        </header>
-        <div className="sr-modal__add">
-          <input className="sr-input" placeholder="New equipment name, e.g. Shaft Generator" value={name}
-            onChange={e => setName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') void add(); }} />
-          <button type="button" className="sa-btn sa-btn--primary" disabled={!name.trim()} onClick={() => void add()}>
-            <Icon iconName="Add" /> Add
-          </button>
-        </div>
-        {error && <div className="sr-alert sr-alert--error"><Icon iconName="ErrorBadge" /> {error}</div>}
-        <input className="sr-input sr-modal__filter" placeholder="Filter…" value={filter} onChange={e => setFilter(e.target.value)} />
-        <div className="sr-modal__list">
-          {loading ? <DmsLoadingState label="Loading equipment names…" /> : shown.map(item => (
-            <div key={item.id} className={`sr-master-row${item.active ? '' : ' sr-master-row--off'}`}>
-              {editing && editing.id === item.id ? (
-                <>
-                  <input className="sr-input" autoFocus value={editing.name} onChange={e => setEditing({ id: item.id, name: e.target.value })}
-                    onKeyDown={async e => {
-                      if (e.key === 'Enter' && await send(`/api/ship-register/equipment-master/${item.id}`, 'PATCH', { name: editing.name })) setEditing(null);
-                      if (e.key === 'Escape') setEditing(null);
-                    }} />
-                  <button type="button" className="sr-icon-btn" title="Save" onClick={async () => {
-                    if (await send(`/api/ship-register/equipment-master/${item.id}`, 'PATCH', { name: editing.name })) setEditing(null);
-                  }}><Icon iconName="CheckMark" /></button>
-                  <button type="button" className="sr-icon-btn" title="Cancel" onClick={() => setEditing(null)}><Icon iconName="Cancel" /></button>
-                </>
-              ) : (
-                <>
-                  <span className="sr-master-row__name">{item.name}</span>
-                  {item.used_count > 0 && <span className="sr-chip" title="Vessels' equipment rows using this name">{item.used_count} in use</span>}
-                  {!item.active && <span className="sr-chip sr-chip--muted">Inactive</span>}
-                  <button type="button" className="sr-icon-btn" title="Rename" onClick={() => setEditing({ id: item.id, name: item.name })}><Icon iconName="Edit" /></button>
-                  <button type="button" className="sr-icon-btn" title={item.active ? 'Deactivate (hide from the list)' : 'Activate'}
-                    onClick={() => void send(`/api/ship-register/equipment-master/${item.id}`, 'PATCH', { active: !item.active })}>
-                    <Icon iconName={item.active ? 'Hide3' : 'View'} />
-                  </button>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Register editor (one vessel) ────────────────────────────────────────────
+// ── Register editor (one ship): tabs so each part fits on one screen ────────
 function RegisterEditor(props: {
   host: VesselEmail; vesselId: number | null; options: Options | null; canEdit: boolean;
   onBack: (saved: boolean) => void;
 }): React.ReactElement {
   const { host, options, canEdit } = props;
-  // vesselId null = registering a new vessel; it becomes the new id once the vessel is created.
+  // vesselId null = registering a new ship; it becomes the new id once the ship is created.
   const [vesselId, setVesselId] = React.useState<number | null>(props.vesselId);
   const isNew = vesselId === null;
   const sites = host.state.documentSites || [];
-  const [siteKey, setSiteKey] = React.useState<string>(() => {
+  // The ship's document folder goes into the current document site, as Vessel Master does.
+  const [siteKey] = React.useState<string>(() => {
     const active = host.state.activeDocumentSite;
     return (sites.find(x => x.site_key === active) || sites.find(x => x.is_primary) || sites[0])?.site_key || '';
   });
@@ -263,6 +169,8 @@ function RegisterEditor(props: {
   const [error, setError] = React.useState<{ message: string; errors: string[] } | null>(null);
   const [notice, setNotice] = React.useState('');
   const [savedOnce, setSavedOnce] = React.useState(false);
+  const [tab, setTab] = React.useState<TabId>('particulars');
+  const [engine, setEngine] = React.useState<Category>('main_engine');
 
   const load = React.useCallback(async () => {
     if (vesselId === null) {
@@ -299,7 +207,8 @@ function RegisterEditor(props: {
     setData(d => (d ? { ...d, equipment: d.equipment.filter(e => e.key !== key) } : d));
 
   const back = (): void => {
-    if (dirty && !window.confirm('You have unsaved changes. Leave without saving?')) return;
+    if (dirty && !isNew && !window.confirm('You have unsaved changes. Leave without saving?')) return;
+    if (isNew && dirty && data && (data.name || data.imo) && !window.confirm('Discard this new ship?')) return;
     props.onBack(savedOnce);
   };
 
@@ -310,15 +219,14 @@ function RegisterEditor(props: {
       const errors: string[] = [];
       if (!data.name.trim()) errors.push('Ship Name is required.');
       if (!/^\d{7}$/.test(data.imo.trim())) errors.push('IMO No must be exactly 7 digits.');
-      if (sites.length > 0 && !siteKey) errors.push('Select the SharePoint site for this vessel\'s documents.');
-      if (errors.length) { setError({ message: 'Please fix the following', errors }); return; }
+      if (errors.length) { setError({ message: 'Please fix the following', errors }); setTab('particulars'); return; }
     }
     setSaving(true); setError(null); setNotice('');
     try {
       const { equipment, vessel_id, name, updated_at, updated_by_email, ...fields } = data;
       void vessel_id; void updated_at; void updated_by_email;
       const body: any = { ...fields, equipment: equipment.map(({ key, ...rest }) => { void key; return rest; }) };
-      // New vessel: one call creates the vessel (and its SharePoint folder in real mode) and saves the register.
+      // New ship: one call creates the vessel (and its SharePoint folder in real mode) and saves the register.
       if (creating) { body.name = name; body.site_key = siteKey || null; }
       const res = await fetch(`${host._base()}/api/ship-register${creating ? '' : `/${vesselId}`}`, {
         method: creating ? 'POST' : 'PUT', headers: host._headers(), body: JSON.stringify(body),
@@ -332,7 +240,7 @@ function RegisterEditor(props: {
       setData(reg);
       setInitial(JSON.stringify(reg));
       setSavedOnce(true);
-      setNotice(creating ? `Vessel "${reg.name}" registered.` : 'Ship register saved.');
+      setNotice(creating ? `${reg.name} registered${siteKey ? ' and its SharePoint folder created' : ''}.` : 'Changes saved.');
     } catch (e) {
       setError({ message: (e as Error).message, errors: [] });
     } finally {
@@ -344,8 +252,8 @@ function RegisterEditor(props: {
   if (!data) {
     return (
       <div className="sr-page">
-        <button type="button" className="sa-btn sa-btn--link" onClick={() => props.onBack(false)}><Icon iconName="Back" /> All vessels</button>
-        <div className="sr-alert sr-alert--error"><Icon iconName="ErrorBadge" /> {error?.message || 'Could not load this vessel.'}</div>
+        <button type="button" className="sa-btn sa-btn--link" onClick={() => props.onBack(false)}><Icon iconName="Back" /> All ships</button>
+        <div className="sr-alert sr-alert--error"><Icon iconName="ErrorBadge" /> {error?.message || 'Could not load this ship.'}</div>
       </div>
     );
   }
@@ -357,49 +265,85 @@ function RegisterEditor(props: {
     ...data.equipment.filter(e => e.category === 'other' && e.equipment_name).map(e => e.equipment_name),
   ])).map(n => ({ key: n, text: n }));
   const unitOptions = (options?.power_units || ['kW', 'kVA']).map(u => ({ key: u, text: u }));
+  const count = (c: Category): number => data.equipment.filter(e => e.category === c).length;
+  const filledRows = (c: Category): number => data.equipment.filter(e => e.category === c && (e.make || e.model || e.equipment_name)).length;
 
-  const managerRow = (prefix: 'tech_manager' | 'crew_manager', label: string): React.ReactElement => (
+  // Per-tab status for the tab strip: a check once the essentials are in.
+  const tabDone: Record<TabId, boolean> = {
+    particulars: !!(data.imo && data.flag && data.vessel_type && data.class_society && data.deadweight),
+    managers: !!(data.tech_manager && data.crew_manager),
+    machinery: ENGINE_SECTIONS.every(sec => filledRows(sec.id) > 0),
+    equipment: filledRows('other') > 0,
+  };
+  const tabBadge: Partial<Record<TabId, number>> = {
+    machinery: filledRows('main_engine') + filledRows('aux_engine') + filledRows('emergency_generator'),
+    equipment: filledRows('other'),
+  };
+  const tabIndex = TABS.findIndex(t => t.id === tab);
+
+  const managerCard = (prefix: 'tech_manager' | 'crew_manager', label: string, icon: string): React.ReactElement => (
     <div className="sr-manager">
-      <div className="sr-manager__label">{label}</div>
-      <div className="sr-grid sr-grid--manager">
-        <Field label="Company / Name" value={data[prefix]} onChange={set(prefix)} placeholder="e.g. Ozellar Ship Management" />
-        <Field label="PIC Email" type="email" inputMode="email" value={data[`${prefix}_email` as keyof Register] as string} onChange={set(`${prefix}_email` as keyof Register)} placeholder="pic@company.com" />
-        <Field label="Email 2" type="email" inputMode="email" value={data[`${prefix}_email2` as keyof Register] as string} onChange={set(`${prefix}_email2` as keyof Register)} />
-        <Field label="Phone" type="tel" inputMode="tel" value={data[`${prefix}_phone` as keyof Register] as string} onChange={set(`${prefix}_phone` as keyof Register)} placeholder="+65 …" />
-        <Field label="Phone 2" type="tel" inputMode="tel" value={data[`${prefix}_phone2` as keyof Register] as string} onChange={set(`${prefix}_phone2` as keyof Register)} />
+      <div className="sr-manager__head"><span className="sr-manager__icon"><Icon iconName={icon} /></span>{label}</div>
+      <div className="sr-grid sr-grid--2">
+        <Field label="Company / Name" icon="CityNext" wide value={data[prefix]} onChange={set(prefix)} placeholder="e.g. Ozellar Ship Management" />
+        <Field label="PIC Email" icon="Mail" type="email" inputMode="email" value={data[`${prefix}_email` as keyof Register] as string} onChange={set(`${prefix}_email` as keyof Register)} placeholder="pic@company.com" />
+        <Field label="Email 2" icon="Mail" type="email" inputMode="email" value={data[`${prefix}_email2` as keyof Register] as string} onChange={set(`${prefix}_email2` as keyof Register)} />
+        <Field label="Phone" icon="Phone" type="tel" inputMode="tel" value={data[`${prefix}_phone` as keyof Register] as string} onChange={set(`${prefix}_phone` as keyof Register)} placeholder="+91 …" />
+        <Field label="Phone 2" icon="Phone" type="tel" inputMode="tel" value={data[`${prefix}_phone2` as keyof Register] as string} onChange={set(`${prefix}_phone2` as keyof Register)} />
       </div>
     </div>
   );
 
-  const cell = (row: Equipment, field: keyof Equipment, placeholder = '', inputMode?: 'decimal'): React.ReactElement => (
+  const cell = (row: Equipment, field: keyof Equipment, label: string, placeholder = '', inputMode?: 'decimal'): React.ReactElement => (
     <input className="sr-input sr-input--cell" value={row[field]} readOnly={!canEdit} placeholder={canEdit ? placeholder : ''}
-      inputMode={inputMode} onChange={e => updateRow(row.key, field, e.target.value)} />
+      aria-label={label} inputMode={inputMode} onChange={e => updateRow(row.key, field, e.target.value)} />
   );
+  const removeBtn = (row: Equipment): React.ReactElement | null => (canEdit ? (
+    <button type="button" className="sr-icon-btn sr-icon-btn--danger" title="Remove" aria-label="Remove row" onClick={() => removeRow(row.key)}>
+      <Icon iconName="Delete" />
+    </button>
+  ) : null);
+
+  const sec = ENGINE_SECTIONS.find(x => x.id === engine) || ENGINE_SECTIONS[0];
+  const engineRows = data.equipment.filter(e => e.category === sec.id);
+  const otherRows = data.equipment.filter(e => e.category === 'other');
 
   return (
-    <div className="sr-page">
+    <div className="sr-page sr-page--editor">
+      {/* Header */}
       <div className="sr-editor-bar">
-        <button type="button" className="sa-btn sa-btn--link" onClick={back}><Icon iconName="Back" /> All vessels</button>
+        <button type="button" className="sr-icon-btn sr-icon-btn--lg" onClick={back} title="All ships" aria-label="Back to all ships"><Icon iconName="Back" /></button>
+        <span className="sr-ship-avatar"><Icon iconName="Ferry" /></span>
         <div className="sr-editor-bar__title">
-          <h2>{isNew ? (data.name.trim() || 'New vessel') : data.name}</h2>
-          <span className="sr-editor-bar__meta">
-            {isNew ? 'Fill in the template and register the vessel' : data.imo ? `IMO ${data.imo}` : 'No IMO yet'}
-            {data.updated_at && ` · Last saved ${fmtDateTime(data.updated_at)}${data.updated_by_email ? ` by ${data.updated_by_email}` : ''}`}
-          </span>
+          <h2>{isNew ? (data.name.trim() || 'New Ship') : data.name}</h2>
+          <div className="sr-editor-bar__meta">
+            {isNew ? <span className="sr-chip sr-chip--info"><Icon iconName="Add" /> New registration</span> : (
+              <>
+                {data.imo && <span className="sr-chip"><Icon iconName="NumberSymbol" /> IMO {data.imo}</span>}
+                {data.vessel_type && <span className="sr-chip"><Icon iconName="Ferry" /> {data.vessel_type}</span>}
+                {data.flag && <span className="sr-chip"><Icon iconName="Flag" /> {data.flag}</span>}
+                {data.updated_at && <span className="sr-editor-bar__saved"><Icon iconName="Clock" /> Saved {fmtDateTime(data.updated_at)}</span>}
+              </>
+            )}
+          </div>
         </div>
         {canEdit && (
           <div className="sr-editor-bar__actions">
-            {dirty && !isNew && <span className="sr-chip sr-chip--warn">Unsaved changes</span>}
-            {!isNew && <button type="button" className="sa-btn sa-btn--secondary" disabled={!dirty || saving} onClick={() => setData(JSON.parse(initial))}>Discard</button>}
+            {dirty && !isNew && <span className="sr-chip sr-chip--warn"><Icon iconName="Edit" /> Unsaved</span>}
+            {!isNew && (
+              <button type="button" className="sa-btn sa-btn--secondary" disabled={!dirty || saving} onClick={() => setData(JSON.parse(initial))}>
+                <Icon iconName="Undo" /> Discard
+              </button>
+            )}
             <button type="button" className="sa-btn sa-btn--primary" disabled={!dirty || saving} onClick={() => void save()}>
-              <Icon iconName={isNew ? 'Add' : 'Save'} /> {saving ? 'Saving…' : isNew ? 'Register Vessel' : 'Save'}
+              <Icon iconName={saving ? 'Sync' : isNew ? 'CheckMark' : 'Save'} /> {saving ? 'Saving…' : isNew ? 'Register Ship' : 'Save'}
             </button>
           </div>
         )}
       </div>
 
       {!canEdit && <div className="sr-alert sr-alert--info"><Icon iconName="Info" /> View only. An administrator can edit the ship register.</div>}
-      {notice && <div className="sr-alert sr-alert--success"><Icon iconName="CheckMark" /> {notice}<button type="button" className="sr-alert__close" onClick={() => setNotice('')}><Icon iconName="Cancel" /></button></div>}
+      {notice && <div className="sr-alert sr-alert--success"><Icon iconName="CompletedSolid" /> {notice}<button type="button" className="sr-alert__close" aria-label="Dismiss" onClick={() => setNotice('')}><Icon iconName="Cancel" /></button></div>}
       {error && (
         <div className="sr-alert sr-alert--error">
           <Icon iconName="ErrorBadge" />
@@ -407,154 +351,177 @@ function RegisterEditor(props: {
             <strong>{error.message}</strong>
             {error.errors.length > 0 && <ul>{error.errors.map(e => <li key={e}>{e}</li>)}</ul>}
           </div>
+          <button type="button" className="sr-alert__close" aria-label="Dismiss" onClick={() => setError(null)}><Icon iconName="Cancel" /></button>
         </div>
       )}
 
-      <Section title="Ship Particulars" icon="Ferry" subtitle="Registration, tonnage, class and insurance">
-        <div className="sr-grid">
-          <Field label={isNew ? 'IMO No *' : 'IMO No'} value={data.imo} onChange={set('imo')} placeholder="7 digits" inputMode="numeric" />
-          {isNew
-            ? <Field label="Ship Name *" value={data.name} onChange={set('name')} placeholder="e.g. Ozellar Star" />
-            : <Field label="Ship Name" value={data.name} readOnly hint="Rename the vessel in Vessel Master" />}
-          <Field label="Flag" value={data.flag} onChange={set('flag')} placeholder="e.g. Singapore" />
-          <Field label="Port of Registry" value={data.port_of_registry} onChange={set('port_of_registry')} />
-          <Field label="Official No" value={data.official_no} onChange={set('official_no')} />
-          <Field label="MMSI" value={data.mmsi} onChange={set('mmsi')} placeholder="9 digits" inputMode="numeric" />
-          <Field label="Call Sign" value={data.call_sign} onChange={set('call_sign')} />
-          <label className="sr-field">
-            <span className="sr-field__label">Type of Ship</span>
-            {canEdit ? (
-              <CustomDropdown options={shipTypeOptions} selectedKey={data.vessel_type || undefined} placeholder="Select type"
-                onChange={key => setData(d => (d ? { ...d, vessel_type: String(key) } : d))} />
-            ) : <input className="sr-input" readOnly value={data.vessel_type} />}
-          </label>
-          <Field label="Gross Tonnage (GT)" value={data.gross_tonnage} onChange={set('gross_tonnage')} inputMode="decimal" />
-          <Field label="Net Tonnage (NT)" value={data.net_tonnage} onChange={set('net_tonnage')} inputMode="decimal" />
-          <Field label="Deadweight (MT)" value={data.deadweight} onChange={set('deadweight')} inputMode="decimal" />
-          <Field label="Class" value={data.class_society} onChange={set('class_society')} placeholder="e.g. DNV, ABS, LR" />
-          <Field label="P&I Club" value={data.p_and_i} onChange={set('p_and_i')} />
-          <Field label="H&M Insurer" value={data.h_and_m} onChange={set('h_and_m')} />
-          {isNew && sites.length > 0 && (
-            <label className="sr-field sr-field--wide">
-              <span className="sr-field__label">SharePoint Site *</span>
-              <CustomDropdown options={sites.map(x => ({ key: x.site_key, text: x.sp_site_name || x.site_key }))}
-                selectedKey={siteKey || undefined} placeholder="Select site" onChange={key => setSiteKey(String(key))} />
-              <span className="sr-field__hint">The vessel's document folder is created in this site.</span>
+      {/* Tabs */}
+      <nav className="sr-tabs" role="tablist">
+        {TABS.map((t, i) => (
+          <button key={t.id} type="button" role="tab" aria-selected={tab === t.id}
+            className={`sr-tab${tab === t.id ? ' sr-tab--active' : ''}${tabDone[t.id] ? ' sr-tab--done' : ''}`} onClick={() => setTab(t.id)}>
+            <span className="sr-tab__icon"><Icon iconName={tabDone[t.id] ? 'CheckMark' : t.icon} /></span>
+            <span className="sr-tab__text">
+              <span className="sr-tab__label">{i + 1}. {t.label}{tabBadge[t.id] ? <span className="sr-tab__badge">{tabBadge[t.id]}</span> : null}</span>
+              <span className="sr-tab__hint">{t.hint}</span>
+            </span>
+          </button>
+        ))}
+      </nav>
+
+      <section className="sr-panel">
+        {tab === 'particulars' && (
+          <div className="sr-grid">
+            <Field label="Ship Name" icon="Ferry" required={isNew} value={data.name} onChange={isNew ? set('name') : undefined}
+              placeholder="e.g. GCL Yamuna" hint={isNew && siteKey ? 'A SharePoint folder is created for this ship' : undefined} />
+            <Field label="IMO No" icon="NumberSymbol" required={isNew} value={data.imo} onChange={set('imo')} placeholder="7 digits" inputMode="numeric" />
+            <label className="sr-field">
+              <span className="sr-field__label">Type of Ship</span>
+              {canEdit ? (
+                <CustomDropdown options={shipTypeOptions} selectedKey={data.vessel_type || undefined} placeholder="Select type"
+                  onChange={key => setData(d => (d ? { ...d, vessel_type: String(key) } : d))} />
+              ) : <span className="sr-inputbox sr-inputbox--ro"><Icon iconName="Ferry" className="sr-inputbox__icon" /><input readOnly value={data.vessel_type} /></span>}
             </label>
-          )}
-        </div>
-      </Section>
+            <Field label="Flag" icon="Flag" value={data.flag} onChange={set('flag')} placeholder="e.g. India" />
+            <Field label="Port of Registry" icon="Location" value={data.port_of_registry} onChange={set('port_of_registry')} placeholder="e.g. Mumbai" />
+            <Field label="Official No" icon="Tag" value={data.official_no} onChange={set('official_no')} />
+            <Field label="MMSI" icon="Globe" value={data.mmsi} onChange={set('mmsi')} placeholder="9 digits" inputMode="numeric" />
+            <Field label="Call Sign" icon="Megaphone" value={data.call_sign} onChange={set('call_sign')} />
+            <Field label="Gross Tonnage (GT)" icon="Package" value={data.gross_tonnage} onChange={set('gross_tonnage')} inputMode="decimal" />
+            <Field label="Net Tonnage (NT)" icon="Package" value={data.net_tonnage} onChange={set('net_tonnage')} inputMode="decimal" />
+            <Field label="Deadweight (MT)" icon="Package" value={data.deadweight} onChange={set('deadweight')} inputMode="decimal" />
+            <Field label="Class" icon="Ribbon" value={data.class_society} onChange={set('class_society')} placeholder="e.g. IRS, DNV, ABS" />
+            <Field label="P&I Club" icon="Health" value={data.p_and_i} onChange={set('p_and_i')} />
+            <Field label="H&M Insurer" icon="Shield" value={data.h_and_m} onChange={set('h_and_m')} />
+          </div>
+        )}
 
-      <Section title="Managers" icon="People" subtitle="Technical and crew management contacts">
-        {managerRow('tech_manager', 'Tech Manager')}
-        {managerRow('crew_manager', 'Crew Manager')}
-      </Section>
+        {tab === 'managers' && (
+          <div className="sr-managers">
+            {managerCard('tech_manager', 'Tech Manager', 'Settings')}
+            {managerCard('crew_manager', 'Crew Manager', 'People')}
+          </div>
+        )}
 
-      {ENGINE_SECTIONS.map(sec => {
-        const rows = data.equipment.filter(e => e.category === sec.id);
-        return (
-          <Section key={sec.id} title={sec.title} icon={sec.icon} subtitle={`${sec.hint} · ${rows.length} unit${rows.length === 1 ? '' : 's'}`}
-            actions={canEdit && (
-              <button type="button" className="sa-btn sa-btn--secondary" onClick={() => addRow(sec.id, sec.unit)}><Icon iconName="Add" /> Add</button>
-            )}>
-            {rows.length === 0 ? (
-              <p className="sr-empty-line">No {sec.title.toLowerCase()} added yet.</p>
+        {tab === 'machinery' && (
+          <div className="sr-machinery">
+            <div className="sr-seg" role="tablist">
+              {ENGINE_SECTIONS.map(x => (
+                <button key={x.id} type="button" role="tab" aria-selected={engine === x.id}
+                  className={`sr-seg__btn${engine === x.id ? ' sr-seg__btn--active' : ''}`} onClick={() => setEngine(x.id)}>
+                  <Icon iconName={ENGINE_ICONS[x.id]} /> {x.title}
+                  <span className="sr-seg__count">{filledRows(x.id)}</span>
+                </button>
+              ))}
+            </div>
+            {engineRows.length === 0 ? (
+              <DmsEmptyState icon={ENGINE_ICONS[sec.id]} title={`No ${sec.title.toLowerCase()} yet`}>
+                {canEdit ? 'Use Add Unit to enter make, model, serial number, power and RPM.' : 'Nothing recorded.'}
+              </DmsEmptyState>
             ) : (
-              <div className="sr-table-wrap">
-                <table className="sr-table">
-                  <thead>
-                    <tr><th className="sr-col-no">#</th><th>Make</th><th>Model</th><th>Serial Number</th><th className="sr-col-power">Power</th><th className="sr-col-rpm">RPM</th>{canEdit && <th className="sr-col-x" />}</tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row, i) => (
-                      <tr key={row.key}>
-                        <td className="sr-col-no">{i + 1}</td>
-                        <td>{cell(row, 'make', 'e.g. MAN B&W')}</td>
-                        <td>{cell(row, 'model')}</td>
-                        <td>{cell(row, 'serial_number')}</td>
-                        <td className="sr-col-power">
-                          <div className="sr-power">
-                            {cell(row, 'power', '0', 'decimal')}
-                            {canEdit ? (
-                              <select className="sr-input sr-input--unit" value={row.power_unit || sec.unit}
-                                onChange={e => updateRow(row.key, 'power_unit', e.target.value)}>
-                                {unitOptions.map(u => <option key={u.key} value={u.key}>{u.text}</option>)}
-                              </select>
-                            ) : <span className="sr-unit">{row.power_unit || sec.unit}</span>}
-                          </div>
-                        </td>
-                        <td className="sr-col-rpm">{cell(row, 'rpm', '0', 'decimal')}</td>
-                        {canEdit && (
-                          <td className="sr-col-x">
-                            <button type="button" className="sr-icon-btn" title="Remove" onClick={() => removeRow(row.key)}><Icon iconName="Delete" /></button>
-                          </td>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="sr-rows">
+                <div className="sr-rows__head sr-rows--engine">
+                  <span>#</span><span>Make</span><span>Model</span><span>Serial Number</span><span>Power</span><span>RPM</span><span />
+                </div>
+                {engineRows.map((row, i) => (
+                  <div key={row.key} className="sr-rows__row sr-rows--engine">
+                    <span className="sr-rows__no">{i + 1}</span>
+                    {cell(row, 'make', 'Make', 'e.g. MAN B&W')}
+                    {cell(row, 'model', 'Model')}
+                    {cell(row, 'serial_number', 'Serial Number')}
+                    <span className="sr-power">
+                      {cell(row, 'power', 'Power', '0', 'decimal')}
+                      {canEdit ? (
+                        <select className="sr-input sr-input--unit" aria-label="Power unit" value={row.power_unit || sec.unit}
+                          onChange={e => updateRow(row.key, 'power_unit', e.target.value)}>
+                          {unitOptions.map(u => <option key={u.key} value={u.key}>{u.text}</option>)}
+                        </select>
+                      ) : <span className="sr-unit">{row.power_unit || sec.unit}</span>}
+                    </span>
+                    {cell(row, 'rpm', 'RPM', '0', 'decimal')}
+                    {removeBtn(row) || <span />}
+                  </div>
+                ))}
               </div>
             )}
-          </Section>
-        );
-      })}
+            {canEdit && (
+              <button type="button" className="sr-add-row" onClick={() => addRow(sec.id, sec.unit)}>
+                <Icon iconName="CirclePlus" /> Add Unit to {sec.title}
+              </button>
+            )}
+          </div>
+        )}
 
-      {(() => {
-        const rows = data.equipment.filter(e => e.category === 'other');
-        return (
-          <Section title="Other Equipment" icon="Repair" subtitle={`Picked from the Equipment Master list · ${rows.length} item${rows.length === 1 ? '' : 's'}`}
-            actions={canEdit && (
-              <button type="button" className="sa-btn sa-btn--secondary" onClick={() => addRow('other', '')}><Icon iconName="Add" /> Add New Equipment</button>
-            )}>
-            {rows.length === 0 ? (
-              <p className="sr-empty-line">No other equipment added yet.</p>
+        {tab === 'equipment' && (
+          <div className="sr-machinery">
+            {otherRows.length === 0 ? (
+              <DmsEmptyState icon="Repair" title="No other equipment yet">
+                {canEdit ? 'Use Add Equipment to pick an item (boiler, purifier, crane…) and enter its make, model and specification.' : 'Nothing recorded.'}
+              </DmsEmptyState>
             ) : (
-              <div className="sr-table-wrap">
-                <table className="sr-table">
-                  <thead>
-                    <tr><th className="sr-col-no">#</th><th className="sr-col-name">Equipment Name</th><th>Make</th><th>Model</th><th className="sr-col-spec">Specification</th>{canEdit && <th className="sr-col-x" />}</tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row, i) => (
-                      <tr key={row.key}>
-                        <td className="sr-col-no">{i + 1}</td>
-                        <td className="sr-col-name">
-                          {canEdit ? (
-                            <CustomDropdown options={nameOptions} selectedKey={row.equipment_name || undefined} placeholder="Select equipment"
-                              onChange={key => updateRow(row.key, 'equipment_name', String(key))} />
-                          ) : <span>{row.equipment_name}</span>}
-                        </td>
-                        <td>{cell(row, 'make')}</td>
-                        <td>{cell(row, 'model')}</td>
-                        <td className="sr-col-spec">{cell(row, 'specification', 'Capacity, rating, type…')}</td>
-                        {canEdit && (
-                          <td className="sr-col-x">
-                            <button type="button" className="sr-icon-btn" title="Remove" onClick={() => removeRow(row.key)}><Icon iconName="Delete" /></button>
-                          </td>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="sr-rows">
+                <div className="sr-rows__head sr-rows--other">
+                  <span>#</span><span>Equipment Name</span><span>Make</span><span>Model</span><span>Specification</span><span />
+                </div>
+                {otherRows.map((row, i) => (
+                  <div key={row.key} className="sr-rows__row sr-rows--other">
+                    <span className="sr-rows__no">{i + 1}</span>
+                    {canEdit ? (
+                      <CustomDropdown options={nameOptions} selectedKey={row.equipment_name || undefined} placeholder="Select equipment"
+                        onChange={key => updateRow(row.key, 'equipment_name', String(key))} />
+                    ) : <span className="sr-rows__text">{row.equipment_name}</span>}
+                    {cell(row, 'make', 'Make')}
+                    {cell(row, 'model', 'Model')}
+                    {cell(row, 'specification', 'Specification', 'Capacity, rating, type…')}
+                    {removeBtn(row) || <span />}
+                  </div>
+                ))}
               </div>
             )}
-          </Section>
-        );
-      })()}
+            {canEdit && (
+              <button type="button" className="sr-add-row" onClick={() => addRow('other', '')}>
+                <Icon iconName="CirclePlus" /> Add Equipment
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Step navigation */}
+        <footer className="sr-panel__foot">
+          <button type="button" className="sa-btn sa-btn--secondary" disabled={tabIndex === 0} onClick={() => setTab(TABS[tabIndex - 1].id)}>
+            <Icon iconName="ChevronLeft" /> Previous
+          </button>
+          <span className="sr-steps">{TABS.map(t => <span key={t.id} className={`sr-steps__dot${t.id === tab ? ' sr-steps__dot--on' : ''}`} />)}</span>
+          {tabIndex < TABS.length - 1 ? (
+            <button type="button" className="sa-btn sa-btn--secondary" onClick={() => setTab(TABS[tabIndex + 1].id)}>
+              Next <Icon iconName="ChevronRight" />
+            </button>
+          ) : canEdit ? (
+            <button type="button" className="sa-btn sa-btn--primary" disabled={!dirty || saving} onClick={() => void save()}>
+              <Icon iconName={isNew ? 'CheckMark' : 'Save'} /> {saving ? 'Saving…' : isNew ? 'Register Ship' : 'Save'}
+            </button>
+          ) : <span />}
+        </footer>
+      </section>
     </div>
   );
 }
 
-// ── Page ────────────────────────────────────────────────────────────────────
+// ── List page ───────────────────────────────────────────────────────────────
+function certTone(held: number, total: number): string {
+  if (!total) return 'none';
+  const pct = held / total;
+  return pct >= 1 ? 'ok' : pct >= 0.5 ? 'warn' : 'bad';
+}
+
 export function ShipRegisterPage({ host }: { host: VesselEmail }): React.ReactElement {
   const [items, setItems] = React.useState<Summary[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState('');
   const [q, setQ] = React.useState('');
-  // number = existing vessel, 'new' = register a new vessel, null = list
+  // number = existing ship, 'new' = register a new ship, null = list
   const [selected, setSelected] = React.useState<number | 'new' | null>(null);
   const [options, setOptions] = React.useState<Options | null>(null);
-  const [masterOpen, setMasterOpen] = React.useState(false);
   const isAdmin = host._isAdmin();
 
   const loadOptions = React.useCallback(async () => {
@@ -589,85 +556,132 @@ export function ShipRegisterPage({ host }: { host: VesselEmail }): React.ReactEl
   const needle = q.trim().toLowerCase();
   const shown = items.filter(i => !needle || [i.name, i.imo, i.flag, i.vessel_type, i.class_society, i.tech_manager, i.crew_manager]
     .some(v => (v || '').toLowerCase().includes(needle)));
-  const complete = items.filter(i => i.filled === i.total_fields).length;
+  const sum = (f: (i: Summary) => number): number => items.reduce((a, i) => a + f(i), 0);
+  const certHeld = sum(i => i.cert_held);
+  const certTotal = sum(i => i.cert_total);
+  const docsKnown = items.some(i => i.documents !== null);
+
+  const tiles = [
+    { icon: 'Ferry', label: 'Ships registered', value: String(items.length), tone: 'accent' },
+    { icon: 'Certificate', label: 'Certificates uploaded', value: certTotal ? `${certHeld} / ${certTotal}` : '-', tone: certTone(certHeld, certTotal) },
+    { icon: 'Ribbon', label: 'Optional uploaded', value: String(sum(i => i.cert_optional)), tone: 'accent' },
+    { icon: 'FabricFolder', label: 'Documents', value: docsKnown ? String(sum(i => i.documents || 0)) : '-', tone: 'accent' },
+  ];
+
+  const certCell = (i: Summary): React.ReactElement => {
+    if (!i.cert_total) return <span className="sr-muted">-</span>;
+    const pct = Math.round((i.cert_held / i.cert_total) * 100);
+    const tone = certTone(i.cert_held, i.cert_total);
+    return (
+      <span className="sr-cert" title={`${i.cert_held} of ${i.cert_total} mandatory certificates uploaded (${pct}%)`}>
+        <span className="sr-progress"><span className={`sr-progress__bar sr-progress__bar--${tone}`} style={{ width: `${Math.max(pct, 2)}%` }} /></span>
+        <span className={`sr-cert__text sr-cert__text--${tone}`}>{i.cert_held} of {i.cert_total}</span>
+      </span>
+    );
+  };
 
   return (
     <div className="sr-page">
-      <DmsPageHeader title="Ship Register" subtitle="Ship particulars, managers, engines and equipment for every vessel.">
-        {isAdmin && (
-          <button type="button" className="sa-btn sa-btn--secondary" onClick={() => setMasterOpen(true)}>
-            <Icon iconName="BulletedList" /> Equipment Master
-          </button>
-        )}
+      <DmsPageHeader title="Ship Register" subtitle="Register ships with their particulars, managers, machinery and equipment.">
         <button type="button" className="sa-btn sa-btn--ghost" onClick={() => void load()} title="Refresh" aria-label="Refresh">
           <Icon iconName="Refresh" />
         </button>
         {isAdmin && (
           <button type="button" className="sa-btn sa-btn--primary" onClick={() => setSelected('new')}>
-            <Icon iconName="Add" /> Register New Vessel
+            <Icon iconName="Add" /> Add Ship
           </button>
         )}
       </DmsPageHeader>
 
+      <div className="sr-tiles">
+        {tiles.map(t => (
+          <div key={t.label} className={`sr-tile sr-tile--${t.tone}`}>
+            <span className="sr-tile__icon"><Icon iconName={t.icon} /></span>
+            <span className="sr-tile__text">
+              <span className="sr-tile__value">{loading ? '…' : t.value}</span>
+              <span className="sr-tile__label">{t.label}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+
       <div className="sr-toolbar">
         <div className="sr-search">
           <Icon iconName="Search" />
-          <input placeholder="Search vessel, IMO, flag, class, manager…" value={q} onChange={e => setQ(e.target.value)} />
-        </div>
-        <div className="sr-stats">
-          <span className="sr-chip">{items.length} vessels</span>
-          <span className="sr-chip sr-chip--ok">{complete} complete</span>
+          <input placeholder="Search ship name, IMO, type, flag, manager…" value={q} onChange={e => setQ(e.target.value)} />
+          {q && <button type="button" className="sr-search__clear" aria-label="Clear search" onClick={() => setQ('')}><Icon iconName="Cancel" /></button>}
         </div>
       </div>
 
       {error && <div className="sr-alert sr-alert--error"><Icon iconName="ErrorBadge" /> {error}</div>}
 
       {loading ? <DmsLoadingState label="Loading ship register…" /> : shown.length === 0 ? (
-        <DmsEmptyState icon="Ferry" title={items.length ? 'No vessels match your search' : 'No vessels yet'}>
-          {items.length ? 'Try a different search.' : 'Use Register New Vessel to add the first one.'}
+        <DmsEmptyState icon="Ferry" title={items.length ? 'No ships match your search' : 'No ships registered yet'}>
+          {items.length ? 'Try a different search.' : 'Use Add Ship to register the first ship with its particulars, managers, machinery and equipment.'}
         </DmsEmptyState>
       ) : (
-        <div className="sr-table-card">
-          <table className="sr-table sr-table--list">
-            <thead>
-              <tr>
-                <th>Vessel</th><th>IMO</th><th>Type</th><th>Flag</th><th>Class</th><th>DWT</th>
-                <th>Tech Manager</th><th>Machinery</th><th>Completed</th><th className="sr-col-x" />
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map(i => {
-                const pct = Math.round((i.filled / Math.max(1, i.total_fields)) * 100);
-                return (
+        <>
+          {/* Wide screens: table */}
+          <div className="sr-table-card sr-only-wide">
+            <table className="sr-table sr-table--list">
+              <thead>
+                <tr>
+                  <th><Icon iconName="Ferry" /> Ship Name</th>
+                  <th><Icon iconName="NumberSymbol" /> IMO No</th>
+                  <th className="sr-num"><Icon iconName="Certificate" /> Certificates Required</th>
+                  <th><Icon iconName="CloudUpload" /> Uploaded</th>
+                  <th className="sr-num"><Icon iconName="Ribbon" /> Optional</th>
+                  <th className="sr-num"><Icon iconName="FabricFolder" /> Documents</th>
+                  <th className="sr-col-x" />
+                </tr>
+              </thead>
+              <tbody>
+                {shown.map(i => (
                   <tr key={i.vessel_id} className="sr-row" onClick={() => setSelected(i.vessel_id)} tabIndex={0}
                     onKeyDown={e => { if (e.key === 'Enter') setSelected(i.vessel_id); }}>
-                    <td className="sr-row__name">{i.name}</td>
-                    <td>{i.imo || <span className="sr-muted">-</span>}</td>
-                    <td>{i.vessel_type || <span className="sr-muted">-</span>}</td>
-                    <td>{i.flag || <span className="sr-muted">-</span>}</td>
-                    <td>{i.class_society || <span className="sr-muted">-</span>}</td>
-                    <td>{i.deadweight ? Number(i.deadweight).toLocaleString('en-US') : <span className="sr-muted">-</span>}</td>
-                    <td>{i.tech_manager || <span className="sr-muted">-</span>}</td>
-                    <td title={`Main ${i.equipment_counts.main_engine || 0} · Aux ${i.equipment_counts.aux_engine || 0} · Emergency ${i.equipment_counts.emergency_generator || 0} · Other ${i.equipment_counts.other || 0}`}>
-                      {i.equipment_total ? `${i.equipment_total} item${i.equipment_total === 1 ? '' : 's'}` : <span className="sr-muted">None</span>}
-                    </td>
                     <td>
-                      <div className="sr-progress" title={`${i.filled} of ${i.total_fields} particulars filled`}>
-                        <div className={`sr-progress__bar${pct === 100 ? ' sr-progress__bar--done' : ''}`} style={{ width: `${pct}%` }} />
-                      </div>
-                      <span className="sr-progress__text">{pct}%</span>
+                      <span className="sr-shipcell">
+                        <span className="sr-ship-avatar sr-ship-avatar--sm"><Icon iconName="Ferry" /></span>
+                        <span>
+                          <span className="sr-row__name">{i.name}</span>
+                          <span className="sr-row__sub">{[i.vessel_type, i.flag].filter(Boolean).join(' · ') || '-'}</span>
+                        </span>
+                      </span>
                     </td>
+                    <td>{i.imo ? <span className="sr-mono">{i.imo}</span> : <span className="sr-chip sr-chip--warn">Missing</span>}</td>
+                    <td className="sr-num"><strong>{i.cert_total || '-'}</strong></td>
+                    <td>{certCell(i)}</td>
+                    <td className="sr-num">{i.cert_optional}</td>
+                    <td className="sr-num">{i.documents === null ? <span className="sr-muted" title="Counted from SharePoint once it is connected">-</span> : i.documents}</td>
                     <td className="sr-col-x"><Icon iconName="ChevronRight" /></td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      {masterOpen && (
-        <EquipmentMasterModal host={host} onClose={changed => { setMasterOpen(false); if (changed) void loadOptions(); }} />
+          {/* Narrow screens: cards */}
+          <div className="sr-cards sr-only-narrow">
+            {shown.map(i => (
+              <button key={i.vessel_id} type="button" className="sr-shipcard" onClick={() => setSelected(i.vessel_id)}>
+                <span className="sr-shipcard__head">
+                  <span className="sr-ship-avatar sr-ship-avatar--sm"><Icon iconName="Ferry" /></span>
+                  <span className="sr-shipcard__title">
+                    <span className="sr-row__name">{i.name}</span>
+                    <span className="sr-row__sub"><Icon iconName="NumberSymbol" /> {i.imo || 'IMO missing'}</span>
+                  </span>
+                  <Icon iconName="ChevronRight" className="sr-shipcard__chev" />
+                </span>
+                <span className="sr-shipcard__cert">{certCell(i)}</span>
+                <span className="sr-shipcard__stats">
+                  <span><Icon iconName="Certificate" /> {i.cert_total || '-'} required</span>
+                  <span><Icon iconName="Ribbon" /> {i.cert_optional} optional</span>
+                  <span><Icon iconName="FabricFolder" /> {i.documents === null ? '-' : i.documents} docs</span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
