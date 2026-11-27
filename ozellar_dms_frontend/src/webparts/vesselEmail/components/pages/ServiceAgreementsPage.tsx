@@ -1,21 +1,53 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Icon } from '@fluentui/react/lib/Icon';
 import type VesselEmail from '../VesselEmail';
 import { DmsPageHeader, DmsEmptyState, DmsLoadingState } from '../dmsDesignSystem';
 import {
-  ServiceAgreementModal, ServiceAgreementHistoryModal, ServiceAgreementCloseModal,
+  ServiceAgreementModal, ServiceAgreementHistoryModal, ServiceAgreementCloseModal, ServiceAgreementReinstateModal,
   type ServiceAgreement, type ServiceAgreementOptions, type ServiceAgreementModalMode,
 } from '../modals/ServiceAgreementModal';
 import { CustomDropdown, type CustomDropdownOption } from '../CustomDropdown';
 
 // Styles: styles/pages/_service-agreements.scss
 
-type StatusTab = 'all' | 'draft' | 'pending_approval' | 'active' | 'expiring' | 'expired' | 'terminated';
+type StatusTab = 'all' | 'draft' | 'pending_approval' | 'active' | 'expiring' | 'expired' | 'terminated' | 'superseded';
 
 const STATUS_LABEL: Record<ServiceAgreement['status'], string> = {
   draft: 'Draft', pending_approval: 'Pending Approval',
-  active: 'Active', expiring: 'Expiring', expired: 'Expired', terminated: 'Terminated',
+  active: 'Active', expiring: 'Expiring', expired: 'Expired', terminated: 'Terminated', superseded: 'Superseded',
 };
+
+/** Symbol, colour (via CSS class), short label and meaning for each status - used by the tabs,
+ *  the Status column, the details panel and the legend. */
+const STATUS_META: Record<ServiceAgreement['status'], { icon: string; short: string; meaning: string }> = {
+  draft: { icon: 'EditNote', short: 'Draft', meaning: 'Saved, not submitted yet' },
+  pending_approval: { icon: 'Clock', short: 'Pending', meaning: 'Waiting for the Contract Owner to approve by email' },
+  active: { icon: 'CheckMark', short: 'Active', meaning: 'Approved and running' },
+  expiring: { icon: 'Warning', short: 'Expiring', meaning: 'Reminder Date reached - act before expiry' },
+  expired: { icon: 'ErrorBadge', short: 'Expired', meaning: 'Current Expiry Date has passed' },
+  terminated: { icon: 'Blocked2', short: 'Terminated', meaning: 'Ended with Terminate' },
+  superseded: { icon: 'History', short: 'Superseded', meaning: 'Older version, replaced by an approved renewal' },
+};
+
+function StatusIcon({ status }: { status: ServiceAgreement['status'] }): React.ReactElement {
+  return (
+    <span className={`sa-sicon sa-sicon--${status}`} title={`${STATUS_LABEL[status]}: ${STATUS_META[status].meaning}`}>
+      <Icon iconName={STATUS_META[status].icon} />
+    </span>
+  );
+}
+
+/** Symbol + short label; the full name and meaning are in the tooltip. */
+function StatusBadge({ status, note }: { status: ServiceAgreement['status']; note?: string }): React.ReactElement {
+  const m = STATUS_META[status];
+  return (
+    <span className={`sa-sbadge sa-sbadge--${status}`} title={`${STATUS_LABEL[status]}: ${m.meaning}${note ? ` (${note})` : ''}`}>
+      <StatusIcon status={status} />
+      <span className="sa-sbadge__text">{m.short}</span>
+    </span>
+  );
+}
 
 const fmtDate = (iso: string | null): string => {
   if (!iso) return '-';
@@ -32,16 +64,6 @@ const expiryHint = (a: ServiceAgreement): string => {
   if (d === 0) return 'Expires today';
   return `${d} day${d === 1 ? '' : 's'} left`;
 };
-
-/** Remarks in a small popover while the pointer is on the note icon (or it has keyboard focus). */
-function RemarksHint({ text }: { text: string }): React.ReactElement {
-  return (
-    <span className="sa-remarks">
-      <button type="button" className="sa-remarks__btn" aria-label="Remarks"><Icon iconName="Comment" /></button>
-      <span role="tooltip" className="sa-remarks__pop"><strong>Remarks</strong>{text}</span>
-    </span>
-  );
-}
 
 const APPLIES_LABEL: Record<string, string> = {
   all_ships: 'All vessels', vessels: 'Selected vessels', newbuilding: 'Newbuilding (hull number)',
@@ -88,7 +110,7 @@ function ContractDetails({ a }: { a: ServiceAgreement }): React.ReactElement {
         <div className="sa-detail__grid">
           {item('Contract Number', a.contract_no)}
           {item('External Contract Number', a.vendor_reference)}
-          {item('Status', STATUS_TEXT[a.status] || a.status)}
+          {item('Status', <StatusBadge status={a.status} />)}
           {item('Contract Title', a.agreement_name, true)}
           {item('Brief Description', a.description, true)}
           {item('Contract Category', a.category)}
@@ -160,7 +182,48 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
   const [opening, setOpening] = React.useState<number | null>(null);
   const [historyFor, setHistoryFor] = React.useState<ServiceAgreement | null>(null);
   const [closing, setClosing] = React.useState<ServiceAgreement | null>(null);
+  const [reinstating, setReinstating] = React.useState<ServiceAgreement | null>(null);
   const [busy, setBusy] = React.useState(false);
+
+  // Row actions collapse into a single "more" menu (same pattern as the Certificates list).
+  // Rendered through a portal to document.body (position: fixed, viewport coordinates) so the
+  // table card's own scroll container can never clip it.
+  const [openActionMenuId, setOpenActionMenuId] = React.useState<number | null>(null);
+  const [menuPos, setMenuPos] = React.useState<{ top: number; right: number } | null>(null);
+  const openActionsMenu = (id: number, e: React.MouseEvent<HTMLButtonElement>): void => {
+    e.stopPropagation();
+    if (openActionMenuId === id) { setOpenActionMenuId(null); return; }
+    const r = e.currentTarget.getBoundingClientRect();
+    setMenuPos({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    setOpenActionMenuId(id);
+  };
+  React.useEffect(() => {
+    if (!openActionMenuId) return;
+    const close = (): void => setOpenActionMenuId(null);
+    const t = window.setTimeout(() => window.addEventListener('click', close), 0);
+    return () => { window.clearTimeout(t); window.removeEventListener('click', close); };
+  }, [openActionMenuId]);
+
+  // Instant hover tooltip for anything on this page with a `title` (cut-off cells, status symbols,
+  // legend). The browser's own tooltip is slow and often doesn't show inside SharePoint, so the
+  // title is moved to data-tip while hovered and shown in a floating box (not clipped by the cell).
+  const [tip, setTip] = React.useState<{ text: string; x: number; y: number; above: boolean } | null>(null);
+  const onTipOver = (e: React.MouseEvent<HTMLDivElement>): void => {
+    const el = (e.target as HTMLElement).closest('[title], [data-tip]') as HTMLElement | null;
+    if (!el || !e.currentTarget.contains(el)) return;
+    const text = el.getAttribute('title') || el.getAttribute('data-tip') || '';
+    if (el.hasAttribute('title')) { el.setAttribute('data-tip', text); el.removeAttribute('title'); }
+    if (!text) return;
+    const r = el.getBoundingClientRect();
+    const above = r.bottom + 90 > window.innerHeight;
+    setTip({ text, x: Math.min(Math.max(8, r.left), window.innerWidth - 368), y: above ? r.top - 6 : r.bottom + 6, above });
+  };
+  const onTipOut = (e: React.MouseEvent<HTMLDivElement>): void => {
+    const el = (e.target as HTMLElement).closest('[data-tip]') as HTMLElement | null;
+    const to = e.relatedTarget as Node | null;
+    if (el && to && el.contains(to)) return;  // still inside the same element
+    setTip(null);
+  };
   // Opened rows: the full contract (parties + files) is loaded when a row is opened.
   const [open, setOpen] = React.useState<Record<number, ServiceAgreement | 'loading' | 'error'>>({});
 
@@ -272,7 +335,34 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
     }
   };
 
-  const total = ['draft', 'pending_approval', 'active', 'expiring', 'expired', 'terminated'].reduce((n, k) => n + (counts[k] || 0), 0);
+  const reinstate = async (status: 'draft' | 'pending_approval'): Promise<void> => {
+    if (!reinstating) return;
+    const a = reinstating;
+    setBusy(true);
+    try {
+      const res = await fetch(`${host._base()}/api/service-agreements/${a.id}`, {
+        method: 'PUT',
+        headers: { ...host._headers(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error((data && typeof data.detail === 'string') ? data.detail : `error ${res.status}`);
+      const verb = status === 'pending_approval'
+        ? `reinstated and sent to ${(data && (data.owner_name || data.owner_email)) || 'the Contract Owner'} for approval`
+        : 'reinstated as Draft';
+      setNotice(data && data.warning
+        ? { tone: 'warning', text: `${a.contract_no} ${verb}. ${data.warning}` }
+        : { tone: 'success', text: `${a.contract_no} ${verb}.` });
+      setReinstating(null);
+      void load();
+    } catch (e) {
+      setNotice({ tone: 'warning', text: `Could not reinstate ${a.contract_no}: ${(e as Error).message}` });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const total =['draft', 'pending_approval', 'active', 'expiring', 'expired', 'terminated'].reduce((n, k) => n + (counts[k] || 0), 0);
   const tabs: Array<{ id: StatusTab; label: string; count: number }> = [
     { id: 'all', label: 'All', count: total },
     { id: 'draft', label: 'Draft', count: counts.draft || 0 },
@@ -281,6 +371,7 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
     { id: 'expiring', label: 'Expiring', count: counts.expiring || 0 },
     { id: 'expired', label: 'Expired', count: counts.expired || 0 },
     { id: 'terminated', label: 'Terminated', count: counts.terminated || 0 },
+    { id: 'superseded', label: 'Superseded', count: counts.superseded || 0 },
   ];
   const categoryOptions: CustomDropdownOption[] = React.useMemo(() => [
     ...(options?.categories || []).map(c => ({ key: c, text: c })),
@@ -302,7 +393,11 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
   );
 
   return (
-    <div className="sa-page">
+    <div className="sa-page" onMouseOver={onTipOver} onMouseOut={onTipOut}>
+      {tip && ReactDOM.createPortal(
+        <div className={`sa-hovertip${tip.above ? ' is-above' : ''}`} role="tooltip" style={{ left: tip.x, top: tip.y }}>{tip.text}</div>,
+        document.body,
+      )}
       <DmsPageHeader title="Service Agreements" subtitle="Contracts with vendors and service providers. Renewals keep the same contract number.">
         {addBtn}
       </DmsPageHeader>
@@ -320,7 +415,7 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
           {tabs.map(t => (
             <button key={t.id} type="button" role="tab" aria-selected={tab === t.id}
               className={`sa-tab sa-tab--${t.id}${tab === t.id ? ' is-on' : ''}`} onClick={() => setTab(t.id)}>
-              {t.label}<span className="sa-tab__count">{t.count}</span>
+              {t.id !== 'all' && <StatusIcon status={t.id} />}{t.label}<span className="sa-tab__count">{t.count}</span>
             </button>
           ))}
         </div>
@@ -390,7 +485,6 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
               <col className="sa-col--toggle" />
               <col className="sa-col--no" />
               <col className="sa-col--title" />
-              <col className="sa-col--desc" />
               <col className="sa-col--cat" />
               <col className="sa-col--owner" />
               <col className="sa-col--party" />
@@ -404,29 +498,29 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
                 <th aria-label="Details" />
                 <th title="Contract No">Contract No</th>
                 <th title="Contract Title">Contract Title</th>
-                <th title="Brief Description">Brief Description</th>
                 <th title="Category">Category</th>
                 <th title="Owner / PIC">Owner / PIC</th>
                 <th title="First Party">First Party</th>
                 <th title="Second Party">Second Party</th>
                 <th title="Current Expiry">Current Expiry</th>
-                <th title="Status">Status</th>
+                <th className="sa-table__status-h" title="Status">Status</th>
                 <th className="sa-table__actions-h">Actions</th>
               </tr>
             </thead>
             <tbody>
               {items.map(a => {
-                const state = open[a.id];
+                const old = a.status === 'superseded' ? a.superseded : null;   // earlier version: read-only row
+                const state = old ? undefined : open[a.id];
                 const second = a.second_party?.name || a.vendor || '';
                 return (
-                  <React.Fragment key={a.id}>
+                  <React.Fragment key={old ? `${a.id}-v${old.history_id}` : a.id}>
                     <tr className={state ? 'is-open' : ''}>
                       <td className="sa-table__toggle" data-label="">
-                        <button type="button" className="sa-expand" aria-expanded={!!state}
+                        {!old && <button type="button" className="sa-expand" aria-expanded={!!state}
                           aria-label={state ? `Hide details of ${a.contract_no}` : `Show all details of ${a.contract_no}`}
                           title={state ? 'Hide details' : 'Show all details'} onClick={() => void toggleRow(a)}>
                           <Icon iconName="ChevronDown" />
-                        </button>
+                        </button>}
                       </td>
                       <td className="sa-table__no" data-label="Contract No">
                         <span className="sa-cell" title={a.contract_no}>{a.contract_no}</span>
@@ -442,54 +536,84 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
                           {a.sharepoint_file_url
                             ? <a className="sa-cell" href={a.sharepoint_file_url} target="_blank" rel="noopener noreferrer" title={`${a.agreement_name} (open ${a.filename || 'contract'})`}>{a.agreement_name}</a>
                             : <span className="sa-cell" title={a.agreement_name}>{a.agreement_name}</span>}
-                          {a.remarks && <RemarksHint text={a.remarks} />}
                         </span>
                       </td>
-                      <td className="sa-table__desc" data-label="Description"><span title={a.description || ''}>{a.description || '-'}</span></td>
                       <td data-label="Category">
                         <span className="sa-cell" title={a.category || ''}>{a.category || '-'}</span>
                         {a.business_unit && <span className="sa-table__sub sa-cell" title={`Business Unit: ${a.business_unit}`}>{a.business_unit}</span>}
                       </td>
-                      <td data-label="Owner / PIC"><span className="sa-cell" title={a.owner_email || ''}>{a.owner_name || a.owner_email || '-'}</span></td>
+                      <td data-label="Owner / PIC"><span className="sa-cell" title={a.owner_name && a.owner_email ? `${a.owner_name} (${a.owner_email})` : (a.owner_email || '')}>{a.owner_name || a.owner_email || '-'}</span></td>
                       <td data-label="First Party"><span className="sa-cell" title={a.first_party?.name || ''}>{a.first_party?.name || '-'}</span></td>
                       <td data-label="Second Party"><span className="sa-cell" title={second}>{second || '-'}</span></td>
                       <td className="sa-table__date" data-label="Current Expiry">
-                        <span className="sa-cell">{a.no_expiry ? 'No expiry' : fmtDate(a.expiry_date)}</span>
-                        <span className={`sa-table__sub sa-cell sa-days sa-days--${a.status}`}>{expiryHint(a)}</span>
-                        {a.reminder_date && a.status !== 'terminated' && (
+                        <span className="sa-cell" title={old ? `This version ran ${fmtDate(a.issue_date)} to ${a.no_expiry ? 'no expiry' : fmtDate(a.expiry_date)}` : `Current Expiry: ${a.no_expiry ? 'No expiry' : fmtDate(a.expiry_date)}`}>{a.no_expiry ? 'No expiry' : fmtDate(a.expiry_date)}</span>
+                        {old ? (
+                          <span className="sa-table__sub sa-cell" title={`Replaced on ${fmtDate((old.renewed_at || '').slice(0, 10))}${old.renewed_by ? ` by ${old.renewed_by}` : ''}${old.notes ? ` - ${old.notes}` : ''}`}>
+                            Replaced {fmtDate((old.renewed_at || '').slice(0, 10))}
+                          </span>
+                        ) : <span className={`sa-table__sub sa-cell sa-days sa-days--${a.status}`} title={expiryHint(a)}>{expiryHint(a)}</span>}
+                        {!old && a.reminder_date && a.status !== 'terminated' && (
                           <span className="sa-table__sub sa-cell" title={`Reminder Date: ${fmtDate(a.reminder_date)} (Current Expiry minus Notice Period)`}>Reminder: {fmtDate(a.reminder_date)}</span>
                         )}
                       </td>
-                      <td data-label="Status">
-                        <span className={`sa-status sa-status--${a.status}`}>{STATUS_LABEL[a.status]}</span>
-                        {a.status === 'pending_approval' && (
-                          <span className="sa-table__sub sa-cell" title="Waiting for the Contract Owner to approve or reject via email">
-                            {a.approval_kind === 'renewal' ? 'Renewal awaiting' : 'Awaiting'} {a.owner_name || a.owner_email || 'owner'}
-                          </span>
-                        )}
+                      <td className="sa-table__status-h" data-label="Status">
+                        <span className="sa-status-symbol" role="img" aria-label={STATUS_LABEL[a.status]}
+                          title={`${STATUS_LABEL[a.status]}: ${STATUS_META[a.status].meaning}${a.status === 'pending_approval'
+                            ? ` (${a.approval_kind === 'renewal' ? 'renewal' : 'activation'}, awaiting ${a.owner_name || a.owner_email || 'the owner'})`
+                            : old ? ` (on ${fmtDate((old.renewed_at || '').slice(0, 10))}${old.renewed_by ? ` by ${old.renewed_by}` : ''})` : ''}`}>
+                          <span className={`sa-sicon sa-sicon--${a.status}`}><Icon iconName={STATUS_META[a.status].icon} /></span>
+                        </span>
                       </td>
                       <td className="sa-table__actions" data-label="">
-                        <button type="button" className="sa-row-btn sa-row-btn--icon" disabled={opening === a.id} onClick={() => void openFull(a, 'edit')} title="Edit" aria-label="Edit">
-                          <Icon iconName="Edit" />
-                        </button>
-                        {(a.status === 'active' || a.status === 'expiring' || a.status === 'expired') && (
-                          <button type="button" className="sa-row-btn sa-row-btn--icon sa-row-btn--accent" disabled={opening === a.id} onClick={() => void openFull(a, 'renew')} title="Renew: upload the renewed contract (the Contract Owner must approve it by email before it's final)" aria-label="Renew">
-                            <Icon iconName="Sync" />
+                        {old ? (
+                          <button type="button" className="sa-row-btn sa-row-btn--icon" onClick={() => setHistoryFor(a)} title="Files and renewals of this contract" aria-label="Documents and history">
+                            <Icon iconName="History" />
                           </button>
-                        )}
-                        <button type="button" className="sa-row-btn sa-row-btn--icon" onClick={() => setHistoryFor(a)} title="Files and renewals" aria-label="Documents and history">
-                          <Icon iconName="History" />
-                        </button>
-                        {a.status !== 'terminated' && (
-                          <button type="button" className="sa-row-btn sa-row-btn--icon" onClick={() => setClosing(a)} title="Terminate: contract ended, files move to Expiry" aria-label="Terminate">
-                            <Icon iconName="Blocked2" />
-                          </button>
+                        ) : (
+                          <div className="sa-actions-menu">
+                            <button type="button" className="sa-row-btn sa-row-btn--icon" disabled={opening === a.id}
+                              onClick={e => openActionsMenu(a.id, e)}
+                              title="Actions menu" aria-label="Actions menu">
+                              <Icon iconName="MoreVertical" />
+                            </button>
+                            {openActionMenuId === a.id && menuPos && ReactDOM.createPortal(
+                              <div role="menu" className="sa-actions-menu__pop sa-actions-menu__pop--portal"
+                                style={{ top: menuPos.top, right: menuPos.right }}
+                                onClick={e => e.stopPropagation()}>
+                                {a.status === 'terminated' ? (
+                                  host._isAdmin() && (
+                                    <button type="button" className="sa-actions-menu__item" onClick={() => { setOpenActionMenuId(null); setReinstating(a); }}>
+                                      <Icon iconName="Edit" /><span>Reinstate (Admin)</span>
+                                    </button>
+                                  )
+                                ) : (
+                                  <button type="button" className="sa-actions-menu__item" disabled={opening === a.id} onClick={() => { setOpenActionMenuId(null); void openFull(a, 'edit'); }}>
+                                    <Icon iconName="Edit" /><span>Edit</span>
+                                  </button>
+                                )}
+                                {(a.status === 'active' || a.status === 'expiring' || a.status === 'expired') && (
+                                  <button type="button" className="sa-actions-menu__item" disabled={opening === a.id} onClick={() => { setOpenActionMenuId(null); void openFull(a, 'renew'); }}>
+                                    <Icon iconName="Sync" /><span>Renew</span>
+                                  </button>
+                                )}
+                                <button type="button" className="sa-actions-menu__item" onClick={() => { setOpenActionMenuId(null); setHistoryFor(a); }}>
+                                  <Icon iconName="History" /><span>Documents &amp; history</span>
+                                </button>
+                                {a.status !== 'terminated' && (
+                                  <button type="button" className="sa-actions-menu__item sa-actions-menu__item--danger" onClick={() => { setOpenActionMenuId(null); setClosing(a); }}>
+                                    <Icon iconName="Blocked2" /><span>Terminate</span>
+                                  </button>
+                                )}
+                              </div>,
+                              document.body,
+                            )}
+                          </div>
                         )}
                       </td>
                     </tr>
                     {state && (
                       <tr className="sa-detail-row">
-                        <td colSpan={11}>
+                        <td colSpan={10}>
                           {state === 'loading' ? <div className="sa-detail__msg">Loading details…</div>
                             : state === 'error' ? <div className="sa-detail__msg">Could not load the details. Close and open the row again.</div>
                               : <ContractDetails a={state} />}
@@ -511,6 +635,9 @@ export function ServiceAgreementsPage({ host }: { host: VesselEmail }): React.Re
       {historyFor && <ServiceAgreementHistoryModal host={host} agreement={historyFor} onClose={() => setHistoryFor(null)} />}
       {closing && (
         <ServiceAgreementCloseModal agreement={closing} busy={busy} onCancel={() => setClosing(null)} onConfirm={note => void terminate(note)} />
+      )}
+      {reinstating && (
+        <ServiceAgreementReinstateModal agreement={reinstating} busy={busy} onCancel={() => setReinstating(null)} onConfirm={status => void reinstate(status)} />
       )}
     </div>
   );

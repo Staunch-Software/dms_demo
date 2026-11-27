@@ -74,6 +74,11 @@ _ALL_SHIPS_RE = re.compile(
     r"\b(all\s+(?:the\s+)?(?:vessels|ships)|entire\s+fleet|whole\s+fleet|fleet[\s-]wide|all\s+fleet|all\s+fleet\s+vessels)\b",
     re.IGNORECASE,
 )
+_NO_FIXED_EXPIRY_RE = re.compile(
+    r"\bno\s+fixed\s+(?:expiry|end|termination)\s+date\b|\bperpetual\b|"
+    r"\bcontinue\s+(?:in\s+(?:full\s+)?force\s+)?(?:indefinitely|until\s+terminated)\b",
+    re.IGNORECASE,
+)
 
 _NUMBER_WORDS = {
     "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "twelve": 12, "eighteen": 18,
@@ -141,6 +146,7 @@ def _find_date(text: str, keywords: list[str]) -> date | None:
 
 def extract_title(text: str, filename: str = "") -> str | None:
     for line in text.splitlines()[:40]:
+        line = line.split(" | ")[0]  # running page header, e.g. "Crew Management Agreement | Ref. X/1"
         cand = _clean(line, 200)
         if cand and 6 <= len(cand) <= 140 and _TITLE_WORDS.search(cand) and not re.match(r"^(this|the|whereas|test\s+data)\b", cand, re.I):
             return cand
@@ -611,6 +617,8 @@ def extract_service_agreement_metadata(
     period_months = extract_period_months(text)
     if effective and not expiry and period_months:
         expiry = effective + relativedelta(months=period_months) - relativedelta(days=1)
+    # No expiry date anywhere, and the text says it runs until terminated -> No Expiry / Perpetual.
+    no_expiry = bool(not expiry and _NO_FIXED_EXPIRY_RE.search(text))
 
     all_ships = bool(_ALL_SHIPS_RE.search(text))
     ships = [] if all_ships else match_vessels(text, vessels)
@@ -632,7 +640,7 @@ def extract_service_agreement_metadata(
         "contract_date": signed.isoformat() if signed else None,
         "issue_date": effective.isoformat() if effective else None,
         "expiry_date": expiry.isoformat() if expiry else None,
-        "no_expiry": False,
+        "no_expiry": no_expiry,
         "validity_months": period_months,
         "applies_to_all_ships": all_ships,
         "applies_to": "all_ships" if all_ships else ("vessels" if ships else None),

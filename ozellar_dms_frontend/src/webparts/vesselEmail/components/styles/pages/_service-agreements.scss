@@ -41,30 +41,30 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
 }
 .sa-tabs {
   display: flex;
-  gap: 4px;
-  padding: 4px;
+  gap: 2px;
+  padding: 3px;
   border-radius: 10px;
   background: var(--vdms-surface-alt);
   border: 1px solid var(--vdms-line);
-  overflow-x: auto;
-  scrollbar-width: thin;
+  overflow: hidden;            // the 8 tabs share one row (they wrap on small screens, see below)
 }
 .sa-tab {
-  flex: 1 0 auto;               // 7 tabs share the row; they scroll sideways when the screen is narrow
+  flex: 1 1 auto;
+  min-width: 0;
   justify-content: center;
-  height: 30px;
-  padding: 0 12px;
+  height: 28px;
+  padding: 0 6px;
   border: none;
   border-radius: 7px;
   background: transparent;
   color: var(--vdms-text-secondary);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 4px;
 
   &.is-on {
     background: var(--vdms-surface);
@@ -73,8 +73,8 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
   }
 }
 .sa-tab__count {
-  min-width: 18px;
-  padding: 1px 6px;
+  min-width: 16px;
+  padding: 0 5px;
   border-radius: 999px;
   font-size: 11px;
   text-align: center;
@@ -218,10 +218,13 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.sa-table__actions-h { text-align: right !important; }
+// min-width on the cells themselves (not just the <col>) is the real floor under
+// table-layout:fixed - same fix as the Status header, so "ACTIONS" never clips either.
+.sa-table__actions-h { text-align: right !important; min-width: 110px; }
 .sa-table__actions {
   white-space: nowrap;
   text-align: right;
+  min-width: 110px;
 
   & > * + * { margin-left: 6px; }
 }
@@ -263,52 +266,48 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
   &--icon { width: 28px; padding: 0; justify-content: center; }
 }
 
-// Remarks popover (hover or keyboard focus)
-.sa-remarks {
-  position: relative;
-  display: inline-flex;
-}
-.sa-remarks__btn {
-  border: none;
-  background: transparent;
-  padding: 2px;
-  cursor: help;
-  color: $sa-accent;
-  font-size: 13px;
-  display: inline-flex;
-}
-.sa-remarks__pop {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 30;
-  margin-top: 4px;
-  width: 280px;
-  max-width: 70vw;
-  padding: 8px 10px;
+// Row actions collapse into a single "more" button + dropdown (same pattern as the
+// Certificates list) instead of several icon buttons side by side.
+.sa-actions-menu { position: relative; display: inline-block; }
+.sa-actions-menu__pop {
+  min-width: 190px;
+  padding: 5px;
   border-radius: 8px;
-  background: var(--vdms-surface);
   border: 1px solid var(--vdms-line);
-  box-shadow: 0 8px 24px rgba(10, 22, 38, 0.16);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.45;
-  color: var(--vdms-text);
-  white-space: pre-wrap;
+  background: var(--vdms-surface);
+  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.14), 0 2px 6px -1px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   text-align: left;
 
-  strong {
-    display: block;
-    margin-bottom: 2px;
-    font-size: 10.5px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--vdms-text-muted);
-  }
+  // Rendered through a portal into document.body (position: fixed, top/right set inline from
+  // the button's own screen coordinates) — this is what actually escapes the table card's own
+  // scroll container, since a parent with overflow:auto clips an absolutely-positioned
+  // descendant no matter how high its z-index is. A high z-index still matters here so the
+  // portaled menu sits above the modal layer too, not just the table.
+  &--portal { position: fixed; z-index: 100030; }
 }
-.sa-remarks:hover .sa-remarks__pop,
-.sa-remarks:focus-within .sa-remarks__pop { display: block; }
+.sa-actions-menu__item {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--vdms-text);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover { background: var(--vdms-surface-alt); }
+  &:disabled { opacity: 0.55; cursor: wait; }
+  &--danger { color: var(--clay-pill-danger-text, #b91c1c); }
+}
 
 // ── Contract list v2 ────────────────────────────────────────────────────
 .sa-table__desc {
@@ -355,15 +354,20 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
 @media (min-width: $phone + 1) {
   .sa-table { table-layout: fixed; }
   .sa-col--toggle { width: 40px; }
-  .sa-col--no { width: 11%; }
-  .sa-col--title { width: 13%; }
-  .sa-col--desc { width: 14%; }
+  .sa-col--no { width: 12%; }
+  .sa-col--title { width: 17%; }
   .sa-col--cat { width: 9%; }
-  .sa-col--owner { width: 8%; }
-  .sa-col--party { width: 9%; }
-  .sa-col--expiry { width: 10%; }
-  .sa-col--status { width: 8%; }
-  .sa-col--actions { width: 136px; }
+  .sa-col--owner { width: 9%; }
+  .sa-col--party { width: 11%; }
+  .sa-col--expiry { width: 16%; }
+  .sa-col--status { width: 100px; }
+  // Just one "more actions" button now instead of up to 4 icons side by side, but the
+  // ACTIONS header text itself still needs real room - see .sa-table__actions-h below.
+  .sa-col--actions { width: 110px; }
+  // A <col>'s own min-width is unreliable under table-layout:fixed in some browsers; the
+  // cells themselves are the real, hard floor that keeps "STATUS" from ever clipping, while
+  // staying no wider than the icon it holds actually needs (the rest goes to Current Expiry).
+  .sa-table__status-h { min-width: 100px; text-align: center !important; }
   .sa-table th, .sa-table td { padding-left: 8px; padding-right: 8px; overflow: hidden; }
   // Smaller headers that wrap only between words (never "CATEGOR / Y")
   .sa-table th { font-size: 10px; letter-spacing: 0.02em; white-space: normal; line-height: 1.3; vertical-align: bottom; overflow-wrap: normal; word-break: keep-all; text-overflow: ellipsis; }
@@ -501,11 +505,83 @@ $sa-accent-soft: var(--clay-accent-soft, #dceef2);
 }
 .sa-detail__doc-meta { color: var(--vdms-text-muted); white-space: nowrap; margin-left: auto; }
 
+// ── Status symbols, badge and legend ────────────────────────────────────
+$st: (
+  draft: (#475569, #eef2f6),
+  pending_approval: (#b45309, #fef3c7),
+  active: (#15803d, #dcfce7),
+  expiring: (#c2410c, #ffedd5),
+  expired: (#b91c1c, #fee2e2),
+  terminated: (#334155, #e2e8f0),
+  superseded: (#6d28d9, #ede9fe),
+);
+.sa-sicon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1;
+  color: #fff;
+}
+@each $name, $c in $st {
+  .sa-sicon--#{$name} { background: nth($c, 1); }
+  .sa-sbadge--#{$name} { background: nth($c, 2); color: nth($c, 1); }
+}
+.sa-sicon--draft { background: transparent; color: #475569; border: 1.5px dashed #94a3b8; box-sizing: border-box; }
+.sa-sbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 2px 9px 2px 3px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.sa-sbadge__text { overflow: hidden; text-overflow: ellipsis; }
+.sa-tab .sa-sicon { width: 15px; height: 15px; font-size: 8.5px; }
+
+// Status column: symbol only (bigger, centred)
+.sa-status-symbol {
+  display: inline-flex;
+  cursor: help;
+
+  .sa-sicon { width: 24px; height: 24px; font-size: 12px; }
+}
+td[data-label='Status'] { text-align: center; }
+
+// Instant hover tooltip (rendered on <body>, so a narrow cell can't clip it)
+.sa-hovertip {
+  position: fixed;
+  z-index: 2147483000;   // above the full-screen app shell (99999) and modals (100020+)
+  max-width: 360px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  box-shadow: 0 8px 24px rgba(10, 22, 38, 0.25);
+  pointer-events: none;
+
+  &.is-above { transform: translateY(-100%); }
+}
+
 // ── Responsive ──────────────────────────────────────────────────────────
 @media (max-width: $tablet) {
   .sa-detail { grid-template-columns: minmax(0, 1fr); padding-left: 14px; }
   .sa-detail__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .sa-tab { padding: 0 10px; }
+  .sa-tabs { flex-wrap: wrap; }
+  .sa-tab { padding: 0 8px; }
   .sa-search { flex: 1 1 100%; }
   .sa-filters > .sa-control { flex: 1 1 140px; min-width: 0; }
 }

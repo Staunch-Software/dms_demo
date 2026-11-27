@@ -16,10 +16,10 @@ Usage: python get_site_drive_id.py
 """
 import requests
 
-TENANT_ID = "8e7d453e-ffcb-4df6-8f2f-6c7ca1b0d457"
-CLIENT_ID = "c5905e40-0090-43e4-9ad6-76a7858f1815"
+TENANT_ID = "cd42dbac-81bd-4fbd-b910-49ca5f79737f"
+CLIENT_ID = "7b9c4cc1-0f71-4846-90f0-051fb187fc38"
 CLIENT_SECRET = os.getenv("LOCAL_GRAPH_CLIENT_SECRET", "")
-SITE_HOSTNAME = "kamalnathqatestergmail.sharepoint.com"
+SITE_HOSTNAME = "0hnz6.sharepoint.com"
 
 # 1. Get token
 token_resp = requests.post(
@@ -35,9 +35,11 @@ token_resp.raise_for_status()
 token = token_resp.json()["access_token"]
 headers = {"Authorization": f"Bearer {token}"}
 
-# 2. Get site ID (root communication site)
+SITE_PATH = "/sites/DemoDMS"
+
+# 2. Get site ID
 site_resp = requests.get(
-    f"https://graph.microsoft.com/v1.0/sites/{SITE_HOSTNAME}:/",
+    f"https://graph.microsoft.com/v1.0/sites/{SITE_HOSTNAME}:{SITE_PATH}",
     headers=headers,
 )
 if site_resp.status_code == 403:

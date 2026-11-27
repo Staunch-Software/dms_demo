@@ -61,7 +61,9 @@ export interface ServiceAgreement {
   vessels: Array<{ id: number; name: string }>;
   remarks: string | null;
   /** draft / pending_approval (saved by the user), active / expiring (reminder date reached) / expired, terminated */
-  status: 'draft' | 'pending_approval' | 'active' | 'expiring' | 'expired' | 'terminated';
+  status: 'draft' | 'pending_approval' | 'active' | 'expiring' | 'expired' | 'terminated' | 'superseded';
+  /** Only on rows of the Superseded tab: an earlier version replaced by an approved renewal. */
+  superseded?: { history_id: number; renewed_at: string | null; renewed_by: string | null; notes: string | null } | null;
   /** Set while status is pending_approval: which decision is awaiting the owner's emailed Approve/Reject. */
   approval_kind?: 'activation' | 'renewal' | null;
   approval_requested_at?: string | null;
@@ -1058,6 +1060,45 @@ export function ServiceAgreementCloseModal({ agreement, busy, onCancel, onConfir
         <button type="button" className="sa-btn sa-btn--secondary" onClick={onCancel} disabled={busy}>Cancel</button>
         <button type="button" className="sa-btn sa-btn--danger" onClick={() => onConfirm(note)} disabled={busy}>
           {busy ? 'Terminating…' : 'Terminate'}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+/** Admin-only: the one thing a Terminated contract can still do — move it back into
+ * Draft or straight to Pending Approval. Every other field stays locked. */
+export function ServiceAgreementReinstateModal({ agreement, busy, onCancel, onConfirm }: {
+  agreement: ServiceAgreement; busy: boolean; onCancel: () => void; onConfirm: (status: 'draft' | 'pending_approval') => void;
+}): React.ReactElement {
+  const owner = agreement.owner_name || agreement.owner_email || 'the Contract Owner';
+  return (
+    <Modal label="Reinstate contract" busy={busy} onClose={onCancel} className="sa-modal__dialog--small">
+      <div className="sa-modal__header">
+        <div className="sa-modal__heading">
+          <span className="sa-modal__icon"><Icon iconName="Sync" /></span>
+          <div>
+            <h3 className="sa-modal__title">Reinstate {agreement.contract_no}?</h3>
+            <div className="sa-modal__subtitle">{agreement.agreement_name}</div>
+          </div>
+        </div>
+      </div>
+      <div className="sa-modal__body">
+        <p className="sa-modal__text">
+          Status is the only thing that can change on a Terminated contract, and only an Admin can change it.
+        </p>
+        <p className="sa-modal__text">
+          <strong>Save as Draft</strong> reopens every field for editing — no email is sent yet.{' '}
+          <strong>Resend for Approval</strong> puts it straight into Pending Approval and emails {owner} a fresh Approve/Reject link.
+        </p>
+      </div>
+      <div className="sa-modal__footer sa-modal__footer--end">
+        <button type="button" className="sa-btn sa-btn--secondary" onClick={onCancel} disabled={busy}>Cancel</button>
+        <button type="button" className="sa-btn sa-btn--secondary" onClick={() => onConfirm('draft')} disabled={busy}>
+          {busy ? 'Saving…' : 'Save as Draft'}
+        </button>
+        <button type="button" className="sa-btn sa-btn--primary" onClick={() => onConfirm('pending_approval')} disabled={busy}>
+          {busy ? 'Sending…' : 'Resend for Approval'}
         </button>
       </div>
     </Modal>

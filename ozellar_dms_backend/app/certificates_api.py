@@ -1740,7 +1740,9 @@ async def sync_certificates_from_sharepoint(
 
                 file_bytes, _, _ = await gd.download_file(item["drive_id"], f["id"])
 
-                meta = extract_certificate_metadata(file_bytes, f["name"], masters, vessels, target_vessel_id=v.id)
+                meta = await asyncio.to_thread(  # off the event loop: OCR / Vision AI can take seconds
+                    extract_certificate_metadata, file_bytes, f["name"], masters, vessels, target_vessel_id=v.id
+                )
 
                 break
 
@@ -2040,7 +2042,8 @@ def build_certificates_router(
 
 
 
-            result = extract_certificate_metadata(
+            result = await asyncio.to_thread(  # off the event loop: OCR / Vision AI can take seconds
+                lambda: extract_certificate_metadata(
 
                 file_bytes=file_bytes,
 
@@ -2052,6 +2055,7 @@ def build_certificates_router(
 
                 target_vessel_id=target_v_id,
 
+            )
             )
 
             return result

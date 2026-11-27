@@ -35,6 +35,7 @@ auto-renewal, amendments as a distinct action (document_type="Amendment" is just
 from __future__ import annotations
 
 import hmac
+import asyncio
 import json
 import logging
 import re
@@ -210,6 +211,21 @@ def _resolve_owner(db, email: Any, required: bool = True) -> tuple[str | None, s
     if not user:
         raise HTTPException(400, f"Contract Owner '{e}' is not in User Management.")
     return user.email, user.display_name
+
+
+def _current_user_is_admin(db, x_user_email: str | None) -> bool:
+    """User Management's "Admin" role for whoever is actually signed in. The identity comes from
+    the validated server-side session (same pattern as main.py's _require_admin) — a client-supplied
+    X-User-Email header is never trusted as identity, except the same local-dev/no-DB fallback."""
+    from .services.auth_guard import AUTH_EMAIL, insecure_dev_auth_enabled
+
+    email = (AUTH_EMAIL.get() or "").strip().lower()
+    if not email and (not getattr(settings, "db_configured", False) or insecure_dev_auth_enabled()):
+        email = (x_user_email or "").strip().lower()
+    if not email:
+        return False
+    user = db.query(models.UserProfile).filter(func.lower(models.UserProfile.email) == email).first()
+    return bool(user and (user.role or "").strip().lower() == "admin")
 
 
 def _parse_parties(raw: Any, required: bool = True) -> list[dict[str, Any]]:
@@ -640,7 +656,7 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
 
     @router.get("")
     async def list_agreements(
-        status: str = Query(default="all", description="all | draft | pending_approval | active | expiring | expired | terminated"),
+        status: str = Query(default="all", description="all | draft | pending_approval | active | expiring | expired | terminated | superseded"),
         vessel_id: str | None = Query(default=None),
         category: str | None = Query(default=None),
         business_unit: str | None = Query(default=None),
@@ -700,8 +716,48 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             items = [_serialize(a, ships.get(a.id, []), today, full=False) for a in rows]
 
             counts = {"draft": 0, "pending_approval": 0, "active": 0, "expiring": 0, "expired": 0, "terminated": 0}
+            pending_hist: set[int] = set()
             for a in db.query(models.ServiceAgreement).all():
                 counts[_status(a, today)] += 1
+                if a.pending_renewal_history_id and a.status == "pending_approval":
+                    pending_hist.add(a.pending_renewal_history_id)
+
+            # Superseded = earlier versions of renewed contracts (one history row each). A renewal still
+            # waiting for approval has a history row too; it is not superseded until approved.
+            hist_q = db.query(models.ServiceAgreementHistory)
+            if pending_hist:
+                hist_q = hist_q.filter(~models.ServiceAgreementHistory.id.in_(pending_hist))
+            counts["superseded"] = hist_q.count()
+
+            if status == "superseded":
+                by_id = {i["id"]: i for i in items}
+                hist = (
+                    hist_q.filter(models.ServiceAgreementHistory.agreement_id.in_(list(by_id) or [-1]))
+                    .order_by(models.ServiceAgreementHistory.renewed_at.desc())
+                    .all()
+                )
+                old_versions = []
+                for h in hist:
+                    cur = by_id[h.agreement_id]
+                    old_versions.append({
+                        **cur,
+                        "status": "superseded",
+                        "vendor_reference": h.vendor_reference,
+                        "issue_date": h.issue_date.isoformat() if h.issue_date else None,
+                        "expiry_date": h.expiry_date.isoformat() if h.expiry_date else None,
+                        "no_expiry": h.expiry_date is None,
+                        "days_left": None,
+                        "reminder_date": None,
+                        "sharepoint_file_url": h.sharepoint_file_url,
+                        "filename": h.filename,
+                        "superseded": {
+                            "history_id": h.id,
+                            "renewed_at": h.renewed_at.isoformat() if h.renewed_at else None,
+                            "renewed_by": h.renewed_by_email,
+                            "notes": h.notes,
+                        },
+                    })
+                return {"items": old_versions, "counts": counts, "default_reminder_days": DEFAULT_REMINDER_DAYS}
 
         if status in counts:
             items = [i for i in items if i["status"] == status]
@@ -756,7 +812,9 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             vessels = [v for v in db.query(models.Vessel).all() if not vessel_roots.is_grouping_folder(v.name)]
             subs = [r[0] for r in db.query(models.ServiceAgreement.sub_category).distinct().all()]
             try:
-                return extract_service_agreement_metadata(file_bytes, file.filename or "", vessels, CATEGORIES, subs)
+                return await asyncio.to_thread(  # off the event loop: OCR / AI fallback can take seconds
+                    extract_service_agreement_metadata, file_bytes, file.filename or "", vessels, CATEGORIES, subs
+                )
             except Exception as exc:
                 log.warning("Contract extraction failed for %s: %s", file.filename, exc)
                 return {"success": False, "message": "Details could not be read from this file. Please fill them in.",
@@ -895,6 +953,31 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             a = db.get(models.ServiceAgreement, agreement_id)
             if not a:
                 raise HTTPException(404, f"Service agreement {agreement_id} not found")
+            if a.status == "terminated":
+                # Reinstating is the only thing a terminated contract can do, and only an Admin
+                # may do it — every other field is locked, for everyone, once terminated.
+                if set(f) - {"status"}:
+                    raise HTTPException(400, "A terminated contract's only editable field is Status.")
+                if not f.get("status"):
+                    raise HTTPException(400, "A terminated contract's status cannot be changed.")
+                if not _current_user_is_admin(db, x_user_email):
+                    raise HTTPException(403, "Only an Admin can reinstate a terminated contract.")
+                requested_raw = _pick(f["status"], SAVE_STATUSES, "Status")
+                target = "pending_approval" if requested_raw == "active" else requested_raw
+                # contract_date and a document are guaranteed already on the row — it was Active
+                # (and so already satisfied both) before it was ever terminated.
+                a.status = target
+                a.closed_at = None
+                a.updated_by = x_user_email or a.updated_by
+                requesting_approval = target == "pending_approval"
+                warning = _request_approval(db, a, "activation") if requesting_approval else None
+                db.commit()
+                out = _one(db, a.id)
+                if requesting_approval:
+                    out["approval_routing"] = _approval_routing(a, a.status)
+                if warning:
+                    out["warning"] = warning
+                return out
             if "agreement_name" in f:
                 a.agreement_name = _clean_text(f["agreement_name"], 300) or _raise("Contract Title is required.")
             if "description" in f:
@@ -949,8 +1032,8 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
             requesting_approval = False
             if f.get("status"):
                 requested_raw = _pick(f["status"], SAVE_STATUSES, "Status")
-                if a.status not in SAVE_STATUSES:
-                    raise HTTPException(400, "A terminated contract's status cannot be changed.")
+                # "terminated" is handled by the early-return above; every other stored status is
+                # one of SAVE_STATUSES, so nothing further to guard here.
                 if a.status == "active":
                     if requested_raw != "active":
                         raise HTTPException(400, "An Active contract cannot go back to Draft or Pending Approval — use Terminate instead.")
@@ -1215,6 +1298,7 @@ def build_service_agreements_router(require_session: Callable) -> APIRouter:
                 history = db.get(models.ServiceAgreementHistory, a.pending_renewal_history_id) if a.pending_renewal_history_id else None
                 if clean_action == "approve":
                     a.status = "active"
+                    a.pending_renewal_history_id = None  # the renewal is final; its history row = superseded version
                     a.approval_rejection_reason = None
                     title = "Renewal Approved"
                     message = f"{a.contract_no} - {a.agreement_name} has been renewed and is now Active."
