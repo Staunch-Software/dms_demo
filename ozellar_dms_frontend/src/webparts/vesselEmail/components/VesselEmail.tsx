@@ -59,6 +59,7 @@ import { renderRecycleBinPage } from './pages/RecycleBinPage';
 import { ArchivePage } from './pages/ArchivePage';
 import { CertificatesPage } from './pages/CertificatesPage';
 import { ServiceAgreementsPage } from './pages/ServiceAgreementsPage';
+import { ShipRegisterPage } from './pages/ShipRegisterPage';
 import { CertificateMasterPage } from './pages/CertificateMasterPage';
 import { renderAlertsPage } from './pages/AlertsPage';
 import { renderApprovalsPage } from './pages/ApprovalsPage';
@@ -13053,6 +13054,9 @@ export default class VesselEmail extends React.Component<IVesselEmailProps, Stat
         break;
       case 'service_agreements':
         content = <ServiceAgreementsPage host={this} />;
+        break;
+      case 'ship_register':
+        content = <ShipRegisterPage host={this} />;
         break;
       // 'templates' (Templates & OCR) removed — redundant with what's
       // already on the SharePoint site. Any stale deep link / saved state

@@ -1247,3 +1247,74 @@ class ServiceAgreementHistory(Base):
     agreement: Mapped["ServiceAgreement"] = relationship(
         back_populates="history", foreign_keys="ServiceAgreementHistory.agreement_id"
     )
+
+
+# ── Ship Register (ship particulars + machinery/equipment) ──────────────────
+# Client template "Ship_DMS_Module_Template" (2026-11-27). Name, IMO, flag,
+# port of registry, ship type and class stay on `vessels`; everything else
+# the register adds lives here so the vessel-creation flows are untouched.
+# Numbers (tonnages, power, rpm) are kept as text exactly as typed.
+
+class ShipParticulars(Base):
+    """One row per vessel: register details that are not on `vessels`."""
+    __tablename__ = "ship_particulars"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    vessel_id: Mapped[int] = mapped_column(
+        ForeignKey("vessels.id", ondelete="CASCADE"), nullable=False, unique=True, index=True
+    )
+    official_no: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    mmsi: Mapped[str | None] = mapped_column(String(9), nullable=True)
+    gross_tonnage: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    net_tonnage: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    deadweight: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    p_and_i: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    h_and_m: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    tech_manager: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    tech_manager_email: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    tech_manager_email2: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    tech_manager_phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    tech_manager_phone2: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    crew_manager: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    crew_manager_email: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    crew_manager_email2: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    crew_manager_phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    crew_manager_phone2: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+    updated_by_email: Mapped[str | None] = mapped_column(String(320), nullable=True)
+
+
+class ShipEquipment(Base):
+    """Engines, generators and other machinery fitted on a vessel.
+
+    category: main_engine | aux_engine | emergency_generator | other.
+    power/power_unit/rpm are used by the engine categories, specification by "other".
+    """
+    __tablename__ = "ship_equipment"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    vessel_id: Mapped[int] = mapped_column(
+        ForeignKey("vessels.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    category: Mapped[str] = mapped_column(String(30), nullable=False, index=True)
+    equipment_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    make: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    model: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    serial_number: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    power: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    power_unit: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    rpm: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    specification: Mapped[str | None] = mapped_column(Text, nullable=True)
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
+class EquipmentMaster(Base):
+    """Master list of equipment names for "Add New Equipment" (admin managed)."""
+    __tablename__ = "equipment_master"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), unique=True, index=True, nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())

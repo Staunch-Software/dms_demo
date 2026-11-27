@@ -11667,6 +11667,10 @@ app.include_router(_build_certificates_router(require_session, _require_admin))
 from .service_agreements_api import build_service_agreements_router as _build_service_agreements_router
 app.include_router(_build_service_agreements_router(require_session))
 
+# ── Ship Register (ship particulars, managers, engines and equipment per vessel) ──
+from .ship_register_api import build_ship_register_router as _build_ship_register_router
+app.include_router(_build_ship_register_router(require_session, _require_admin))
+
 from .graph.guard import ProtectedTargetError as _ProtectedTargetError
 
 

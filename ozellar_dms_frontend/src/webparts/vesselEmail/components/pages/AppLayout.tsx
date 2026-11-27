@@ -33,6 +33,7 @@ const VIEW_LABELS: Record<string, string> = {
   certificates: 'Certificates & Compliance',
   certificate_master: 'Certificate Master',
   service_agreements: 'Service Agreements',
+  ship_register: 'Ship Register',
   templates: 'Templates',
   migration: 'Migration Assistant',
   reports: 'Reports',

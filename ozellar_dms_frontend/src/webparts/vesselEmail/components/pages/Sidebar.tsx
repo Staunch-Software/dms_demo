@@ -128,6 +128,7 @@ export function renderSidebar(host: VesselEmail): React.ReactElement {
     { id: 'certificates', label: 'Certificates',     iconName: 'Certificate' },
     { id: 'certificate_master', label: 'Certificate Master', iconName: 'DocumentApproval' },
     { id: 'service_agreements', label: 'Service Agreements', iconName: 'TextDocument' },
+    { id: 'ship_register', label: 'Ship Register', iconName: 'Ferry' },
     { id: 'approvals',  label: 'Approvals',          iconName: 'CheckList' },
     // 'templates' (Templates & OCR) removed — that functionality already
     // lives directly on the SharePoint site, so this module was redundant.

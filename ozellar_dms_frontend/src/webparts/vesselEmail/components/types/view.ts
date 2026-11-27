@@ -10,6 +10,7 @@ export type AppView =
   | 'certificates'
   | 'certificate_master'
   | 'service_agreements'
+  | 'ship_register'
   | 'templates'
   | 'approvals'
   | 'reports'

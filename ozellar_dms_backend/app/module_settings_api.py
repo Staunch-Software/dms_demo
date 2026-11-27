@@ -43,6 +43,7 @@ MODULE_CATALOG: list[dict[str, str]] = [
     {"id": "recycle", "label": "Recycle Bin"},
     {"id": "archive", "label": "Archive"},
     {"id": "service_agreements", "label": "Service Agreements"},
+    {"id": "ship_register", "label": "Ship Register"},
 ]
 MODULE_IDS = {m["id"] for m in MODULE_CATALOG}
 SETTING_KEY = "hidden_modules"
