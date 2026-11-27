@@ -2198,6 +2198,14 @@ async def get_profile(email: str, _session: object = Depends(require_session)):
                         "phone": row.phone,
                         "office_location": row.office_location,
                         "office_name": row.office_name,
+                        "address_line1": row.address_line1,
+                        "address_line2": row.address_line2,
+                        "area_locality": row.area_locality,
+                        "landmark": row.landmark,
+                        "city": row.city,
+                        "state": row.state,
+                        "postal_code": row.postal_code,
+                        "country": row.country,
                         "company_name": row.company_name,
                         "employee_id": row.employee_id,
                         "manager_name": row.manager_name,
@@ -2209,7 +2217,16 @@ async def get_profile(email: str, _session: object = Depends(require_session)):
                         "created_at": row.created_at.isoformat() + "Z",
                         "photo_base64": row.photo_base64,
                         "date_of_joining": row.date_of_joining.isoformat() if row.date_of_joining else None,
-                        "emergency_contact": None,
+                        "emergency_contacts": [
+                            {
+                                "id": ec.id,
+                                "name": ec.name,
+                                "relationship_type": ec.relationship_type,
+                                "phone": ec.phone,
+                                "email": ec.email,
+                            }
+                            for ec in (row.emergency_contacts or [])
+                        ],
                         "folder_permissions": [
                             {"folder_name": p.folder_name, "permission_level": p.permission_level}
                             for p in perms
@@ -2259,6 +2276,13 @@ async def get_profile(email: str, _session: object = Depends(require_session)):
     raise HTTPException(404, "Profile not found")
 
 
+class EmergencyContactIn(BaseModel):
+    name: str | None = None
+    relationship_type: str | None = None
+    phone: str | None = None
+    email: str | None = None
+
+
 class ProfileUpdateIn(BaseModel):
     employee_id: str | None = None
     first_name: str | None = None
@@ -2266,12 +2290,22 @@ class ProfileUpdateIn(BaseModel):
     phone: str | None = None
     office_location: str | None = None
     office_name: str | None = None
+    address_line1: str | None = None
+    address_line2: str | None = None
+    area_locality: str | None = None
+    landmark: str | None = None
+    city: str | None = None
+    state: str | None = None
+    postal_code: str | None = None
+    country: str | None = None
     department: str | None = None
     manager_name: str | None = None
     manager_email: str | None = None
     two_factor_enabled: bool | None = None
     photo_base64: str | None = None
     date_of_joining: str | None = None
+    # Replaces the user's full set of emergency contacts when provided (omit to leave untouched).
+    emergency_contacts: list[EmergencyContactIn] | None = None
 
 
 @app.patch("/api/profile")
@@ -2298,7 +2332,9 @@ async def patch_profile(email: str, payload: ProfileUpdateIn, _session: object =
                     db.flush()  # assign id before seeding related rows
 
                 for field in ("employee_id", "first_name", "last_name", "phone", "office_location",
-                              "office_name", "department", "manager_name", "manager_email", "photo_base64"):
+                              "office_name", "address_line1", "address_line2", "area_locality", "landmark",
+                              "city", "state", "postal_code", "country",
+                              "department", "manager_name", "manager_email", "photo_base64"):
                     val = getattr(payload, field)
                     if val is not None:
                         setattr(row, field, val)
@@ -2312,6 +2348,23 @@ async def patch_profile(email: str, payload: ProfileUpdateIn, _session: object =
 
                 if payload.two_factor_enabled is not None:
                     row.two_factor_enabled = payload.two_factor_enabled
+
+                if payload.emergency_contacts is not None:
+                    # Replace the full set — simplest correct semantics for a short,
+                    # user-edited list (at most a handful of contacts per person).
+                    for ec in list(row.emergency_contacts):
+                        db.delete(ec)
+                    db.flush()
+                    for ec_in in payload.emergency_contacts:
+                        if not (ec_in.name or ec_in.phone or ec_in.email):
+                            continue
+                        db.add(db_models.EmergencyContact(
+                            user_email=email,
+                            name=ec_in.name,
+                            relationship_type=ec_in.relationship_type,
+                            phone=ec_in.phone,
+                            email=ec_in.email,
+                        ))
 
                 # Log the update activity
                 db.add(db_models.ActivityLog(
@@ -8629,6 +8682,42 @@ async def vessel_provision_status(
         return {"vessel_id": vessel_id, "is_provisioned": bool(vessel.is_provisioned)}
 
 
+@app.get("/api/vessels/{vessel_id}/name-history")
+async def vessel_name_history(
+    vessel_id: str,
+    _session: object = Depends(require_session),
+):
+    """Past names this vessel has been renamed from, most recent first."""
+    try:
+        vessel_id_num = int(vessel_id)
+    except ValueError:
+        raise HTTPException(404, "Vessel not found")
+    from .db.base import SessionLocal
+    from .db import models as db_models
+    with SessionLocal() as db:
+        vessel = db.query(db_models.Vessel).filter_by(id=vessel_id_num).one_or_none()
+        if vessel is None:
+            raise HTTPException(404, "Vessel not found")
+        rows = (
+            db.query(db_models.VesselNameHistory)
+            .filter_by(vessel_id=vessel_id_num)
+            .order_by(db_models.VesselNameHistory.changed_at.desc())
+            .all()
+        )
+        return {
+            "vessel_id": vessel_id_num,
+            "current_name": vessel.name,
+            "history": [
+                {
+                    "previous_name": r.previous_name,
+                    "changed_at": r.changed_at.isoformat() + "Z",
+                    "changed_by_email": r.changed_by_email,
+                }
+                for r in rows
+            ],
+        }
+
+
 @app.get("/api/admin/site-provisioning/sites")
 async def get_site_provisioning_sites(
     include_hidden: bool = Query(default=False),
@@ -11332,6 +11421,200 @@ async def list_session_audit(
         ]
     except Exception as exc:
         raise HTTPException(500, f"Could not retrieve audit log: {exc}")
+
+
+@app.get("/api/admin/activity-log")
+async def list_activity_log(
+    user_email: str | None = Query(default=None),
+    action: str | None = Query(default=None),
+    date_from: str | None = Query(default=None),
+    date_to: str | None = Query(default=None),
+    limit: int = Query(default=100, le=500),
+    offset: int = Query(default=0, ge=0),
+    _admin: str = Depends(_require_admin),
+):
+    """Admin-only, filterable view over every sensitive action recorded in
+    `activity_logs` (role changes, permission edits, user lifecycle, password
+    resets, profile updates, ...) — the same table the Alerts bell's CRUD tab
+    draws from, but filterable and not capped at a flat 100 most-recent rows."""
+    if not settings.db_configured:
+        return {"items": [], "total": 0}
+    from .db.base import SessionLocal
+    from .db import models as db_models
+
+    with SessionLocal() as db:
+        q = db.query(db_models.ActivityLog)
+        if user_email:
+            q = q.filter(db_models.ActivityLog.user_email.ilike(f"%{user_email.strip()}%"))
+        if action:
+            q = q.filter(db_models.ActivityLog.action == action.strip())
+        if date_from:
+            try:
+                q = q.filter(db_models.ActivityLog.created_at >= datetime.fromisoformat(date_from))
+            except ValueError:
+                raise HTTPException(400, "date_from must be YYYY-MM-DD")
+        if date_to:
+            try:
+                q = q.filter(db_models.ActivityLog.created_at <= datetime.fromisoformat(date_to) + timedelta(days=1))
+            except ValueError:
+                raise HTTPException(400, "date_to must be YYYY-MM-DD")
+        total = q.count()
+        rows = q.order_by(db_models.ActivityLog.created_at.desc()).offset(offset).limit(limit).all()
+        return {
+            "total": total,
+            "items": [
+                {
+                    "id": r.id,
+                    "user_email": r.user_email,
+                    "action": r.action,
+                    "detail": r.detail,
+                    "created_at": r.created_at.isoformat() + "Z" if r.created_at else None,
+                }
+                for r in rows
+            ],
+        }
+
+
+# ── Approvals ─────────────────────────────────────────────────────────────────
+# `approval_requests` holds two kinds of row (see ApprovalRequest's docstring in
+# db/models.py): entry_kind='approval'/status='pending' for a non-admin's gated
+# action awaiting a decision, and entry_kind='activity'/status='completed' for
+# an admin's own action, executed immediately and logged for audit only. Both
+# surface here as one list so the Approvals page can show "what happened and
+# what's waiting" in one place.
+_APPROVAL_STATUS_MAP = {
+    "pending": "Pending",
+    "approved": "Approved",
+    "completed": "Approved",
+    "rejected": "Rejected",
+    "cancelled": "Rejected",
+}
+
+
+def _approval_request_public(row) -> dict:
+    action_type = row.action_type or "upload"
+    document_name = (
+        row.filename
+        or row.target_description
+        or row.message
+        or action_type.replace("_", " ").title()
+    )
+    return {
+        "id": str(row.id),
+        "documentName": document_name,
+        "vessel": row.vessel_name or "—",
+        "requestedBy": row.uploaded_by_name or row.uploaded_by_email or "—",
+        "requestedOn": row.uploaded_at.isoformat() + "Z" if row.uploaded_at else None,
+        "status": _APPROVAL_STATUS_MAP.get((row.status or "").lower(), "Approved"),
+        "actionType": action_type,
+        "uploadedAt": row.uploaded_at.isoformat() + "Z" if row.uploaded_at else None,
+        "decidedAt": row.decided_at.isoformat() + "Z" if row.decided_at else None,
+        "decidedByEmail": row.decided_by_email,
+        "rejectionReason": row.rejection_reason,
+    }
+
+
+@app.get("/api/approvals")
+async def list_approvals(
+    status: str = Query(default="all"),
+    _admin: str = Depends(_require_admin),
+):
+    if not settings.db_configured:
+        return []
+    from .db.base import SessionLocal
+    from .db import models as db_models
+
+    status_key = (status or "all").strip().lower()
+    with SessionLocal() as db:
+        q = db.query(db_models.ApprovalRequest)
+        if status_key == "pending":
+            q = q.filter(db_models.ApprovalRequest.status == "pending")
+        elif status_key == "approved":
+            q = q.filter(db_models.ApprovalRequest.status.in_(["approved", "completed"]))
+        elif status_key == "rejected":
+            q = q.filter(db_models.ApprovalRequest.status.in_(["rejected", "cancelled"]))
+        rows = q.order_by(db_models.ApprovalRequest.uploaded_at.desc()).limit(500).all()
+        return [_approval_request_public(r) for r in rows]
+
+
+@app.post("/api/approvals/{approval_id}/approve")
+async def approve_approval_request(
+    approval_id: int,
+    admin_email: str = Depends(_require_admin),
+):
+    from .db.base import SessionLocal
+    from .db import models as db_models
+    with SessionLocal() as db:
+        row = db.query(db_models.ApprovalRequest).filter_by(id=approval_id).one_or_none()
+        if row is None:
+            raise HTTPException(404, "Approval not found")
+        row.status = "approved"
+        row.decided_by_email = admin_email
+        row.decided_at = datetime.utcnow()
+        db.commit()
+        return _approval_request_public(row)
+
+
+class ApprovalRejectIn(BaseModel):
+    reason: str | None = None
+
+
+@app.post("/api/approvals/{approval_id}/reject")
+async def reject_approval_request(
+    approval_id: int,
+    payload: ApprovalRejectIn,
+    admin_email: str = Depends(_require_admin),
+):
+    from .db.base import SessionLocal
+    from .db import models as db_models
+    with SessionLocal() as db:
+        row = db.query(db_models.ApprovalRequest).filter_by(id=approval_id).one_or_none()
+        if row is None:
+            raise HTTPException(404, "Approval not found")
+        row.status = "rejected"
+        row.decided_by_email = admin_email
+        row.decided_at = datetime.utcnow()
+        row.rejection_reason = (payload.reason or "").strip() or None
+        db.commit()
+        return _approval_request_public(row)
+
+
+@app.delete("/api/approvals/{approval_id}")
+async def delete_approval_request(
+    approval_id: int,
+    _admin: str = Depends(_require_admin),
+):
+    from .db.base import SessionLocal
+    from .db import models as db_models
+    with SessionLocal() as db:
+        row = db.query(db_models.ApprovalRequest).filter_by(id=approval_id).one_or_none()
+        if row is None:
+            return {"deleted": False}
+        db.delete(row)
+        db.commit()
+        return {"deleted": True}
+
+
+@app.delete("/api/approvals")
+async def clear_approval_requests(
+    status: str = Query(...),
+    _admin: str = Depends(_require_admin),
+):
+    """Bulk-remove every Approved or Rejected entry (the Approvals page's "Clear All")."""
+    from .db.base import SessionLocal
+    from .db import models as db_models
+    status_values = {
+        "approved": ["approved", "completed"],
+        "rejected": ["rejected", "cancelled"],
+    }.get((status or "").strip().lower())
+    if not status_values:
+        raise HTTPException(400, "status must be 'approved' or 'rejected'")
+    with SessionLocal() as db:
+        deleted = db.query(db_models.ApprovalRequest).filter(
+            db_models.ApprovalRequest.status.in_(status_values)
+        ).delete(synchronize_session=False)
+        db.commit()
+        return {"deleted": deleted}
 
 
 # ── AI BANTO Email Automation routes ──────────────────────────────────────────

@@ -42,6 +42,7 @@ SETTINGS_TAB_CATALOG: list[dict[str, str]] = [
     {"id": "Module Management", "label": "Module Management"},
     {"id": "Color Management", "label": "Color Management"},
     {"id": "Audit Logs", "label": "Audit Logs"},
+    {"id": "Activity Log", "label": "Activity Log"},
 ]
 SETTINGS_TAB_IDS = {t["id"] for t in SETTINGS_TAB_CATALOG}
 SETTING_KEY = "hidden_settings_tabs"
