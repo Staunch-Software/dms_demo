@@ -46,9 +46,64 @@ function actionBadge(actionType?: string): React.ReactElement | null {
   );
 }
 
+// Formats a millisecond duration as a short "Xm"/"Xh"/"Xd" label for the SLA badges below.
+function formatDuration(ms: number): string {
+  const minutes = Math.round(ms / 60000);
+  if (minutes < 1) return '<1m';
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.round(hours / 24);
+  return `${days}d`;
+}
+
+// Per-row aging: how long a Pending item has been waiting, or how long a
+// decided item took to be decided. Both read straight off the raw ISO
+// timestamps the backend already stores on every approval_requests row —
+// no new data, just arithmetic that was never done before.
+function slaBadge(app: ApprovalItem): React.ReactElement | null {
+  if (!app.uploadedAt) return null;
+  const uploaded = new Date(app.uploadedAt).getTime();
+  if (Number.isNaN(uploaded)) return null;
+  if (app.status === 'Pending') {
+    const waitingMs = Date.now() - uploaded;
+    const overdue = waitingMs > 1000 * 60 * 60 * 24 * 3; // 3+ days waiting
+    const { bg, fg } = dmsTone(overdue ? 'danger' : 'neutral');
+    return (
+      <span className="approvals-page-i35" style={{ background: bg, color: fg }} title="Time waiting for a decision">
+        Waiting {formatDuration(waitingMs)}
+      </span>
+    );
+  }
+  if (app.decidedAt) {
+    const decided = new Date(app.decidedAt).getTime();
+    if (Number.isNaN(decided)) return null;
+    const { bg, fg } = dmsTone('neutral');
+    return (
+      <span className="approvals-page-i35" style={{ background: bg, color: fg }} title="Time from request to decision">
+        Took {formatDuration(decided - uploaded)}
+      </span>
+    );
+  }
+  return null;
+}
+
+// Header stat: average time-to-decision across the decided items currently
+// in view (Approved/Rejected tabs only — Pending has no decidedAt yet).
+function averageDecisionTime(items: ApprovalItem[]): string | null {
+  const durations = items
+    .filter(a => a.uploadedAt && a.decidedAt)
+    .map(a => new Date(a.decidedAt as string).getTime() - new Date(a.uploadedAt as string).getTime())
+    .filter(ms => Number.isFinite(ms) && ms >= 0);
+  if (durations.length === 0) return null;
+  const avg = durations.reduce((sum, ms) => sum + ms, 0) / durations.length;
+  return formatDuration(avg);
+}
+
 export function renderApprovalsPage(host: VesselEmail): React.ReactElement {
     const { approvalsList, approvalTab, panelLoading } = host.state;
     const filtered = approvalsList.filter(a => a.status === approvalTab);
+    const avgDecision = approvalTab !== 'Pending' ? averageDecisionTime(filtered) : null;
 
     const pendingCount   = approvalsList.filter(a => a.status === 'Pending').length;
     const approvedCount  = approvalsList.filter(a => a.status === 'Approved').length;
@@ -62,7 +117,14 @@ export function renderApprovalsPage(host: VesselEmail): React.ReactElement {
 
     return (
       <div className="approvals-page-i2">
-        <DmsPageHeader title="Approvals" subtitle="Review and take action on pending approvals." />
+        <DmsPageHeader
+          title="Approvals"
+          subtitle={
+            avgDecision
+              ? `Review and take action on pending approvals. Average time to decide: ${avgDecision}.`
+              : 'Review and take action on pending approvals.'
+          }
+        />
 
         {/* Tabs + Clear All button */}
         <div className="approvals-page-i3">
@@ -88,11 +150,14 @@ export function renderApprovalsPage(host: VesselEmail): React.ReactElement {
                 const userEmail = host.props.userEmail || '';
                 const adminParam = userEmail ? `?admin=${encodeURIComponent(userEmail)}` : '';
                 try {
-                  await fetch(`${host._base()}/api/approvals?status=${approvalTab.toLowerCase()}${adminParam.replace('?', '&')}`, {
+                  const res = await fetch(`${host._base()}/api/approvals?status=${approvalTab.toLowerCase()}${adminParam.replace('?', '&')}`, {
                     method: 'DELETE', headers: host._headers(),
                   });
-                } catch { /* offline fallback */ }
-                host.setState({ approvalsList: host.state.approvalsList.filter(a => a.status !== approvalTab) });
+                  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                  await host._loadApprovals();
+                } catch (err) {
+                  window.alert(`Could not clear ${approvalTab.toLowerCase()} entries: ${err instanceof Error ? err.message : 'request failed'}`);
+                }
               }}
               style={{ ...dmsBtn('danger'), padding: '5px 12px', marginBottom: 4 }}
               title={`Remove all ${approvalTab.toLowerCase()} entries`}
@@ -159,7 +224,8 @@ export function renderApprovalsPage(host: VesselEmail): React.ReactElement {
                     {app.requestedBy}
                   </td>
                   <td className="approvals-page-i24" style={{ fontSize: 12 }}>
-                    {app.requestedOn}
+                    <div>{app.requestedOn}</div>
+                    {slaBadge(app)}
                   </td>
                   <td className="approvals-page-i28">
                     {app.status === 'Pending' ? (
@@ -169,10 +235,13 @@ export function renderApprovalsPage(host: VesselEmail): React.ReactElement {
                             const userEmail = host.props.userEmail || '';
                             const adminParam = userEmail ? `?admin=${encodeURIComponent(userEmail)}` : '';
                             try {
-                              await fetch(`${host._base()}/api/approvals/${app.id}/approve${adminParam}`, { method: 'POST', headers: host._headers() });
-                            } catch { /* fallback to local update */ }
-                            const updated = approvalsList.map(item => item.id === app.id ? { ...item, status: 'Approved' as const } : item);
-                            host.setState({ approvalsList: updated });
+                              const res = await fetch(`${host._base()}/api/approvals/${app.id}/approve${adminParam}`, { method: 'POST', headers: host._headers() });
+                              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                            } catch (err) {
+                              window.alert(`Could not approve this item: ${err instanceof Error ? err.message : 'request failed'}`);
+                              return;
+                            }
+                            await host._loadApprovals();
                             host._filesLoadedForFolders.clear();
                             host._filesLoadedForVessels.clear();
                             host._loadData();
@@ -191,17 +260,21 @@ export function renderApprovalsPage(host: VesselEmail): React.ReactElement {
                         </button>
                         <button
                           onClick={async () => {
+                            const reason = window.prompt('Reason for rejecting this request (optional):', '') || '';
                             const userEmail = host.props.userEmail || '';
                             const adminParam = userEmail ? `?admin=${encodeURIComponent(userEmail)}` : '';
                             try {
-                              await fetch(`${host._base()}/api/approvals/${app.id}/reject${adminParam}`, {
+                              const res = await fetch(`${host._base()}/api/approvals/${app.id}/reject${adminParam}`, {
                                 method: 'POST',
                                 headers: { ...host._headers(), 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ reason: 'Rejected by admin' }),
+                                body: JSON.stringify({ reason: reason.trim() || null }),
                               });
-                            } catch { /* fallback to local update */ }
-                            const updated = approvalsList.map(item => item.id === app.id ? { ...item, status: 'Rejected' as const } : item);
-                            host.setState({ approvalsList: updated });
+                              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                            } catch (err) {
+                              window.alert(`Could not reject this item: ${err instanceof Error ? err.message : 'request failed'}`);
+                              return;
+                            }
+                            await host._loadApprovals();
                           }}
                           className="approvals-page-i30" style={{ background: dmsTone('danger').bg, color: dmsTone('danger').fg, borderRadius: 6, transition: 'all 0.15s' }}
                           title="Reject"
@@ -210,18 +283,22 @@ export function renderApprovalsPage(host: VesselEmail): React.ReactElement {
                         </button>
                       </div>
                     ) : (
-                      <div className="approvals-page-i32">
+                      <div className="approvals-page-i32" title={app.rejectionReason || undefined}>
                         {badge(app.status === 'Approved' ? 'green' : 'red', app.status)}
                         <button
                           onClick={async () => {
                             const userEmail = host.props.userEmail || '';
                             const adminParam = userEmail ? `?admin=${encodeURIComponent(userEmail)}` : '';
                             try {
-                              await fetch(`${host._base()}/api/approvals/${app.id}${adminParam}`, {
+                              const res = await fetch(`${host._base()}/api/approvals/${app.id}${adminParam}`, {
                                 method: 'DELETE', headers: host._headers(),
                               });
-                            } catch { /* offline fallback */ }
-                            host.setState({ approvalsList: host.state.approvalsList.filter(a => a.id !== app.id) });
+                              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                            } catch (err) {
+                              window.alert(`Could not remove this entry: ${err instanceof Error ? err.message : 'request failed'}`);
+                              return;
+                            }
+                            await host._loadApprovals();
                           }}
                           className="approvals-page-i33" style={{ width: 28, borderRadius: 6, transition: 'all 0.15s' }}
                           title="Remove this entry"

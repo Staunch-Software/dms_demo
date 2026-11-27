@@ -503,3 +503,12 @@
   cursor: pointer;
 }
 .vessel-dms-app .vessel-form-modal-i77 { font-size: 13.5px !important; } // same size scaling the global stylesheet applied to inline font sizes
+.vessel-form-modal-i78 {
+  margin-top: 6px;
+  font-size: 11px;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.vessel-dms-app .vessel-form-modal-i78 { font-size: 11px !important; } // same size scaling the global stylesheet applied to inline font sizes

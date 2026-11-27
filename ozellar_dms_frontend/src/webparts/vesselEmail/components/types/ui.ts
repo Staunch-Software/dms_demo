@@ -139,6 +139,11 @@ export interface ApprovalItem {
   requestedOn: string;
   status: 'Pending' | 'Approved' | 'Rejected';
   actionType?: string;
+  /** Raw ISO timestamps (requestedOn is the pre-formatted display string) — used for SLA/aging badges. */
+  uploadedAt?: string | null;
+  decidedAt?: string | null;
+  decidedByEmail?: string | null;
+  rejectionReason?: string | null;
 }
 
 export interface NotificationItem {

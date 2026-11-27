@@ -37,7 +37,7 @@ import type {
 
 
 import {
-  cleanName, INITIAL_MOCK_APPROVALS, INITIAL_MOCK_DOCUMENTS, INITIAL_MOCK_TEMPLATES,
+  cleanName, INITIAL_MOCK_DOCUMENTS, INITIAL_MOCK_TEMPLATES,
 } from './constants';
 import { renderSidebar } from './pages/Sidebar';
 import { renderLayout } from './pages/AppLayout';
@@ -61,6 +61,7 @@ import { CertificatesPage } from './pages/CertificatesPage';
 import { ServiceAgreementsPage } from './pages/ServiceAgreementsPage';
 import { CertificateMasterPage } from './pages/CertificateMasterPage';
 import { renderAlertsPage } from './pages/AlertsPage';
+import { renderApprovalsPage } from './pages/ApprovalsPage';
 import { ComposeMailModal } from './mail/ComposeMailModal';
 import { renderVesselForm } from './modals/VesselFormModal';
 import { renderDeleteModal } from './modals/DeleteVesselModal';
@@ -635,6 +636,14 @@ interface State {
   // Real-time cached Dashboard/Home counts from backend
   dashboardStats: DashboardStats | null;
   dashboardStatsLoading?: boolean;
+  // Full employee profile (GET/PATCH /api/profile) shown/edited on the Profile page.
+  profileData: import('./pages/ProfilePage').ProfileData | null;
+  profileLoading: boolean;
+  profileSaving: boolean;
+  profileError: string | null;
+  // Present only while editing — a draft copy of profileData the form writes
+  // to, kept separate so Cancel can discard changes without a re-fetch.
+  profileDraft: import('./pages/ProfilePage').ProfileData | null;
   // SharePoint site the Dashboard's stat cards are scoped to ('all' = every
   // configured site, merged). Independent of vesselSiteFilter/activeDocumentSite
   // so switching it doesn't disturb the Vessels/Documents site selections.
@@ -838,7 +847,7 @@ export default class VesselEmail extends React.Component<IVesselEmailProps, Stat
       uploadedFilesByFolder: {},
       selectedDocPreview: null,
       templatesList: INITIAL_MOCK_TEMPLATES,
-      approvalsList: INITIAL_MOCK_APPROVALS,
+      approvalsList: [],
       approvalTab: 'Pending',
       reportsSelectedVessel: 'All Vessels',
       ocrStagingCount: 0,
@@ -944,6 +953,11 @@ export default class VesselEmail extends React.Component<IVesselEmailProps, Stat
       vesselsNavExpanded: true,
       dashboardStats: null,
       dashboardStatsLoading: false,
+      profileData: null,
+      profileLoading: false,
+      profileSaving: false,
+      profileError: null,
+      profileDraft: null,
       dashboardSiteFilter: 'ozellardms',
       alertsAttentionSite: null,
       alertsAttentionVessel: null,
@@ -1599,6 +1613,74 @@ export default class VesselEmail extends React.Component<IVesselEmailProps, Stat
       this.setState({ archiveList: (data || []).map((v: any) => ({ ...v, name: cleanName(v.name || '') })), panelLoading: false });
     } catch {
       this.setState({ archiveList: [], panelLoading: false });
+    }
+  };
+
+  public _loadApprovals = async (): Promise<void> => {
+    this.setState({ panelLoading: true });
+    try {
+      const userEmail = this.props.userEmail || '';
+      const adminParam = userEmail ? `?admin=${encodeURIComponent(userEmail)}` : '';
+      const data = await this._fetchJson(`${this._base()}/api/approvals${adminParam}`);
+      const list: ApprovalItem[] = Array.isArray(data) ? data : [];
+      this.setState({ approvalsList: list, panelLoading: false });
+    } catch {
+      this.setState({ approvalsList: [], panelLoading: false });
+    }
+  };
+
+  public _loadProfile = async (): Promise<void> => {
+    const email = this.state.customUserEmail || this.props.userEmail;
+    if (!email) return;
+    this.setState({ profileLoading: true, profileError: null });
+    try {
+      const data = await this._fetchJson(`${this._base()}/api/profile?email=${encodeURIComponent(email)}`);
+      this.setState({ profileData: data || null, profileLoading: false });
+    } catch {
+      this.setState({ profileData: null, profileLoading: false, profileError: 'Could not load your profile.' });
+    }
+  };
+
+  public _saveProfile = async (
+    draft: import('./pages/ProfilePage').ProfileData,
+  ): Promise<boolean> => {
+    const email = this.state.customUserEmail || this.props.userEmail;
+    if (!email) return false;
+    this.setState({ profileSaving: true, profileError: null });
+    try {
+      const res = await this._fetchJson(`${this._base()}/api/profile?email=${encodeURIComponent(email)}`, {
+        method: 'PATCH',
+        headers: this._headers(),
+        body: JSON.stringify({
+          first_name: draft.first_name,
+          last_name: draft.last_name,
+          employee_id: draft.employee_id,
+          phone: draft.phone,
+          office_location: draft.office_location,
+          office_name: draft.office_name,
+          address_line1: draft.address_line1,
+          address_line2: draft.address_line2,
+          area_locality: draft.area_locality,
+          landmark: draft.landmark,
+          city: draft.city,
+          state: draft.state,
+          postal_code: draft.postal_code,
+          country: draft.country,
+          department: draft.department,
+          manager_name: draft.manager_name,
+          manager_email: draft.manager_email,
+          date_of_joining: draft.date_of_joining,
+          photo_base64: draft.photo_base64,
+          emergency_contacts: (draft.emergency_contacts || []).map(c => ({
+            name: c.name, relationship_type: c.relationship_type, phone: c.phone, email: c.email,
+          })),
+        }),
+      });
+      this.setState({ profileData: res || draft, profileDraft: null, profileSaving: false });
+      return true;
+    } catch {
+      this.setState({ profileSaving: false, profileError: 'Could not save your profile. Please try again.' });
+      return false;
     }
   };
 
@@ -7243,6 +7325,10 @@ export default class VesselEmail extends React.Component<IVesselEmailProps, Stat
       void this._loadRecycleBin();
     } else if (view === 'archive') {
       await this._loadArchiveList();
+    } else if (view === 'approvals') {
+      void this._loadApprovals();
+    } else if (view === 'profile') {
+      void this._loadProfile();
     } else if (view === 'users') {
       this.setState({ panelLoading: true });
       try {
@@ -12994,6 +13080,9 @@ export default class VesselEmail extends React.Component<IVesselEmailProps, Stat
         break;
       case 'alerts':
         content = renderAlertsPage(this);
+        break;
+      case 'approvals':
+        content = renderApprovalsPage(this);
         break;
       case 'migration':
         content = this._renderMigrationAssistant();

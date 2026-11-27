@@ -52,6 +52,21 @@ function VesselFormContent({ host, mode }: { host: VesselEmail; mode: 'create' |
   const [siteMenuOpen, setSiteMenuOpen] = React.useState(false);
   const siteMenuRef = React.useRef<HTMLDivElement>(null);
 
+  // Past names this vessel was renamed from (vessel_name_history table) —
+  // written on every rename but never surfaced anywhere in the UI before.
+  const [nameHistory, setNameHistory] = React.useState<Array<{ previous_name: string; changed_at: string; changed_by_email: string | null }>>([]);
+  const editingVesselId = !isCreate ? host.state.selectedVessel?.id : null;
+  React.useEffect(() => {
+    if (!editingVesselId) { setNameHistory([]); return; }
+    let cancelled = false;
+    fetch(`${host._base()}/api/vessels/${editingVesselId}/name-history`, { headers: host._headers() })
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((data: { history?: typeof nameHistory }) => { if (!cancelled) setNameHistory(data.history || []); })
+      .catch(() => { if (!cancelled) setNameHistory([]); });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingVesselId]);
+
   React.useEffect(() => {
     const closeSiteMenu = (event: MouseEvent): void => {
       if (siteMenuRef.current && !siteMenuRef.current.contains(event.target as Node)) {
@@ -423,6 +438,18 @@ function VesselFormContent({ host, mode }: { host: VesselEmail; mode: 'create' |
                   {formFieldErrors?.name && (
                     <div className="vessel-form-modal-i70">
                       <span><Icon iconName="Warning" aria-hidden="true" className="vessel-form-modal-i71" /></span><span>{formFieldErrors.name}</span>
+                    </div>
+                  )}
+                  {!isCreate && nameHistory.length > 0 && (
+                    <div className="vessel-form-modal-i78" style={{ color: clay.textMuted }} title="Past names this vessel was renamed from">
+                      <Icon iconName="History" aria-hidden="true" className="vessel-form-modal-i71" /> Previously named{' '}
+                      {nameHistory.map((h, idx) => (
+                        <span key={idx}>
+                          {idx > 0 ? ', ' : ''}
+                          <strong>&quot;{h.previous_name}&quot;</strong>
+                          {' '}({new Date(h.changed_at).toLocaleDateString()}{h.changed_by_email ? ` by ${h.changed_by_email}` : ''})
+                        </span>
+                      ))}
                     </div>
                   )}
                 </div>

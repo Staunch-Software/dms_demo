@@ -43,7 +43,7 @@ export function renderSettingsPage(host: VesselEmail): React.ReactElement {
 // longer has a pane for it.
 const HIDEABLE_SETTINGS_TABS = [
   // 'Vessel Settings', // hidden from the UI for now — uncomment to bring the tab back
-  'Tag Configuration', 'Module Management', 'Color Management', 'Audit Logs'
+  'Tag Configuration', 'Module Management', 'Color Management', 'Audit Logs', 'Activity Log'
 ];
 
 function SettingsPageView({ host }: { host: VesselEmail }): React.ReactElement {
@@ -70,9 +70,10 @@ function SettingsPageView({ host }: { host: VesselEmail }): React.ReactElement {
     // Configuration tabs (admin only) stay as plain Settings tabs; Appearance is personal.
     const configTabs = showAdminTabs
       ? [
-        ...HIDEABLE_SETTINGS_TABS.filter(tab => tab !== 'Audit Logs' && hiddenSettingsTabs.indexOf(tab) === -1),
+        ...HIDEABLE_SETTINGS_TABS.filter(tab => tab !== 'Audit Logs' && tab !== 'Activity Log' && hiddenSettingsTabs.indexOf(tab) === -1),
         // 'Certificate Mapping', // moved to Certificates → Mapping tab (admin only)
         ...(hiddenSettingsTabs.indexOf('Audit Logs') === -1 ? ['Audit Logs'] : []),
+        ...(hiddenSettingsTabs.indexOf('Activity Log') === -1 ? ['Activity Log'] : []),
       ]
       : [];
     // Appearance (Night/Light) lives inside Color Management for admins; everyone
@@ -95,7 +96,7 @@ function SettingsPageView({ host }: { host: VesselEmail }): React.ReactElement {
 
     const TAB_ICONS: Record<string, string> = {
       'Appearance': 'Color', 'Vessel Settings': 'Ferry', 'Tag Configuration': 'Tag', 'Module Management': 'GridViewMedium',
-      'Color Management': 'Color', 'Certificate Mapping': 'Certificate', 'Audit Logs': 'History', 'Settings Management': 'Settings',
+      'Color Management': 'Color', 'Certificate Mapping': 'Certificate', 'Audit Logs': 'History', 'Activity Log': 'TimelineProgress', 'Settings Management': 'Settings',
       'Site Management': 'SharepointLogo', 'User Management': 'People',
     };
     const navIcon = (name: string, active: boolean): React.ReactElement => (
@@ -137,7 +138,7 @@ function SettingsPageView({ host }: { host: VesselEmail }): React.ReactElement {
           </div>
 
           {/* Settings Content Area */}
-          <div className="vdms-settings-body" style={(settingsTab === 'Tag Configuration' || settingsTab === 'Module Management' || settingsTab === 'Color Management' || settingsTab === 'Audit Logs')
+          <div className="vdms-settings-body" style={(settingsTab === 'Tag Configuration' || settingsTab === 'Module Management' || settingsTab === 'Color Management' || settingsTab === 'Audit Logs' || (settingsTab as string) === 'Activity Log')
             ? { width: '100%', minWidth: 0, height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '14px 20px 14px', boxSizing: 'border-box' }
             : { width: '100%', minWidth: 0, height: '100%', overflowY: 'auto', padding: '24px 32px 32px', boxSizing: 'border-box' }}>
             {settingsTab === 'Tag Configuration' ? (
@@ -146,7 +147,7 @@ function SettingsPageView({ host }: { host: VesselEmail }): React.ReactElement {
                 <div className="settings-page-i6">Changes are pushed to SharePoint and the Term Store automatically.</div>
               </div>
             ) : (
-              <h3 className="settings-page-i7" style={{ margin: (settingsTab === 'Module Management' || settingsTab === 'Color Management' || settingsTab === 'Audit Logs') ? '0 0 8px' : '0 0 20px', fontFamily: DMS_FONT_DISPLAY, letterSpacing: '-0.025em' }}>{settingsTab}</h3>
+              <h3 className="settings-page-i7" style={{ margin: (settingsTab === 'Module Management' || settingsTab === 'Color Management' || settingsTab === 'Audit Logs' || (settingsTab as string) === 'Activity Log') ? '0 0 8px' : '0 0 20px', fontFamily: DMS_FONT_DISPLAY, letterSpacing: '-0.025em' }}>{settingsTab}</h3>
             )}
 
             {settingsTab === 'Vessel Settings' && (
@@ -170,6 +171,10 @@ function SettingsPageView({ host }: { host: VesselEmail }): React.ReactElement {
 
             {settingsTab === 'Audit Logs' && (
               <SessionAuditLog host={host} />
+            )}
+
+            {(settingsTab as string) === 'Activity Log' && (
+              <AdminActivityLog host={host} />
             )}
 
             {(settingsTab as string) === 'Appearance' && (
@@ -311,6 +316,141 @@ function SessionAuditLog({ host }: { host: VesselEmail }): React.ReactElement {
             </tbody>
           </table>
         </div>
+      )}
+    </div>
+  );
+}
+
+const ACTIVITY_LOG_ACTIONS = [
+  'access_request', 'login', 'password_set', 'profile_update', 'role_updated',
+  'site_permissions_updated', 'user_created', 'user_updated', 'access_granted',
+  'access_denied', 'user_deleted', 'removed', 'hidden', 'unhidden',
+];
+
+/**
+ * Admin-only, tenant-wide view over every sensitive action recorded in
+ * `activity_logs` (GET /api/admin/activity-log) — role changes, permission
+ * edits, user lifecycle, password resets, profile updates. This is the same
+ * table SessionAuditLog's sibling tab draws its OWN per-user session history
+ * from, but here filterable across every user instead of capped at a flat
+ * feed buried inside the Alerts bell's CRUD tab.
+ */
+function AdminActivityLog({ host }: { host: VesselEmail }): React.ReactElement {
+  const [entries, setEntries] = React.useState<Array<{ id: number; user_email: string; action: string; detail: string | null; created_at: string | null }>>([]);
+  const [total, setTotal] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
+  const [err, setErr] = React.useState<string | null>(null);
+  const [userFilter, setUserFilter] = React.useState('');
+  const [actionFilter, setActionFilter] = React.useState('');
+  const [dateFrom, setDateFrom] = React.useState('');
+  const [dateTo, setDateTo] = React.useState('');
+  const [offset, setOffset] = React.useState(0);
+  const PAGE_SIZE = 50;
+
+  const load = React.useCallback(async (nextOffset: number): Promise<void> => {
+    setLoading(true);
+    setErr(null);
+    try {
+      const params = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(nextOffset) });
+      if (userFilter.trim()) params.set('user_email', userFilter.trim());
+      if (actionFilter) params.set('action', actionFilter);
+      if (dateFrom) params.set('date_from', dateFrom);
+      if (dateTo) params.set('date_to', dateTo);
+      const response = await fetch(`${host._base()}/api/admin/activity-log?${params.toString()}`, { headers: host._headers() });
+      const data = await response.json();
+      if (!response.ok) throw new Error((data && data.detail) || 'Failed to load activity log');
+      setEntries(nextOffset === 0 ? (data.items || []) : [...entries, ...(data.items || [])]);
+      setTotal(data.total || 0);
+      setOffset(nextOffset);
+    } catch (e: any) {
+      setErr(e?.message || 'Failed to load activity log');
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [host, userFilter, actionFilter, dateFrom, dateTo]);
+
+  React.useEffect(() => {
+    void load(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userFilter, actionFilter, dateFrom, dateTo]);
+
+  const formatTime = (iso: string | null): string => {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return isNaN(d.getTime()) ? '—' : `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+  };
+
+  return (
+    <div className="settings-page-i15">
+      <div className="settings-page-i16">
+        <p className="settings-page-i17">
+          Every role change, permission edit, user lifecycle event and password reset, tenant-wide ({total} total).
+        </p>
+        <button onClick={() => void load(0)} disabled={loading} style={dmsBtn('secondary', !loading)}>
+          {loading && offset === 0 ? 'Refreshing…' : <><Icon iconName="Refresh" aria-hidden="true" className="settings-page-i18" /> Refresh</>}
+        </button>
+      </div>
+
+      <div className="settings-page-i66">
+        <input
+          placeholder="Filter by user email…"
+          value={userFilter}
+          onChange={e => setUserFilter(e.target.value)}
+          style={{ ...dmsControlStyle(), minWidth: 200 }}
+        />
+        <select value={actionFilter} onChange={e => setActionFilter(e.target.value)} style={dmsControlStyle()}>
+          <option value="">All actions</option>
+          {ACTIVITY_LOG_ACTIONS.map(a => <option key={a} value={a}>{a.replace(/_/g, ' ')}</option>)}
+        </select>
+        <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} style={dmsControlStyle()} title="From date" />
+        <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} style={dmsControlStyle()} title="To date" />
+      </div>
+
+      {err && (
+        <div className="settings-page-i19" style={{ background: clay.pillDangerBg, color: clay.pillDangerText, borderRadius: 6 }}>
+          {err}
+        </div>
+      )}
+
+      {loading && entries.length === 0 && !err ? (
+        <div className="settings-page-i20">Loading activity log…</div>
+      ) : entries.length === 0 && !err ? (
+        <div className="settings-page-i20">No activity log entries match these filters.</div>
+      ) : (
+        <>
+          <div className="vdms-scroll-clean" style={{ ...DMS_TABLE_CARD, flex: '1 1 0', minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
+            <table style={{ ...DMS_TABLE, width: '100%', tableLayout: 'fixed' }}>
+              <colgroup>
+                <col style={{ width: '18%' }} /><col style={{ width: '16%' }} /><col /><col style={{ width: '16%' }} />
+              </colgroup>
+              <thead>
+                <tr>
+                  {['When', 'User', 'Detail', 'Action'].map(h => (
+                    <th key={h} style={{ ...DMS_TH, position: 'sticky', top: 0, zIndex: 2, background: 'var(--vdms-surface-alt, #f4f8fb)', whiteSpace: 'nowrap' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {entries.map(e => (
+                  <tr key={e.id} style={DMS_TR}>
+                    <td style={{ ...DMS_TD, whiteSpace: 'nowrap' }}>{formatTime(e.created_at)}</td>
+                    <td style={{ ...DMS_TD_NAME, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={e.user_email}>{e.user_email}</td>
+                    <td style={{ ...DMS_TD, overflow: 'hidden', textOverflow: 'ellipsis' }} title={e.detail || ''}>{e.detail || '—'}</td>
+                    <td style={{ ...DMS_TD, whiteSpace: 'nowrap' }}>{badge('default', e.action.replace(/_/g, ' '))}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {entries.length < total && (
+            <div className="settings-page-i67">
+              <button onClick={() => void load(offset + PAGE_SIZE)} disabled={loading} style={dmsBtn('secondary', !loading)}>
+                {loading ? 'Loading…' : `Load more (${entries.length} of ${total})`}
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
